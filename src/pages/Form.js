@@ -78,12 +78,17 @@ const Form = () => {
         })
     }
 
+    function handleSubmit(e) {
+        e.preventDefault();
+        sentToServer();
+    }
     return (
-        <div>
+        <form onSubmit={handleSubmit}>
             <a href="/">Regresar</a>
             <h1>Missing Word Worksheet Form</h1>
             <label htmlFor="language">Idioma</label>
             <select
+                required
                 id="language"
                 onBlur={sentToServer}
                 value={worksheet.lang}
@@ -100,6 +105,7 @@ const Form = () => {
             <br />
             <label htmlFor="title">Título de la actividad</label>
             <input
+                required
                 id="title"
                 value={worksheet.title}
                 onBlur={sentToServer}
@@ -114,10 +120,10 @@ const Form = () => {
                 value={worksheet.content}
                 onChange={newContent => handleChangeProp({ propery: "content", value: newContent })}
             >
-                <Editable onBlur={sentToServer} style={{ textAlign: "left" }} placeholder="Escribe aquí..." />
+                <Editable required onBlur={sentToServer} style={{ textAlign: "left" }} placeholder="Escribe aquí..." />
             </Slate>
-            <button onClick={sentToServer}>Guardar Worksheet</button>
-        </div>
+            <button type="submit">Guardar Worksheet</button>
+        </form>
     )
 }
 

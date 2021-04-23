@@ -1,5 +1,6 @@
 import './App.css';
 import Home from "./pages/Home";
+import Form from "./pages/Form";
 import NotFounded from "./pages/NotFounded";
 
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
@@ -10,6 +11,7 @@ function App() {
       <Router>
         <Switch>
           <Route path="/" exact component={Home} />
+          <Route path="/worksheets/:id/edit" component={Form} />
           <Route path="*" component={NotFounded} />
         </Switch>
       </Router>
