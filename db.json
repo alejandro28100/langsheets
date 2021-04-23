@@ -1,0 +1,47 @@
+{
+  "worksheets": [
+    {
+      "id": "c47053c1-4870-4a2f-8536-3804e4475475",
+      "title": "El título de mi actividad",
+      "content": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "text": "Este es el contenido de mi actividad 🥰"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cad4b469-131a-4b55-95af-7bb8a36973d2",
+      "title": "Nice yupiiii esto si se guarda",
+      "content": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "text": "Este es mi nuevo contenido"
+            }
+          ]
+        }
+      ],
+      "lang": "ru"
+    },
+    {
+      "id": "ab1b6300-908e-4835-b496-1f01cb8a8645",
+      "title": "",
+      "content": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "text": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
