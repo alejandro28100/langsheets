@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { useHistory } from "react-router-dom"
 import { v4 as uuid } from "uuid";
 
+import WorksheetCard from "../components/WorksheetCard";
+import { serializeSlateContent } from '../utils';
+
 function request({ url, method, body }) {
     return fetch(url, {
         method: method,
@@ -37,10 +40,10 @@ const Home = () => {
         const body = {
             id: uuid(),
             title: "",
-            content: [{
+            content: serializeSlateContent([{
                 type: 'paragraph',
                 children: [{ text: '' }],
-            }],
+            }]),
             createdAt: new Date()
         }
         try {
@@ -87,6 +90,7 @@ const Home = () => {
     return (
         <div>
             <h1>Mis Worksheets</h1>
+            <button onClick={worksheetsHandler.createSheet}>Crear Worksheet</button>
             {
                 worksheets.length !== 0
                     ? worksheets.map(worksheet =>
@@ -96,31 +100,10 @@ const Home = () => {
                         />)
                     : <h3>Aun no has creado una worksheet</h3>
             }
-            <button onClick={worksheetsHandler.createSheet}>Crear Worksheet</button>
+
         </div>
     )
 }
 
-
-function WorksheetCard({ lang, title, id, createdAt, deleteSheet }) {
-    console.log(lang, title);
-    const date = new Date(createdAt);
-    const days = date.toLocaleDateString();
-    const hours = date.toLocaleTimeString();
-    return (
-        <div>
-            <h3>{title}</h3>
-            <p>Idioma : {lang}</p>
-            <p>Creada el {days} - {hours} </p>
-            <a href={`http://localhost:3000/worksheets/${id}/edit`}>Editar</a>
-            <button onClick={e => deleteSheet(id)}>Elimar</button>
-            <hr />
-        </div>
-    )
-}
-
-// WorksheetCard.propTypes = {
-
-// }
 
 export default Home
