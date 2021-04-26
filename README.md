@@ -26,10 +26,13 @@ Este proyecto consiste en una aplicación para la creación y aplicación de act
 
 El proyecto se divide en dos partes: 
 
-### Editor de texto enriquecido ([RTE])(https://en.wikipedia.org/wiki/Online_rich-text_editor)
+### Editor de texto enriquecido [RTE][1]
 
 Se utiliza el framework [Slate JS](https://docs.slatejs.org/) para crear un editor de texto enriquecido totalmente customizable.
 
 ### Página de práctica
 
 Esta página traduce todo el contenido del [RTE](https://en.wikipedia.org/wiki/Online_rich-text_editor) a una versión interactiva que se pueda contestar usando elementos HTML nativos (select, input, etc.)
+
+
+[rte link]: https://en.wikipedia.org/wiki/Online_rich-text_editor
