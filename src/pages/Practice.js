@@ -82,13 +82,13 @@ const Practice = () => {
             result.content = deserializeSlateContent(result.content);
             setWorksheet(result);
 
-            const itemsCount = setItemsCount()
+            const itemsCount = getItemsCount()
             setActivity(prevActivity => ({ ...prevActivity, itemsCount }));
         })
 
     }, [id])
 
-    function setItemsCount() {
+    function getItemsCount() {
         let itemsCount = 0;
         // Iterate over every node in the editor and get the missing-word-type nodes
         for (const [node] of Node.descendants(editor)) {
