@@ -4,6 +4,10 @@ import { useParams } from "react-router-dom"
 import { createEditor, Node, Transforms } from 'slate'
 import { Slate, Editable, withReact } from "slate-react"
 import PropTypes from "prop-types";
+
+import { Title, Subtitle } from "../components/Slate/Block/Header";
+import DefaultElement from "../components/Slate/Block/DefaultElement";
+
 import Leaf from "../components/Slate/Inline/Leaf";
 
 import { deserializeSlateContent } from '../utils'
@@ -31,6 +35,17 @@ const Practice = () => {
     //method to render leaves in the slate editor
     const renderLeaf = useCallback(props => {
         return <Leaf {...props} readOnly />
+    }, [])
+
+    const renderElement = useCallback(props => {
+        switch (props.element.type) {
+            case 'title':
+                return <Title {...props} />
+            case 'subtitle':
+                return <Subtitle {...props} />
+            default:
+                return <DefaultElement {...props} />
+        }
     }, [])
 
     // Keep track of state for the value of the editor.
@@ -128,14 +143,18 @@ const Practice = () => {
 
     return (
         <div>
-            <h3>{worksheet.title}</h3>
+            <h1>{worksheet.title}</h1>
             <div style={{ margin: "2em 10em" }}>
                 <Slate
-                    editor={editor}
-                    value={worksheet.content}
-                    onChange={newContent => handleChangeProp({ propery: "content", value: newContent })}
+                    {...{
+                        editor,
+                        value: worksheet.content,
+                        onChange: (newContent) => handleChangeProp({ propery: "content", value: newContent })
+                    }}
                 >
-                    <Editable renderLeaf={renderLeaf} readOnly style={{ textAlign: "left" }} />
+                    <Editable
+                        {...{ renderElement, renderLeaf, readOnly: true, style: { textAlign: "left" } }}
+                    />
                 </Slate>
             </div>
 
@@ -151,7 +170,7 @@ const Practice = () => {
 
 function ExercisesSection({ isFinished, scorePercentage, scoreString, handleCheckExercise }) {
     return (
-        <Fragment>
+        <div style={{ margin: "1em" }}>
             {isFinished
                 ? (
                     <div>
@@ -162,7 +181,7 @@ function ExercisesSection({ isFinished, scorePercentage, scoreString, handleChec
                 :
                 < button onClick={handleCheckExercise}>Calificar Respuestas</button>
             }
-        </Fragment>
+        </div>
 
     )
 }
