@@ -1,10 +1,17 @@
 // @refresh reset
 import React, { useEffect, useMemo, useState, useCallback } from 'react'
 import { useParams } from "react-router-dom"
-import { createEditor, Transforms, Text, Editor, Range } from 'slate'
-import { Slate, Editable, withReact, useSlate } from "slate-react"
-import Leaf from "../components/Slate/Leaf";
+import { createEditor } from 'slate'
+import { Slate, Editable, withReact } from "slate-react"
+
 import { deserializeSlateContent, serializeSlateContent } from '../utils';
+import withMissingWord from "../components/Slate/plugins/withMissingWord";
+import Leaf from "../components/Slate/Leaf";
+
+import Toolbar from "../components/Slate/Toolbar";
+import LanguagePicker from "../components/LanguagePicker";
+import WorksheetTitle from "../components/WorksheetTitle";
+
 
 const defaultValue = {
     "title": "",
@@ -50,41 +57,12 @@ const Form = () => {
     }, [id])
 
     //Slate editor component
-    const editor = useMemo(() => withReact(createEditor()), [])
+    const editor = useMemo(() => withMissingWord(withReact(createEditor())), [])
 
     //method to render leaves in the slate editor
     const renderLeaf = useCallback(props => {
         return <Leaf {...props} />
     }, [])
-
-    // //Slate styling methods
-    // function isMarkActive(format) {
-    //     const marks = Editor.marks(editor);
-    //     return marks[format] === true;
-    // }
-    // function toggleMark(format) {
-    //     const isActive = isMarkActive(format)
-    //     // console.log(isActive);
-    //     if (isActive) {
-    //         Editor.removeMark(editor, format)
-    //     } else {
-    //         Editor.addMark(editor, format, true)
-    //     }
-    // }
-    // function handleCreateMissingWord() {
-    //     //Make sure there's text selected
-    //     if (Range.isCollapsed(editor.selection)) {
-    //         alert("Para crear una palabra faltante , seleciona primero la palabra")
-    //         return
-    //     }
-    //     //Asign the property missingWord into the selected text in the editor 
-    //     Transforms.setNodes(
-    //         editor,
-    //         { missingWord: true },
-    //         { match: n => Text.isText(n), split: true }
-    //     )
-    // }
-
 
     //Worksheet methods
     function updateWorksheetInfo({ body }) {
@@ -135,39 +113,18 @@ const Form = () => {
             <h2>Fill in the blanks Worksheet Form</h2>
 
             <button type="submit">Guardar Worksheet</button>
+
             <br />
             <br />
-            <a target="_blank" rel="noreferrer" href={`/worksheets/${id}/practice`}>Visualizar Actividad</a>
+            <a target="_blank" rel="noreferrer" href={`/worksheets/${id}/practice`}>
+                Visualizar Actividad
+            </a>
             <br />
             <br />
-            <label htmlFor="language">Idioma</label>
-            <select
-                required
-                id="language"
-                onBlur={sentToServer}
-                value={worksheet.lang}
-                onChange={e => handleChangeProp({ propery: "lang", value: e.target.value })}
-            >
-                <option value="de">Alemán</option>
-                <option value="es">Español</option>
-                <option value="fr">Francés</option>
-                <option value="en">Inglés</option>
-                <option value="ru">Ruso</option>
-                <option value="zh">Chino</option>
-                <option value="ja">Japonés</option>
-            </select>
+            <LanguagePicker {...{ handleChangeProp, sentToServer, lang: worksheet.lang }} />
             <br />
             <br />
-            <label htmlFor="title">Título de la actividad</label>
-            <input
-                required
-                id="title"
-                value={worksheet.title}
-                onBlur={sentToServer}
-                onChange={e => handleChangeProp({ propery: "title", value: e.target.value })}
-                type="text"
-                placeholder="Escribe un tílulo aquí..."
-            />
+            <WorksheetTitle {...{ handleChangeProp, sentToServer, title: worksheet.title }} />
             <br />
             <p>Contenido de la actividad</p>
             <Slate
@@ -177,8 +134,9 @@ const Form = () => {
             >
                 <Toolbar />
 
-                <Editable renderLeaf={renderLeaf} required
-                    style={{ textAlign: "left", background: "white", margin: "1em 5em", padding: "2em" }}
+                <Editable renderLeaf={renderLeaf}
+                    required
+                    style={{ textAlign: "left", background: "white", margin: ".5em 5em", padding: "2em" }}
                     placeholder="Escribe aquí..." />
             </Slate>
 
@@ -188,45 +146,6 @@ const Form = () => {
 
 
 
-function Toolbar() {
-    //get the editor reference from the slate context using the hook
-    const editor = useSlate();
-
-    //Slate styling methods
-    function isMarkActive(format) {
-        const marks = Editor.marks(editor);
-        return marks[format] === true;
-    }
-    function toggleMark(format) {
-        const isActive = isMarkActive(format)
-
-        if (isActive) {
-            Editor.removeMark(editor, format)
-        } else {
-            Editor.addMark(editor, format, true)
-        }
-    }
-    function handleCreateMissingWord() {
-        //Make sure there's text selected
-        if (Range.isCollapsed(editor.selection)) {
-            alert("Para crear una palabra faltante , seleciona primero la palabra")
-            return
-        }
-
-        //Asign the property missingWord into the selected text in the editor 
-        toggleMark("missingWord")
-    }
-
-
-    return (
-        <div style={{ position: "sticky", top: 0, zIndex: 1, padding: "1em", background: "white" }}>
-            <button type="button" onClick={e => toggleMark("bold")}> <b>B</b> </button>
-            <button type="button" onClick={e => toggleMark("italic")}> <em>I</em> </button>
-            <button type="button" onClick={e => toggleMark("underline")} > <u>U</u>  </button>
-            <button type="button" onClick={handleCreateMissingWord} title="Selecciona la palabra primero">Crear palabra faltante</button>
-        </div>
-    )
-}
 
 
 export default Form
