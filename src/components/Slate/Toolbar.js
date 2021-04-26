@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 
 function isBlockActive(format, editor) {
     if (!editor) return false;
+    //get the node in the current selection that matches the format given
     const [match] = Editor.nodes(editor, {
         match: n => n.type === format,
     })
@@ -21,6 +22,7 @@ function toggleBlock(format, editor) {
 
 function isMarkActive(format, editor) {
     if (!editor) return false;
+    //get the marks (style marks) in the current selection
     const marks = Editor.marks(editor);
     if (!marks) return false
     return marks[format] === true;
@@ -28,7 +30,7 @@ function isMarkActive(format, editor) {
 
 function toggleMark(format, editor) {
     if (!editor) return
-    console.log(format, editor);
+    // console.log(format, editor);
     const isActive = isMarkActive(format, editor)
 
     if (isActive) {
@@ -101,7 +103,7 @@ const ToolbarButton = ({ children, format, label, type, customOnClick }) => {
 
     function handleClass() {
         if (type === "mark") {
-            console.log(isMarkActive(format, editor) ? "isActive" : "")
+            // console.log(isMarkActive(format, editor) ? "isActive" : "")
             return isMarkActive(format, editor) ? "isActive" : "";
 
         } else if (type === "block") {

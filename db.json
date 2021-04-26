@@ -3,14 +3,14 @@
     {
       "id": "67e10aff-5431-4c51-8639-06768ebdf48f",
       "title": "Frases Méxicanas",
-      "content": "Instrucciones : Rellena los espacios vacíos como corresponda usando las palabras a continuación<p></p><p><em><b>Toluca , nieto ,tortas, pelos, taco, corrió.</b></em></p><p></p><p></p><p></p><p>De lengua me hecho un <span class=\"missingWord=true\">taco</span> </p><p></p><p></p><p>¿Qué Pachuca por <span class=\"missingWord=true\">Toluca</span> ?</p><p></p><p></p><p>Mejor aquí <span class=\"missingWord=true\">corrió</span> que aquí quedó… </p><p></p><p></p><p>Abuelita soy tu <span class=\"missingWord=true\">nieto</span> !</p><p></p><p></p><p>Hablar sin <span class=\"missingWord=true\">pelos</span> en la lengua.</p><p></p><p></p><p>Me quedé como el perro de las dos <span class=\"missingWord=true\">tortas</span> .</p><p></p><p></p>",
+      "content": "<h3>Instrucciones : Rellena los espacios vacíos como corresponda usando las palabras a continuación</h3><h3></h3><p><em><b>Toluca , nieto ,tortas, pelos, taco, corrió.</b></em></p><p></p><p></p><p></p><p>De lengua me hecho un <span class=\"missingWord=true\">taco</span> </p><p></p><p></p><p>¿Qué Pachuca por <span class=\"missingWord=true\">Toluca</span> ?</p><p></p><p></p><p>Mejor aquí <span class=\"missingWord=true\">corrió</span> que aquí quedó… </p><p></p><p></p><p>Abuelita soy tu <span class=\"missingWord=true\">nieto</span> !</p><p></p><p></p><p>Hablar sin <span class=\"missingWord=true\">pelos</span> en la lengua.</p><p></p><p></p><p>Me quedé como el perro de las dos <span class=\"missingWord=true\">tortas</span> .</p><p></p><p></p>",
       "createdAt": "2021-04-24T01:50:11.979Z",
       "lang": "es"
     },
     {
       "id": "52ff329e-c900-4826-b241-84bf9112caa0",
       "title": "Mi actividad 3",
-      "content": "<p>Este es el <b>contenido </b>de mi actividad </p><p></p>",
+      "content": "<h2>Contenido Estático</h2><p>Este es el <b>contenido </b>de mi actividad </p><p>El editor puede también ser utilizado para mostrar contenido estático sin ejercicios</p>",
       "createdAt": "2021-04-24T02:41:45.933Z",
       "lang": "en"
     },

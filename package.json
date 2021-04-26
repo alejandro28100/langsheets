@@ -18,6 +18,7 @@
 		"web-vitals": "^1.1.1"
 	},
 	"scripts": {
+		"dev": "start npm run json-server && npm start ",
 		"json-server": "json-server --watch db.json --port 3001",
 		"start": "react-scripts start",
 		"build": "react-scripts build",
