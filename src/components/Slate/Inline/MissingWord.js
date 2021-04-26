@@ -1,43 +1,7 @@
-import { Transforms } from 'slate';
-import { ReactEditor, useSlate } from 'slate-react';
+import { ReactEditor, useSlate } from "slate-react"
+import { Transforms } from "slate"
 
-const Leaf = (props) => {
-
-    let { leaf, children, attributes } = props
-    const isMissingWord = leaf.missingWord === true;
-
-    if (isMissingWord) {
-        //If readOnly render an input to be answered by a student
-        if (props.readOnly) {
-            return <MissingWordInput {...props} />
-        }
-        return <MissingWordEditable {...props} />
-    }
-
-
-    if (leaf.bold) {
-        children = <strong>{children}</strong>
-    }
-    if (leaf.italic) {
-        children = <em>{children}</em>
-    }
-
-    if (leaf.underline) {
-        children = <u>{children}</u>
-    }
-
-
-    //Default text element
-    return (
-        <span {...attributes}>{children}</span>
-    )
-};
-
-Leaf.defaultProps = {
-    readOnly: false
-}
-
-const MissingWordInput = (props) => {
+export const MissingWordInput = (props) => {
     console.log("rendering leaf");
     const { text: correctAnswer, userAnswer = "", isChecked = false, isCorrect = false } = props.leaf;
 
@@ -77,7 +41,7 @@ const MissingWordInput = (props) => {
 
 }
 
-const MissingWordEditable = props => {
+export const MissingWordEditable = props => {
     return (
         <span
             {...props.attributes}
@@ -88,5 +52,3 @@ const MissingWordEditable = props => {
     )
 }
 
-
-export default Leaf

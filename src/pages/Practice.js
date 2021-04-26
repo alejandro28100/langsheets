@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom"
 import { createEditor, Node, Transforms } from 'slate'
 import { Slate, Editable, withReact } from "slate-react"
 import PropTypes from "prop-types";
-import Leaf from "../components/Slate/Leaf";
+import Leaf from "../components/Slate/Inline/Leaf";
 
 import { deserializeSlateContent } from '../utils'
 
@@ -117,7 +117,7 @@ const Practice = () => {
     //Check whether a worksheet has only content or includes exercises
     const hasExercises = activity.itemsCount > 0;
 
-    console.log(activity.itemsCount)
+    // console.log(activity.itemsCount)
 
     const ExercisesSectionProps = {
         isFinished: activity.isFinished,

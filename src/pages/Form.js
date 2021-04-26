@@ -6,7 +6,10 @@ import { Slate, Editable, withReact } from "slate-react"
 
 import { deserializeSlateContent, serializeSlateContent } from '../utils';
 import withMissingWord from "../components/Slate/plugins/withMissingWord";
-import Leaf from "../components/Slate/Leaf";
+
+import { Title, Subtitle } from "../components/Slate/Block/Header";
+import Leaf from "../components/Slate/Inline/Leaf";
+import DefaultElement from "../components/Slate/Block/DefaultElement";
 
 import Toolbar from "../components/Slate/Toolbar";
 import LanguagePicker from "../components/LanguagePicker";
@@ -64,6 +67,17 @@ const Form = () => {
         return <Leaf {...props} />
     }, [])
 
+    const renderElement = useCallback(props => {
+        switch (props.element.type) {
+            case 'title':
+                return <Title {...props} />
+            case 'subtitle':
+                return <Subtitle {...props} />
+            default:
+                return <DefaultElement {...props} />
+        }
+    }, [])
+
     //Worksheet methods
     function updateWorksheetInfo({ body }) {
         return fetch(`http://localhost:3001/worksheets/${id}`, {
@@ -89,6 +103,7 @@ const Form = () => {
             //But first deserialize the string and turn it into a valid json object
             data.content = deserializeSlateContent(data.content);
             setWorksheet(data);
+            alert("Actividad Guardada");
             // console.log("Data updated from the server", data);
         } catch (error) {
             alert(error);
@@ -128,16 +143,23 @@ const Form = () => {
             <br />
             <p>Contenido de la actividad</p>
             <Slate
-                editor={editor}
-                value={worksheet.content}
-                onChange={newContent => handleChangeProp({ propery: "content", value: newContent })}
+                {...{
+                    editor,
+                    value: worksheet.content,
+                    onChange: (newContent) => handleChangeProp({ propery: "content", value: newContent })
+                }}
             >
                 <Toolbar />
 
-                <Editable renderLeaf={renderLeaf}
-                    required
-                    style={{ textAlign: "left", background: "white", margin: ".5em 5em", padding: "2em" }}
-                    placeholder="Escribe aquí..." />
+                <Editable
+                    {...{
+                        renderElement,
+                        renderLeaf,
+                        placeholder: "Escribe aquí...",
+                        required: true,
+                        style: { textAlign: "left", background: "white", margin: ".5em 5em", padding: "2em" }
+                    }}
+                />
             </Slate>
 
         </form>
