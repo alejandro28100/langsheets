@@ -33,6 +33,3 @@ Se utiliza el framework [Slate JS](https://docs.slatejs.org/) para crear un edit
 ### Página de práctica
 
 Esta página traduce todo el contenido del [RTE](https://en.wikipedia.org/wiki/Online_rich-text_editor) a una versión interactiva que se pueda contestar usando elementos HTML nativos (select, input, etc.)
-
-### Capturas
-
