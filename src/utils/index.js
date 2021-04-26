@@ -35,7 +35,10 @@ function serializeNode(node) {
     switch (node.type) {
         case "paragraph":
             return `<p>${children}</p>`
-
+        case "title":
+            return `<h2>${children}</h2>`
+        case "subtitle":
+            return `<h3>${children}</h3>`
         default:
             return children
     }
@@ -72,6 +75,10 @@ export function deserializeElement(el) {
             return jsx('element', { type: 'quote' }, children)
         case 'P':
             return jsx('element', { type: 'paragraph' }, children)
+        case 'H2':
+            return jsx('element', { type: 'title' }, children)
+        case 'H3':
+            return jsx('element', { type: 'subtitle' }, children)
         case 'A':
             return jsx(
                 'element',
