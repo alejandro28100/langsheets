@@ -26,7 +26,7 @@ Este proyecto consiste en una aplicación para la creación y aplicación de act
 
 El proyecto se divide en dos partes: 
 
-### Editor de texto enriquecido [RTE][1]
+### Editor de texto enriquecido [RTE][rte link]
 
 Se utiliza el framework [Slate JS](https://docs.slatejs.org/) para crear un editor de texto enriquecido totalmente customizable.
 
