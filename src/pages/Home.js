@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { useHistory } from "react-router-dom"
 import { v4 as uuid } from "uuid";
 
+import { Box, Grid, Container, Text, Flex, Icon, Button } from "@chakra-ui/react"
+
 import WorksheetCard from "../components/WorksheetCard";
+
+import { HiDocumentAdd } from "react-icons/hi";
 import { serializeSlateContent } from '../utils';
 
 function request({ url, method, body }) {
@@ -32,9 +36,9 @@ const Home = () => {
         })
     }, [])
 
-    useEffect(() => {
-        console.log("Worksheets", worksheets);
-    }, [worksheets])
+    // useEffect(() => {
+    //     console.log("Worksheets", worksheets);
+    // }, [worksheets])
 
     async function handleCreateWorksheet() {
         const body = {
@@ -88,20 +92,30 @@ const Home = () => {
     }
 
     return (
-        <div>
-            <h1>Mis Worksheets</h1>
-            <button onClick={worksheetsHandler.createSheet}>Crear Worksheet</button>
+        <Container maxW="container.lg">
+            <Text fontSize="xx-large" fontWeight="semibold" my="5"> Mis Worksheets </Text>
+
             {
                 worksheets.length !== 0
-                    ? worksheets.map(worksheet =>
-                        <WorksheetCard
-                            key={worksheet.id}
-                            {...{ ...worksheet, ...worksheetsHandler }}
-                        />)
+                    ? (
+                        <Grid
+                            gap="4"
+                            templateColumns={["1fr", "repeat(2,1fr)", "repeat(3,1fr)"]}
+                        >
+                            {worksheets.map(worksheet =>
+                                <WorksheetCard
+                                    key={worksheet.id}
+                                    {...{ ...worksheet, ...worksheetsHandler }}
+                                />)
+                            }
+                            <Flex as={Button} colorScheme="blue" variant="ghost" background="white" onClick={worksheetsHandler.createSheet} leftIcon={<Icon as={HiDocumentAdd} />} size="lg" boxShadow="base" height="40" borderRadius="xl">
+                                Crear Nueva actividad
+                                </Flex>
+                        </Grid>
+                    )
                     : <h3>Aun no has creado una worksheet</h3>
             }
-
-        </div>
+        </Container>
     )
 }
 
