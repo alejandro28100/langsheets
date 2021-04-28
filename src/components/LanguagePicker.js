@@ -1,14 +1,14 @@
 import React from 'react'
 import PropTypes from "prop-types";
+import { Select, Box, Text } from '@chakra-ui/react';
 
 const LanguagePicker = ({ handleChangeProp, lang, sentToServer }) => {
     return (
-        <div>
-            <label htmlFor="language">Idioma</label>
-            <select
+        <Box my="4">
+            <Text my="2" fontWeight="medium">Idioma</Text>
+            <Select
+                background="white"
                 required
-                id="language"
-                onBlur={sentToServer}
                 value={lang}
                 onChange={e => handleChangeProp({ propery: "lang", value: e.target.value })}
             >
@@ -20,8 +20,8 @@ const LanguagePicker = ({ handleChangeProp, lang, sentToServer }) => {
                 <option value="ru">Ruso</option>
                 <option value="zh">Chino</option>
                 <option value="ja">Japonés</option>
-            </select>
-        </div>
+            </Select>
+        </Box>
     )
 }
 

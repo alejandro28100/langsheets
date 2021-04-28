@@ -1,5 +1,5 @@
 // @refresh reset
-import React, { useEffect, useMemo, useState, useCallback } from 'react'
+import React, { useEffect, useMemo, useState, useCallback, Fragment } from 'react'
 import { useParams } from "react-router-dom"
 import { createEditor } from 'slate'
 import { Slate, Editable, withReact } from "slate-react"
@@ -11,9 +11,16 @@ import { Title, Subtitle } from "../components/Slate/Block/Header";
 import Leaf from "../components/Slate/Inline/Leaf";
 import DefaultElement from "../components/Slate/Block/DefaultElement";
 
+import Navbar from "../components/Navbar";
+import Sidebar from "../components/Sidebar";
 import Toolbar from "../components/Slate/Toolbar";
-import LanguagePicker from "../components/LanguagePicker";
 import WorksheetTitle from "../components/WorksheetTitle";
+
+import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem } from "@chakra-ui/react";
+
+
+import { IoIosArrowBack } from "react-icons/io"
+import { FaSave, FaChalkboardTeacher } from "react-icons/fa";
 
 
 const defaultValue = {
@@ -122,51 +129,72 @@ const Form = () => {
     }
 
 
+
     return (
-        <form onSubmit={handleSubmit}>
-            <a href="/">Regresar</a>
-            <h2>Fill in the blanks Worksheet Form</h2>
+        <Fragment>
+            <Navbar
+                leftActions={
+                    <Tooltip label="Regresar">
+                        <IconButton icon={<Icon as={IoIosArrowBack} />} variant="ghost" color="white" _hover={{ background: "var(--chakra-colors-whiteAlpha-300)" }} as="a" href="/" />
+                    </Tooltip>
+                }
+                rightActions={
+                    <Fragment>
+                        <ButtonGroup size="lg" variant="ghost" spacing="2">
+                            <Tooltip label="Guardar Actividad">
+                                <IconButton onClick={sentToServer} color="white" _hover={{ background: "var(--chakra-colors-whiteAlpha-300)" }} icon={<Icon as={FaSave} />} />
+                            </Tooltip>
+                            <Tooltip label="Visualizar Actividad">
+                                <IconButton as="a" target="_blank" referrerPolicy="no-referrer" href={`/worksheets/${id}/practice`} color="white" _hover={{ background: "var(--chakra-colors-whiteAlpha-300)" }} icon={<Icon as={FaChalkboardTeacher} />} />
+                            </Tooltip>
+                        </ButtonGroup>
+                    </Fragment>
+                }
+            />
 
-            <button type="submit">Guardar Worksheet</button>
+            <Grid templateColumns="repeat(12,1fr)" as="form" onSubmit={handleSubmit}>
+                <GridItem colSpan={[11, 11, 9]}>
 
-            <br />
-            <br />
-            <a target="_blank" rel="noreferrer" href={`/worksheets/${id}/practice`}>
-                Visualizar Actividad
-            </a>
-            <br />
-            <br />
-            <LanguagePicker {...{ handleChangeProp, sentToServer, lang: worksheet.lang }} />
-            <br />
-            <br />
-            <WorksheetTitle {...{ handleChangeProp, sentToServer, title: worksheet.title }} />
-            <br />
-            <p>Contenido de la actividad</p>
-            <Slate
-                {...{
-                    editor,
-                    value: worksheet.content,
-                    onChange: (newContent) => handleChangeProp({ propery: "content", value: newContent })
-                }}
-            >
-                <Toolbar />
+                    <WorksheetTitle {...{ handleChangeProp, sentToServer, title: worksheet.title }} />
 
-                <Editable
-                    {...{
-                        renderElement,
-                        renderLeaf,
-                        placeholder: "Escribe aquí...",
-                        required: true,
-                        style: { textAlign: "left", background: "white", margin: ".5em 5em", padding: "2em" }
-                    }}
-                />
-            </Slate>
+                    <Text my="4" fontSize="xl" textAlign="center">Contenido de la actividad</Text>
 
-        </form>
+                    <Slate
+                        {...{
+                            editor,
+                            value: worksheet.content,
+                            onChange: (newContent) => handleChangeProp({ propery: "content", value: newContent })
+                        }}
+                    >
+                        <Toolbar />
+                        <Box background="gray.100" py={["5", "7"]} px={["5", "14"]}>
+                            <Box
+                                background="white"
+                                p="5"
+                                as={Editable}
+                                {...{
+                                    renderElement,
+                                    renderLeaf,
+                                    placeholder: "Escribe aquí...",
+                                    required: true,
+                                }}
+                            />
+                        </Box>
+                    </Slate>
+
+                </GridItem>
+                <GridItem colSpan={[1, 1, 3]} p="5" flex="1" justifyContent="center" shadow="md">
+
+                    <Box position="sticky" top="0.5" zIndex="sticky">
+                        <Sidebar {...{ handleChangeProp, sentToServer, lang: worksheet.lang, isPublic: worksheet.isPublic }} />
+                    </Box>
+
+                </GridItem>
+            </Grid>
+
+        </Fragment >
     )
 }
-
-
 
 
 

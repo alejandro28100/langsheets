@@ -1,20 +1,25 @@
 import React from 'react'
 import PropTypes from "prop-types";
 
+import { Editable, EditablePreview, EditableInput, Box } from "@chakra-ui/react"
+
 function WorksheetTitle({ title, handleChangeProp, sentToServer }) {
     return (
-        <div>
-            <label htmlFor="title">Título de la actividad</label>
-            <input
+        <Box my="4" mx="6">
+            <Editable
+                fontSize="2em"
                 required
                 id="title"
                 value={title}
                 onBlur={sentToServer}
-                onChange={e => handleChangeProp({ propery: "title", value: e.target.value })}
+                onChange={newValue => handleChangeProp({ propery: "title", value: newValue })}
                 type="text"
                 placeholder="Escribe un tílulo aquí..."
-            />
-        </div>
+            >
+                <EditablePreview />
+                <EditableInput />
+            </Editable>
+        </Box>
     )
 }
 WorksheetTitle.defaultProps = {

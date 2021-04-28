@@ -1,6 +1,7 @@
 import { Editor, Transforms, Range } from "slate";
 import { useSlate } from "slate-react";
 import PropTypes from "prop-types";
+import { Box } from "@chakra-ui/layout";
 
 function isBlockActive(format, editor) {
     if (!editor) return false;
@@ -16,7 +17,7 @@ function toggleBlock(format, editor) {
     Transforms.setNodes(
         editor,
         { type: isActive ? 'paragraph' : format },
-        // { match: n => Editor.isBlock(editor, n) }
+        { match: n => Editor.isBlock(editor, n) }
     );
 }
 
@@ -45,7 +46,7 @@ function Toolbar() {
     const editor = useSlate();
 
     function handleCreateMissingWord() {
-        console.log("Clicked");
+        // console.log("Clicked");
         //Make sure there's text selected
         if (Range.isCollapsed(editor.selection)) {
             alert("Para crear una palabra faltante , seleciona primero la palabra")
@@ -57,7 +58,7 @@ function Toolbar() {
     }
 
     return (
-        <div className="toolbar" style={{ position: "sticky", top: 0, zIndex: 1, padding: "1em", background: "white" }}>
+        <Box className="toolbar" background="white" position="sticky" top="0.5" zIndex="sticky" py="2" px="6" border="1px" borderColor="whitesmoke" shadow="sm">
 
             <ToolbarButton type="block" label="Título" format="title">
                 Título
@@ -83,7 +84,7 @@ function Toolbar() {
                 Palabra faltante
             </ToolbarButton>
 
-        </div>
+        </Box>
     )
 }
 
@@ -103,7 +104,6 @@ const ToolbarButton = ({ children, format, label, type, customOnClick }) => {
 
     function handleClass() {
         if (type === "mark") {
-            // console.log(isMarkActive(format, editor) ? "isActive" : "")
             return isMarkActive(format, editor) ? "isActive" : "";
 
         } else if (type === "block") {

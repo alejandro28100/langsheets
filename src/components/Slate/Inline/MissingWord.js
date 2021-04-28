@@ -1,8 +1,12 @@
 import { ReactEditor, useSlate } from "slate-react"
 import { Transforms } from "slate"
+import { Box } from "@chakra-ui/layout";
+import { Input, InputGroup, InputRightElement } from "@chakra-ui/input";
+import Icon from "@chakra-ui/icon";
+import { FaCheck, FaTimes } from "react-icons/fa";
 
 export const MissingWordInput = (props) => {
-    console.log("rendering leaf");
+
     const { text: correctAnswer, userAnswer = "", isChecked = false, isCorrect = false } = props.leaf;
 
     const editor = useSlate();
@@ -26,29 +30,31 @@ export const MissingWordInput = (props) => {
         return userAnswer.toLowerCase().trim() === correctAnswer.toLowerCase().trim();
     }
 
-    function getColor() {
-        if (isChecked) {
-            return isCorrect ? "#4caf50" : "#f44336";
-        }
-        return ""
-    }
+    const Mark = isChecked
+        ? isCorrect
+            ? <InputRightElement as="span" children={<Icon as={FaCheck} color="green.400" />} />
+            : <InputRightElement as="span" children={<Icon as={FaTimes} color="red.400" />} />
+        : null
 
     return (
-        <span {...props.attributes}>
-            <input readOnly={isChecked} style={{ color: getColor() }} value={userAnswer} onChange={handleOnChange} type="text" />
-        </span>
+        <InputGroup w="32" as="span" display="inline-block">
+            <Input variant="filled" readOnly={isChecked} value={userAnswer} onChange={handleOnChange} />
+            { Mark}
+        </InputGroup>
     )
 
 }
 
 export const MissingWordEditable = props => {
     return (
-        <span
+        <Box as="span"
+            borderRadius="sm"
+            px="1"
+            background="red.200"
             {...props.attributes}
-            style={{ border: 'lightblue 1px solid' }}
         >
             {props.children}
-        </span>
+        </Box>
     )
 }
 

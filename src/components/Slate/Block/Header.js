@@ -1,18 +1,20 @@
+import { Text } from '@chakra-ui/layout'
 import React from 'react'
+
 
 export const Title = (props) => {
     return (
-        <h2 {...props.attributes}>
+        <Text fontSize="4xl" {...props.attributes}>
             {props.children}
-        </h2>
+        </Text>
     )
 }
 
 export const Subtitle = (props) => {
     return (
-        <h3 {...props.attributes}>
+        <Text fontSize="3xl" {...props.attributes}>
             {props.children}
-        </h3>
+        </Text >
     )
 }
 

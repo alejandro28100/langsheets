@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useHistory } from "react-router-dom"
 import { v4 as uuid } from "uuid";
 
-import { Box, Grid, Container, Text, Flex, Icon, Button } from "@chakra-ui/react"
+import { Grid, Container, Text, Flex, Icon, Button } from "@chakra-ui/react"
 
 import WorksheetCard from "../components/WorksheetCard";
 
@@ -92,7 +92,9 @@ const Home = () => {
     }
 
     return (
-        <Container maxW="container.lg">
+
+
+        <Container maxW="container.lg" >
             <Text fontSize="xx-large" fontWeight="semibold" my="5"> Mis Worksheets </Text>
 
             {
@@ -108,7 +110,7 @@ const Home = () => {
                                     {...{ ...worksheet, ...worksheetsHandler }}
                                 />)
                             }
-                            <Flex as={Button} colorScheme="blue" variant="ghost" background="white" onClick={worksheetsHandler.createSheet} leftIcon={<Icon as={HiDocumentAdd} />} size="lg" boxShadow="base" height="40" borderRadius="xl">
+                            <Flex as={Button} colorScheme="blue" variant="ghost" background="gray.50" onClick={worksheetsHandler.createSheet} leftIcon={<Icon as={HiDocumentAdd} />} size="lg" boxShadow="base" height="40" borderRadius="xl">
                                 Crear Nueva actividad
                                 </Flex>
                         </Grid>
@@ -116,6 +118,7 @@ const Home = () => {
                     : <h3>Aun no has creado una worksheet</h3>
             }
         </Container>
+
     )
 }
 

@@ -2,31 +2,35 @@
   "worksheets": [
     {
       "id": "67e10aff-5431-4c51-8639-06768ebdf48f",
-      "title": "Frases Méxicanas",
-      "content": "<h3>Instrucciones : Rellena los espacios vacíos como corresponda usando las palabras a continuación</h3><h3></h3><p><em><b>Toluca , nieto ,tortas, pelos, taco, corrió.</b></em></p><p></p><p></p><p></p><p>De lengua me hecho un <span class=\"missingWord=true\">taco</span> </p><p></p><p></p><p>¿Qué Pachuca por <span class=\"missingWord=true\">Toluca</span> ?</p><p></p><p></p><p>Mejor aquí <span class=\"missingWord=true\">corrió</span> que aquí quedó… </p><p></p><p></p><p>Abuelita soy tu <span class=\"missingWord=true\">nieto</span> !</p><p></p><p></p><p>Hablar sin <span class=\"missingWord=true\">pelos</span> en la lengua.</p><p></p><p></p><p>Me quedé como el perro de las dos <span class=\"missingWord=true\">tortas</span> .</p><p></p><p></p>",
+      "title": "Frases Mexicanas",
+      "content": "<h3>Instrucciones : Rellena los espacios vacíos como corresponda usando las palabras a continuación</h3><h3></h3><p><em><b>Toluca , nieto ,tortas, pelos, taco, corrió.</b></em></p><p></p><p></p><p>De lengua me hecho un <span class=\"missingWord=true\">taco</span> </p><p></p><p></p><p>¿Qué Pachuca por <span class=\"missingWord=true\">Toluca</span> ?</p><p></p><p></p><p>Mejor aquí <span class=\"missingWord=true\">corrió</span> que aquí quedó… </p><p></p><p></p><p>Abuelita soy tu <span class=\"missingWord=true\">nieto</span> !</p><p></p><p></p><p>Hablar sin <span class=\"missingWord=true\">pelos</span> en la lengua.</p><p></p><p></p><p>Me quedé como el perro de las dos <span class=\"missingWord=true\">tortas</span> .</p><p></p><p></p>",
       "createdAt": "2021-04-24T01:50:11.979Z",
-      "lang": "es"
+      "lang": "es",
+      "isPublic": false
     },
     {
       "id": "52ff329e-c900-4826-b241-84bf9112caa0",
       "title": "Mi actividad 3",
       "content": "<h2>Contenido Estático</h2><p>Este es el <b>contenido </b>de mi actividad </p><p>El editor puede también ser utilizado para mostrar contenido estático sin ejercicios</p>",
       "createdAt": "2021-04-24T02:41:45.933Z",
-      "lang": "en"
+      "lang": "en",
+      "isPublic": true
     },
     {
       "id": "1ee461c0-6a59-4092-9832-c2181cb5c402",
       "title": "El presente de Indicativo",
       "content": "<p><b>El Presente de Indicativo</b>, en español indica que la acción expresada por el verbo se da en el mismo momento en el que se habla. El presente de indicativo es uno de  los tiempos verbales más utilizados y versátiles del español. Por esta misma razón puede ser utilizado en muchos contextos diferentes. </p><p></p><p>Este tiempo verbal no tiene por qué estar ligado únicamente al presente (ahora) sino que puede estar desligado del tiempo o referirse al pasado o al futuro.  </p><p></p><p>Es un tiempo verbal muy versátil que nos sirve tanto para hablar del presente (<em>“¿Dónde vives?”</em>), como del futuro (<em>“Este verano voy a Sicilia”</em>), del pasado (<em>“Cervantes publica la primera parte del Quijote en 1605”</em>) y de verdades inmutables (<em>“Dos y dos son cuatro”/ “Lo que no mata, engorda” / “El aceite flota en el agua</em>”).</p><p></p><p>Además, usamos el presente para hablar de:</p><p></p><b>–    Cualidades de las cosas</b><p><em></em></p><p><em>Es una casa antigua y tiene un patio grande</em></p><p><em>Ese libro vale 20 euros</em></p><p></p><b>–    Situaciones regulares</b><p><em></em></p><p><em>Pedro normalmente 8 horas al día</em></p><p><em>Juan vive en Motril y trabaja en Granada</em></p><p></p><b>–    Situaciones momentáneas</b><p><em></em></p><p><em>Mi novio esta semana está en Madrid</em></p><p><em>Hoy no puedo trabajar</em></p><p></p><b>–    Cosas que no cambian</b><p></p><p><em>Los gatos comen ratones</em></p><p><em>En verano hace calor</em></p><p></p><p></p><p>El presente del indicativo también se usa para describir:</p><p></p>    <b>* Acciones habituales</b><p><b></b></p><p>Cuando una acción se repite en el presente, el pasado y el futuro, normalmente se emplea el presente del indicativo  para describirla.</p><p></p><p>Ejemplo:    <em> Siempre leo en voz alta.</em></p><p></p><b>* Acciones futuras</b><p></p><p>A veces se describen acciones del futuro empleando el presente para darles más énfasis, color y vida.</p><p></p><p>Ejemplos:    </p><p><em>La fiesta empieza a las nueve.</em></p><p><em>La semana que viene hay un eclipse del sol.</em></p><p><em>Si abres la boca, ¡estás muerto!</em></p><p></p><b>* El futuro perifrástico</b><p></p><p>Se forma el futuro perifrástico con el verbo ir o venir conjugado en el presente.</p><p></p><p>Ejemplos:     </p><p><em>Vamos a ir con ellos mañana.</em></p><p><em>Mi padre viene el mes próximo.</em></p><p></p><b>* Acciones del pasado</b><p></p><p>Acciones reportadas en los periódicos, revistas, etc., a menudo emplean el presente para hacerlas más vivas.</p><p></p><p>Ejemplos:   <em> </em></p><p><em>El robo tiene lugar el 18 de febrero de 1868. </em></p><p><em>Tres hombres enmascarados entran en el banco, sacan sus pistolas y piden a los empleados que estén tranquilos.</em></p>",
       "createdAt": "2021-04-24T02:42:29.794Z",
-      "lang": "es"
+      "lang": "es",
+      "isPublic": true
     },
     {
       "id": "b9e5b43d-63ae-4879-8f40-7280d8432a74",
       "title": "Vocabulary B1-B2: Health",
       "content": "<p><b>Complete the sentences using the words below.</b></p><p><b></b></p><p><em>x-ray, medicine, ambulance, dentist, nurse, bandage,</em></p><p><em></em></p><p><em></em></p><p>A <span class=\"missingWord=true\">nurse</span> helps a doctor. They can also help patients who don't have a serious condition.</p><p></p><p></p><p><span class=\"missingWord=true\">Medicine</span> makes us feel better or helps us get better. It comes in many forms.</p><p></p><p></p><p>We can put a <span class=\"missingWord=true\">bandage</span> around an injury or body part that hurts.</p><p></p><p></p><p> An <span class=\"missingWord=true\">X-ray</span> is a picture of our bones.</p><p></p><p></p><p>An <span class=\"missingWord=true\">ambulance</span> takes people to the hospital quickly.</p><p></p><p></p><p>A <span class=\"missingWord=true\">dentist</span> cheks our teeth.</p>",
       "createdAt": "2021-04-24T22:18:44.365Z",
-      "lang": "en"
+      "lang": "en",
+      "isPublic": true
     }
   ]
 }

@@ -1,5 +1,5 @@
 // @refresh reset
-import React, { useEffect, useMemo, useState, useCallback, Fragment } from 'react'
+import React, { useEffect, useMemo, useState, useCallback } from 'react'
 import { useParams } from "react-router-dom"
 import { createEditor, Node, Transforms } from 'slate'
 import { Slate, Editable, withReact } from "slate-react"
@@ -11,6 +11,8 @@ import DefaultElement from "../components/Slate/Block/DefaultElement";
 import Leaf from "../components/Slate/Inline/Leaf";
 
 import { deserializeSlateContent } from '../utils'
+
+import { Container, Box, Text, Button, Flex } from "@chakra-ui/react";
 
 const defaultValue = {
     "title": "",
@@ -132,56 +134,52 @@ const Practice = () => {
     //Check whether a worksheet has only content or includes exercises
     const hasExercises = activity.itemsCount > 0;
 
-    // console.log(activity.itemsCount)
-
-    const ExercisesSectionProps = {
-        isFinished: activity.isFinished,
-        scoreString: getScoreString(),
-        scorePercentage: getScorePercentage(),
-        handleCheckExercise
-    }
 
     return (
-        <div>
-            <h1>{worksheet.title}</h1>
-            <div style={{ margin: "2em 10em" }}>
-                <Slate
-                    {...{
-                        editor,
-                        value: worksheet.content,
-                        onChange: (newContent) => handleChangeProp({ propery: "content", value: newContent })
-                    }}
-                >
-                    <Editable
-                        {...{ renderElement, renderLeaf, readOnly: true, style: { textAlign: "left" } }}
-                    />
-                </Slate>
-            </div>
+        <Container maxWidth="container.lg">
+
+            <Text fontSize="5xl" fontWeight="semibold" my="5">{worksheet.title}</Text>
+
+            <Slate
+                {...{
+                    editor,
+                    value: worksheet.content,
+                    onChange: (newContent) => handleChangeProp({ propery: "content", value: newContent })
+                }}
+            >
+                <Container maxWidth="container.md" as={Editable}
+                    {...{ renderElement, renderLeaf, readOnly: true, style: { textAlign: "left" } }}
+                />
+            </Slate>
 
             {
                 hasExercises ?
-                    <ExercisesSection {...ExercisesSectionProps} />
+                    <ExercisesSection {...{
+                        isFinished: activity.isFinished,
+                        scoreString: getScoreString(),
+                        scorePercentage: getScorePercentage(),
+                        handleCheckExercise
+                    }} />
                     : null
             }
-
-        </div>
+        </Container>
     )
 }
 
 function ExercisesSection({ isFinished, scorePercentage, scoreString, handleCheckExercise }) {
     return (
-        <div style={{ margin: "1em" }}>
+        <Flex justifyContent="center" my="4">
             {isFinished
                 ? (
-                    <div>
-                        <h5>Resultados</h5>
-                        <p> {scorePercentage}% </p>
-                        <p> {scoreString}</p>
-                    </div>)
+                    <Box textAlign="center" m="5">
+                        <Text fontSize="4xl">Resultados</Text>
+                        <Text> {scorePercentage}% </Text>
+                        <Text> {scoreString}</Text>
+                    </Box>)
                 :
-                < button onClick={handleCheckExercise}>Calificar Respuestas</button>
+                <Button variant="outline" colorScheme="blue" onClick={handleCheckExercise}>Calificar Respuestas</Button>
             }
-        </div>
+        </Flex>
 
     )
 }

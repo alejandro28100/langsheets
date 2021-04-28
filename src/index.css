@@ -1,4 +1,4 @@
-body {
+/* body {
 	background-color: #e9e9e966;
 	margin: 0;
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
@@ -9,8 +9,7 @@ body {
 
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-}
-
+} */
 .toolbar > button {
 	margin: 0 5px;
 	background: transparent;

@@ -1,6 +1,3 @@
-import { Transforms } from 'slate';
-import { ReactEditor, useSlate } from 'slate-react';
-
 import { MissingWordEditable, MissingWordInput } from "./MissingWord";
 
 const Leaf = (props) => {

@@ -2,10 +2,11 @@ import React, { Fragment, useState, useRef } from 'react'
 import PropTypes from "prop-types"
 import { Text, Icon, ButtonGroup, IconButton, Button, Spacer, Flex, Tooltip, AlertDialog, AlertDialogBody, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogFooter } from "@chakra-ui/react"
 
-import { FaChalkboardTeacher } from "react-icons/fa"
-import { GrLanguage } from "react-icons/gr"
-import { MdDelete } from "react-icons/md";
-import { RiFileEditFill } from "react-icons/ri"
+import { FaChalkboardTeacher } from "react-icons/fa";
+import { MdDelete, MdPublic } from "react-icons/md";
+import { RiFileEditFill } from "react-icons/ri";
+import { RiGitRepositoryPrivateFill } from "react-icons/ri";
+import { SiGoogletranslate } from "react-icons/si";
 
 
 const LANGUAGES = {
@@ -18,7 +19,7 @@ const LANGUAGES = {
     zh: "Chino"
 }
 
-function WorksheetCard({ lang, title, id, createdAt, deleteSheet }) {
+function WorksheetCard({ lang, title, id, createdAt, deleteSheet, isPublic }) {
     const [isAlertOpen, setIsAlertOpen] = useState(false);
     const onClose = () => setIsAlertOpen(false);
     const cancelRef = useRef();
@@ -26,11 +27,22 @@ function WorksheetCard({ lang, title, id, createdAt, deleteSheet }) {
     return (
         <Fragment>
 
-            <Flex boxShadow="base" background="white" height="40" borderRadius="xl">
+            <Flex boxShadow="base" background="gray.50" height="40" borderRadius="xl">
                 <Flex padding="5" flexDirection="column">
-                    <Text fontFamily="sans-serif" fontSize="large" fontWeight="semibold">{title}</Text>
+                    <Text fontFamily="sans-serif" fontSize="large" fontWeight="semibold">{title === "" ? "Sin título" : title}</Text>
                     <Spacer />
-                    <Text> <Icon as={GrLanguage} /> {LANGUAGES[lang]} </Text>
+
+                    {LANGUAGES[lang] && <Text >
+                        <Icon mr="2" as={SiGoogletranslate} />
+                        {LANGUAGES[lang]}
+                    </Text>}
+
+                    <Text>
+                        <Icon mr="2" as={isPublic ? MdPublic : RiGitRepositoryPrivateFill} />
+                        Actividad {isPublic ? "Pública" : "Privada"}
+                    </Text>
+
+
                 </Flex>
                 <Spacer />
                 <Flex pr="5" py="5">
@@ -50,6 +62,7 @@ function WorksheetCard({ lang, title, id, createdAt, deleteSheet }) {
                     </ButtonGroup>
                 </Flex>
             </Flex >
+
             <AlertDialog
                 isOpen={isAlertOpen}
                 leastDestructiveRef={cancelRef}
@@ -80,12 +93,16 @@ function WorksheetCard({ lang, title, id, createdAt, deleteSheet }) {
     )
 }
 
-
+WorksheetCard.defaultProps = {
+    lang: "",
+    isPublic: true,
+}
 
 WorksheetCard.propTypes = {
-    lang: PropTypes.oneOf(["en", "fr", "de", "ja", "es", "zh", "ru"]).isRequired,
+    lang: PropTypes.oneOf(["en", "fr", "de", "ja", "es", "zh", "ru", ""]).isRequired,
     title: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
+    isPublic: PropTypes.bool.isRequired,
     createdAt: PropTypes.string.isRequired,
     deleteSheet: PropTypes.func.isRequired,
 }
