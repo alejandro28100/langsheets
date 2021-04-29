@@ -1,15 +1,9 @@
 // @refresh reset
-import React, { useEffect, useMemo, useState, useCallback, Fragment } from 'react'
+import React, { useEffect, useState, Fragment } from 'react'
 import { useParams } from "react-router-dom"
-import { createEditor } from 'slate'
-import { Slate, Editable, withReact } from "slate-react"
+import { Slate, Editable } from "slate-react"
 
 import { deserializeSlateContent, serializeSlateContent } from '../utils';
-import withMissingWord from "../components/Slate/plugins/withMissingWord";
-
-import { Title, Subtitle } from "../components/Slate/Block/Header";
-import Leaf from "../components/Slate/Inline/Leaf";
-import DefaultElement from "../components/Slate/Block/DefaultElement";
 
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
@@ -21,6 +15,8 @@ import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem } fro
 
 import { IoIosArrowBack } from "react-icons/io"
 import { FaSave, FaChalkboardTeacher } from "react-icons/fa";
+import useSlateRender from '../hooks/useSlateRender';
+import useSlateEditor from '../hooks/useSlateEditor';
 
 
 const defaultValue = {
@@ -41,6 +37,11 @@ const Form = () => {
     //Get the id of the worksheet from the url 
     const { id } = useParams();
     // Keep track of state for the value of the editor.
+
+    //Slate editor component
+    const editor = useSlateEditor();
+    //Slate editor render functions
+    const [renderLeaf, renderElement] = useSlateRender();
 
     const [worksheet, setWorksheet] = useState(defaultValue);
 
@@ -66,24 +67,6 @@ const Form = () => {
 
     }, [id])
 
-    //Slate editor component
-    const editor = useMemo(() => withMissingWord(withReact(createEditor())), [])
-
-    //method to render leaves in the slate editor
-    const renderLeaf = useCallback(props => {
-        return <Leaf {...props} />
-    }, [])
-
-    const renderElement = useCallback(props => {
-        switch (props.element.type) {
-            case 'title':
-                return <Title {...props} />
-            case 'subtitle':
-                return <Subtitle {...props} />
-            default:
-                return <DefaultElement {...props} />
-        }
-    }, [])
 
     //Worksheet methods
     function updateWorksheetInfo({ body }) {
@@ -111,7 +94,6 @@ const Form = () => {
             data.content = deserializeSlateContent(data.content);
             setWorksheet(data);
             alert("Actividad Guardada");
-            // console.log("Data updated from the server", data);
         } catch (error) {
             alert(error);
         }
