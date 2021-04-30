@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { useHistory } from "react-router-dom"
 import { v4 as uuid } from "uuid";
 
@@ -8,6 +8,8 @@ import WorksheetCard from "../components/WorksheetCard";
 
 import { HiDocumentAdd } from "react-icons/hi";
 import { serializeSlateContent } from '../utils';
+import useBodyBackground from '../hooks/useBodyBackground';
+import Navbar from '../components/Navbar';
 
 function request({ url, method, body }) {
     return fetch(url, {
@@ -35,10 +37,6 @@ const Home = () => {
             setWorksheets(worksheets);
         })
     }, [])
-
-    // useEffect(() => {
-    //     console.log("Worksheets", worksheets);
-    // }, [worksheets])
 
     async function handleCreateWorksheet() {
         const body = {
@@ -91,33 +89,38 @@ const Home = () => {
         deleteSheet: handleDeleteWorksheet,
     }
 
+    useBodyBackground("var(--chakra-colors-gray-100)")
+
     return (
+        <Fragment>
 
+            <Navbar />
 
-        <Container maxW="container.lg" >
-            <Text fontSize="xx-large" fontWeight="semibold" my="5"> Mis Worksheets </Text>
+            <Container maxW="container.lg" >
+                <Text fontSize="xx-large" fontWeight="semibold" my="5"> Mis Worksheets </Text>
 
-            {
-                worksheets.length !== 0
-                    ? (
-                        <Grid
-                            gap="4"
-                            templateColumns={["1fr", "repeat(2,1fr)", "repeat(3,1fr)"]}
-                        >
-                            {worksheets.map(worksheet =>
-                                <WorksheetCard
-                                    key={worksheet.id}
-                                    {...{ ...worksheet, ...worksheetsHandler }}
-                                />)
-                            }
-                            <Flex as={Button} colorScheme="blue" variant="ghost" background="gray.50" onClick={worksheetsHandler.createSheet} leftIcon={<Icon as={HiDocumentAdd} />} size="lg" boxShadow="base" height="40" borderRadius="xl">
-                                Crear Nueva actividad
+                {
+                    worksheets.length !== 0
+                        ? (
+                            <Grid
+                                gap="4"
+                                templateColumns={["1fr", "repeat(2,1fr)", "repeat(3,1fr)"]}
+                            >
+                                {worksheets.map(worksheet =>
+                                    <WorksheetCard
+                                        key={worksheet.id}
+                                        {...{ ...worksheet, ...worksheetsHandler }}
+                                    />)
+                                }
+                                <Flex as={Button} colorScheme="blue" variant="ghost" background="white" onClick={worksheetsHandler.createSheet} leftIcon={<Icon as={HiDocumentAdd} />} size="lg" boxShadow="base" height="40" borderRadius="xl">
+                                    Crear Nueva actividad
                                 </Flex>
-                        </Grid>
-                    )
-                    : <h3>Aun no has creado una worksheet</h3>
-            }
-        </Container>
+                            </Grid>
+                        )
+                        : <h3>Aun no has creado una worksheet</h3>
+                }
+            </Container>
+        </Fragment>
 
     )
 }

@@ -117,17 +117,17 @@ const Form = () => {
             <Navbar
                 leftActions={
                     <Tooltip label="Regresar">
-                        <IconButton icon={<Icon as={IoIosArrowBack} />} variant="ghost" color="white" _hover={{ background: "var(--chakra-colors-whiteAlpha-300)" }} as="a" href="/" />
+                        <IconButton icon={<Icon as={IoIosArrowBack} />} variant="ghost" as="a" href="/" />
                     </Tooltip>
                 }
                 rightActions={
                     <Fragment>
                         <ButtonGroup size="lg" variant="ghost" spacing="2">
                             <Tooltip label="Guardar Actividad">
-                                <IconButton onClick={sentToServer} color="white" _hover={{ background: "var(--chakra-colors-whiteAlpha-300)" }} icon={<Icon as={FaSave} />} />
+                                <IconButton onClick={sentToServer} icon={<Icon as={FaSave} />} />
                             </Tooltip>
                             <Tooltip label="Visualizar Actividad">
-                                <IconButton as="a" target="_blank" referrerPolicy="no-referrer" href={`/worksheets/${id}/practice`} color="white" _hover={{ background: "var(--chakra-colors-whiteAlpha-300)" }} icon={<Icon as={FaChalkboardTeacher} />} />
+                                <IconButton as="a" target="_blank" referrerPolicy="no-referrer" href={`/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />} />
                             </Tooltip>
                         </ButtonGroup>
                     </Fragment>

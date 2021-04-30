@@ -3,9 +3,10 @@ import PropTypes from 'prop-types'
 
 const useBodyBackground = (backgroundColor) => {
     //Set the color value to the body background on mount 
-    useEffect(() => {
-        document.body.style.background = backgroundColor;
-    });
+    document.body.style.background = backgroundColor;
+    // useEffect(() => {
+
+    // });
 }
 
 useBodyBackground.propTypes = {

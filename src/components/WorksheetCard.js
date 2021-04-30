@@ -27,7 +27,7 @@ function WorksheetCard({ lang, title, id, createdAt, deleteSheet, isPublic }) {
     return (
         <Fragment>
 
-            <Flex boxShadow="base" background="gray.50" height="40" borderRadius="xl">
+            <Flex boxShadow="base" background="white" height="40" borderRadius="xl">
                 <Flex padding="5" flexDirection="column">
                     <Text fontFamily="sans-serif" fontSize="large" fontWeight="semibold">{title === "" ? "Sin título" : title}</Text>
                     <Spacer />
