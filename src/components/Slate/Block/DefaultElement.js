@@ -1,11 +1,12 @@
+import { Text } from '@chakra-ui/layout';
 import React from 'react'
 
-const DefaultElement = props => {
-
+const DefaultElement = ({ attributes, element, children }) => {
+    const { textAlign } = element;
     return (
-        <p {...props.attributes}>
-            {props.children}
-        </p>
+        <Text textAlign={textAlign} {...attributes}>
+            {children}
+        </Text>
     )
 
 }

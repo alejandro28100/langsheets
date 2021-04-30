@@ -13,7 +13,7 @@ import WorksheetTitle from "../components/WorksheetTitle";
 import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem } from "@chakra-ui/react";
 
 
-import { IoIosArrowBack } from "react-icons/io"
+import { IoIosArrowBack, IoMdPrint } from "react-icons/io"
 import { FaSave, FaChalkboardTeacher } from "react-icons/fa";
 import useSlateRender from '../hooks/useSlateRender';
 import useSlateEditor from '../hooks/useSlateEditor';
@@ -117,15 +117,19 @@ const Form = () => {
             <Navbar
                 leftActions={
                     <Tooltip label="Regresar">
-                        <IconButton icon={<Icon as={IoIosArrowBack} />} variant="ghost" as="a" href="/" />
+                        <IconButton size="lg" icon={<Icon as={IoIosArrowBack} />} variant="ghost" colorScheme="blue" as="a" href="/" />
                     </Tooltip>
                 }
                 rightActions={
                     <Fragment>
-                        <ButtonGroup size="lg" variant="ghost" spacing="2">
+                        <ButtonGroup size="lg" variant="ghost" colorScheme="blue" spacing="2">
                             <Tooltip label="Guardar Actividad">
                                 <IconButton onClick={sentToServer} icon={<Icon as={FaSave} />} />
                             </Tooltip>
+                            <Tooltip label="Imprimir Actividad">
+                                <IconButton icon={<Icon as={IoMdPrint} />} />
+                            </Tooltip>
+
                             <Tooltip label="Visualizar Actividad">
                                 <IconButton as="a" target="_blank" referrerPolicy="no-referrer" href={`/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />} />
                             </Tooltip>

@@ -1,52 +1,33 @@
-import { Editor, Transforms, Range } from "slate";
+import { Fragment, cloneElement, useState, Children } from "react";
+import { Range } from "slate";
 import { useSlate } from "slate-react";
-import PropTypes from "prop-types";
-import { Box } from "@chakra-ui/layout";
+import { Tooltip } from "@chakra-ui/tooltip";
+import { Button } from "@chakra-ui/button";
+import { ButtonGroup } from "@chakra-ui/button";
+import { Menu, MenuButton } from "@chakra-ui/menu";
+import { Text, Box } from "@chakra-ui/layout";
+import ToolbarButton from "./ToolbarButton";
+import Icon from "@chakra-ui/icon";
 
-function isBlockActive(format, editor) {
-    if (!editor) return false;
-    //get the node in the current selection that matches the format given
-    const [match] = Editor.nodes(editor, {
-        match: n => n.type === format,
-    })
-    return !!match
+import { FaHeading, FaFont, FaBold, FaItalic, FaStrikethrough, FaUnderline, FaAlignJustify, FaAlignLeft, FaAlignCenter, FaAlignRight } from "react-icons/fa"
+import { ReactComponent as MissingWord } from "../../missingWord.svg";
+import { toggleMark } from "../../utils/slate";
+import { MenuList } from "@chakra-ui/menu";
+import { useMediaQuery } from "@chakra-ui/media-query";
+
+function ToogleButtonGroup({ children, value, setValue }) {
+    //create a clone element of each child with the value and setValue properties
+    return Children.map(children, (child) => cloneElement(child, { value, setValue }))
 }
 
-function toggleBlock(format, editor) {
-    const isActive = isBlockActive(format, editor);
-    Transforms.setNodes(
-        editor,
-        { type: isActive ? 'paragraph' : format },
-        { match: n => Editor.isBlock(editor, n) }
-    );
-}
-
-function isMarkActive(format, editor) {
-    if (!editor) return false;
-    //get the marks (style marks) in the current selection
-    const marks = Editor.marks(editor);
-    if (!marks) return false
-    return marks[format] === true;
-}
-
-function toggleMark(format, editor) {
-    if (!editor) return
-    // console.log(format, editor);
-    const isActive = isMarkActive(format, editor)
-
-    if (isActive) {
-        Editor.removeMark(editor, format)
-    } else {
-        Editor.addMark(editor, format, true)
-    }
-}
 
 function Toolbar() {
     //get the editor reference from the slate context using the hook
     const editor = useSlate();
 
+    const [isTabletOrLower] = useMediaQuery(["(max-width:900px)"]);
+
     function handleCreateMissingWord() {
-        // console.log("Clicked");
         //Make sure there's text selected
         if (Range.isCollapsed(editor.selection)) {
             alert("Para crear una palabra faltante , seleciona primero la palabra")
@@ -57,80 +38,103 @@ function Toolbar() {
         toggleMark("missingWord", editor)
     }
 
+    const [alignment, setAlignment] = useState("left");
+
+    function handleSetAlignment(format) {
+        setAlignment(format)
+    }
+
     return (
         <Box className="toolbar" background="white" position="sticky" top="0.5" zIndex="sticky" py="2" px="6" border="1px" borderColor="whitesmoke" shadow="sm">
+            <ButtonGroup variant="ghost" colorScheme="blue" spacing="2">
+                <Menu>
 
-            <ToolbarButton type="block" label="Título" format="title">
-                Título
-            </ToolbarButton>
+                    <Tooltip hasArrow label="Estilos de tipografía" fontSize="md">
+                        <MenuButton
+                            as={Button}
+                            aria-label="Estilos de tipografía"
+                            variant="ghost"
+                        >
+                            <Icon as={FaHeading} />
 
-            <ToolbarButton type="block" label="Subtítulo" format="subtitle">
-                Subtítulo
-            </ToolbarButton>
+                        </MenuButton>
+                    </Tooltip>
 
-            <ToolbarButton type="mark" label="Negrita" format="bold">
-                <b>B</b>
-            </ToolbarButton>
+                    <MenuList>
+                        <ToolbarButton variant="menuListItem" type="block" format="heading 4xl" label={<Text fontSize="3xl">Título 1</Text>} />
+                        <ToolbarButton variant="menuListItem" type="block" format="heading 3xl" label={<Text fontSize="2xl">Título 2</Text>} />
+                        <ToolbarButton variant="menuListItem" type="block" format="heading 2xl" label={<Text fontSize="xl">Subtítulo 1</Text>} />
+                        <ToolbarButton variant="menuListItem" type="block" format="heading xl" label={<Text fontSize="lg">Subtítulo 2</Text>} />
+                        <ToolbarButton variant="menuListItem" type="block" format="" label={<Text fontSize="md">Texto normal</Text>} />
+                    </MenuList>
+                </Menu>
 
-            <ToolbarButton type="mark" label="Cursiva" format="italic">
-                <em>I</em>
-            </ToolbarButton>
+                {
+                    isTabletOrLower
+                        ? (
+                            < Menu >
 
-            <ToolbarButton type="mark" label="Subrayado" format="underline">
-                <u>U</u>
-            </ToolbarButton>
+                                <Tooltip hasArrow label="Estilos de texto" fontSize="md">
+                                    <MenuButton
+                                        as={Button}
+                                        aria-label="Estilos de texto"
+                                        variant="ghost"
+                                    >
+                                        <Icon as={FaFont} />
+                                    </MenuButton>
+                                </Tooltip>
 
-            <ToolbarButton type="mark" format="missingWord" label="Crear palabra faltante" customOnClick={handleCreateMissingWord}>
-                Palabra faltante
-            </ToolbarButton>
+                                <MenuList>
+                                    <ToolbarButton type="mark" format="bold" variant="menuListItem" label="Negrita" icon={<Icon as={FaBold} />} />
+                                    <ToolbarButton type="mark" format="italic" variant="menuListItem" label="Cursiva" icon={<Icon as={FaItalic} />} />
+                                    <ToolbarButton type="mark" format="underline" variant="menuListItem" label="Subrayado" icon={<Icon as={FaUnderline} />} />
+                                    <ToolbarButton type="mark" format="strike" variant="menuListItem" label="Tachado" icon={<Icon as={FaStrikethrough} />} />
+                                </MenuList>
+                            </Menu>)
+                        : (
+                            <Fragment>
 
+                                <ToolbarButton type="mark" format="bold" label="Negrita" icon={<Icon as={FaBold} />} />
+                                <ToolbarButton type="mark" format="italic" label="Cursiva" icon={<Icon as={FaItalic} />} />
+                                <ToolbarButton type="mark" format="underline" label="Subrayado" icon={<Icon as={FaUnderline} />} />
+                                <ToolbarButton type="mark" format="strike" label="Tachado" icon={<Icon as={FaStrikethrough} />} />
+
+                            </Fragment>)
+                }
+
+                {isTabletOrLower
+                    ? (< Menu >
+
+                        <Tooltip hasArrow label="Estilos de alineación" fontSize="md">
+                            <MenuButton
+                                as={Button}
+                                aria-label="Estilos de alineación"
+                                variant="ghost"
+                            >
+                                <Icon as={FaAlignJustify} />
+                            </MenuButton>
+                        </Tooltip>
+
+                        <MenuList>
+                            <ToolbarButton variant="menuListItem" type="block" formatKey="textAlign" format="left" label="Alinear a la izquierda" icon={<FaAlignLeft size="1em" />} />
+                            <ToolbarButton variant="menuListItem" type="block" formatKey="textAlign" format="center" label="Alinear al centro" icon={<FaAlignCenter size="1em" />} />
+                            <ToolbarButton variant="menuListItem" type="block" formatKey="textAlign" format="right" label="Alinear a la derecha" icon={<FaAlignRight size="1em" />} />
+                            <ToolbarButton variant="menuListItem" type="block" formatKey="textAlign" format="justify" label="Justificar" icon={<FaAlignJustify size="1em" />} />
+                        </MenuList>
+                    </Menu>)
+                    : (<ToogleButtonGroup value={alignment} setValue={handleSetAlignment}>
+                        <ToolbarButton type="block" formatKey="textAlign" format="left" label="Alinear a la izquierda" icon={<FaAlignLeft size="1em" />} />
+                        <ToolbarButton type="block" formatKey="textAlign" format="center" label="Alinear al centro" icon={<FaAlignCenter size="1em" />} />
+                        <ToolbarButton type="block" formatKey="textAlign" format="right" label="Alinear a la derecha" icon={<FaAlignRight size="1em" />} />
+                        <ToolbarButton type="block" formatKey="textAlign" format="justify" label="Justificar" icon={<FaAlignJustify size="1em" />} />
+                    </ToogleButtonGroup>)
+                }
+
+                <ToolbarButton type="mark" customOnClick={handleCreateMissingWord} format="missingWord" label="Palabra faltante" icon={<Icon width="2em" as={MissingWord} />} />
+
+            </ButtonGroup>
         </Box>
     )
-}
-
-
-const ToolbarButton = ({ children, format, label, type, customOnClick }) => {
-
-    const editor = useSlate();
-
-    function handleClick() {
-        if (typeof customOnClick === "function") {
-            //run custom click function
-            customOnClick.call()
-        } else {
-            type === "mark" ? toggleMark(format, editor) : toggleBlock(format, editor)
-        }
-    }
-
-    function handleClass() {
-        if (type === "mark") {
-            return isMarkActive(format, editor) ? "isActive" : "";
-
-        } else if (type === "block") {
-            return isBlockActive(format, editor) ? "isActive" : "";
-        }
-    }
-
-
-    return (
-        <button className={handleClass()} title={label} type="button"
-            onClick={handleClick}
-        >
-            {children}
-        </button>
-    )
-}
-
-ToolbarButton.defaultProps = {
-    onClick: undefined,
-}
-
-ToolbarButton.propTypes = {
-    customOnClick: PropTypes.func,
-    format: PropTypes.string,
-    type: PropTypes.oneOf(["mark", "block"]),
-    children: PropTypes.node.isRequired,
-    label: PropTypes.string.isRequired,
 }
 
 export default Toolbar;

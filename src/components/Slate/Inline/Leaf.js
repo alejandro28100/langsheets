@@ -25,6 +25,9 @@ const Leaf = (props) => {
         children = <u>{children}</u>
     }
 
+    if (leaf.strike) {
+        children = <s>{children}</s>
+    }
 
     //Default text element
     return (

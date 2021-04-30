@@ -117,7 +117,14 @@ const Home = () => {
                                 </Flex>
                             </Grid>
                         )
-                        : <h3>Aun no has creado una worksheet</h3>
+                        : (
+                            <Fragment>
+                                <Text fontSize="lg" fontWeight="semibold">Aun no has creado una worksheet</Text>
+                                <Flex as={Button} colorScheme="blue" variant="ghost" background="white" onClick={worksheetsHandler.createSheet} leftIcon={<Icon as={HiDocumentAdd} />} size="lg" boxShadow="base" height="40" borderRadius="xl">
+                                    Crear Nueva actividad
+                                </Flex>
+                            </Fragment>
+                        )
                 }
             </Container>
         </Fragment>
