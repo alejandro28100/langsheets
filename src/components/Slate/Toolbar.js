@@ -116,17 +116,17 @@ function Toolbar() {
                         </Tooltip>
 
                         <MenuList>
-                            <ToolbarButton variant="menuListItem" type="block" formatKey="textAlign" format="left" label="Alinear a la izquierda" icon={<FaAlignLeft size="1em" />} />
-                            <ToolbarButton variant="menuListItem" type="block" formatKey="textAlign" format="center" label="Alinear al centro" icon={<FaAlignCenter size="1em" />} />
-                            <ToolbarButton variant="menuListItem" type="block" formatKey="textAlign" format="right" label="Alinear a la derecha" icon={<FaAlignRight size="1em" />} />
-                            <ToolbarButton variant="menuListItem" type="block" formatKey="textAlign" format="justify" label="Justificar" icon={<FaAlignJustify size="1em" />} />
+                            <ToolbarButton variant="menuListItem" type="block" formatKey="textAlign" format="left" label="Alinear a la izquierda" icon={<Icon as={FaAlignLeft} />} />
+                            <ToolbarButton variant="menuListItem" type="block" formatKey="textAlign" format="center" label="Alinear al centro" icon={<Icon as={FaAlignCenter} />} />
+                            <ToolbarButton variant="menuListItem" type="block" formatKey="textAlign" format="right" label="Alinear a la derecha" icon={<Icon as={FaAlignRight} />} />
+                            <ToolbarButton variant="menuListItem" type="block" formatKey="textAlign" format="justify" label="Justificar" icon={<Icon as={FaAlignJustify} />} />
                         </MenuList>
                     </Menu>)
                     : (<ToogleButtonGroup value={alignment} setValue={handleSetAlignment}>
-                        <ToolbarButton type="block" formatKey="textAlign" format="left" label="Alinear a la izquierda" icon={<FaAlignLeft size="1em" />} />
-                        <ToolbarButton type="block" formatKey="textAlign" format="center" label="Alinear al centro" icon={<FaAlignCenter size="1em" />} />
-                        <ToolbarButton type="block" formatKey="textAlign" format="right" label="Alinear a la derecha" icon={<FaAlignRight size="1em" />} />
-                        <ToolbarButton type="block" formatKey="textAlign" format="justify" label="Justificar" icon={<FaAlignJustify size="1em" />} />
+                        <ToolbarButton type="block" formatKey="textAlign" format="left" label="Alinear a la izquierda" icon={<Icon as={FaAlignLeft} />} />
+                        <ToolbarButton type="block" formatKey="textAlign" format="center" label="Alinear al centro" icon={<Icon as={FaAlignCenter} />} />
+                        <ToolbarButton type="block" formatKey="textAlign" format="right" label="Alinear a la derecha" icon={<Icon as={FaAlignRight} />} />
+                        <ToolbarButton type="block" formatKey="textAlign" format="justify" label="Justificar" icon={<Icon as={FaAlignJustify} />} />
                     </ToogleButtonGroup>)
                 }
 

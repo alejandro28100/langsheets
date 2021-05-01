@@ -1,4 +1,4 @@
-import { Box, Flex, Text } from '@chakra-ui/layout'
+import { Flex, Text } from '@chakra-ui/layout'
 import React, { Fragment } from 'react'
 import Navbar from '../components/Navbar'
 import useDocumentTitle from '../hooks/useDocumentTitle'

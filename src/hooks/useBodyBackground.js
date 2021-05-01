@@ -6,16 +6,8 @@ const useBodyBackground = (backgroundColor) => {
 
     useEffect(() => {
         document.body.style.background = backgroundColor;
-    }, []);
+    }, [backgroundColor]);
 }
-
-
-const setBodyBackground = (backgroundColor) => {
-    document.body.style.background = backgroundColor;
-}
-
-
-
 
 
 
