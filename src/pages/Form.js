@@ -12,6 +12,7 @@ import WorksheetTitle from "../components/WorksheetTitle";
 
 import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem } from "@chakra-ui/react";
 
+import useDocumentTitle from "../hooks/useDocumentTitle";
 
 import { IoIosArrowBack, IoMdPrint } from "react-icons/io"
 import { FaSave, FaChalkboardTeacher } from "react-icons/fa";
@@ -109,8 +110,10 @@ const Form = () => {
         e.preventDefault();
         sentToServer();
     }
-
-
+    const title = !!worksheet.title
+        ? `LangSheets | ${worksheet.title}`
+        : "LangSheets";
+    useDocumentTitle(title);
 
     return (
         <Fragment>

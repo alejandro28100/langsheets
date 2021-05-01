@@ -10,6 +10,7 @@ import { HiDocumentAdd } from "react-icons/hi";
 import { serializeSlateContent } from '../utils';
 import useBodyBackground from '../hooks/useBodyBackground';
 import Navbar from '../components/Navbar';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 function request({ url, method, body }) {
     return fetch(url, {
@@ -90,7 +91,7 @@ const Home = () => {
     }
 
     useBodyBackground("var(--chakra-colors-gray-100)")
-
+    useDocumentTitle(`LangSheets | Mis actividades`);
     return (
         <Fragment>
 

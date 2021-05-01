@@ -13,6 +13,9 @@ import useBodyBackground from '../hooks/useBodyBackground';
 import useSlateRender from '../hooks/useSlateRender';
 import useSlateEditor from '../hooks/useSlateEditor';
 
+import { Helmet } from "react-helmet";
+import useDocumentTitle from '../hooks/useDocumentTitle';
+
 const defaultValue = {
     "title": "",
     "content": [
@@ -121,7 +124,7 @@ const Practice = () => {
 
     //Set a custom background color
     useBodyBackground("var(--chakra-colors-gray-100)");
-
+    useDocumentTitle(`LangSheets | ${worksheet.title}`);
     return (
         <Box >
 
