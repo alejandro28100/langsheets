@@ -2,6 +2,7 @@
 var CACHE_NAME = 'pwa-langSheets';
 var urlsToCache = [
     '/',
+    "/worksheets"
 ];
 
 // Install a service worker
