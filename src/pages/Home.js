@@ -7,7 +7,6 @@ import { Grid, Container, Text, Flex, Icon, Button } from "@chakra-ui/react"
 import WorksheetCard from "../components/WorksheetCard";
 
 import { HiDocumentAdd } from "react-icons/hi";
-import { serializeSlateContent } from '../utils';
 import useBodyBackground from '../hooks/useBodyBackground';
 import Navbar from '../components/Navbar';
 import useDocumentTitle from '../hooks/useDocumentTitle';
@@ -43,7 +42,7 @@ const Home = () => {
         const body = {
             id: uuid(),
             title: "",
-            content: serializeSlateContent([{
+            content: JSON.stringify([{
                 type: 'paragraph',
                 children: [{ text: '' }],
             }]),

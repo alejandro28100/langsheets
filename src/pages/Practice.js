@@ -5,8 +5,6 @@ import { Node, Transforms } from 'slate'
 import { Slate, Editable } from "slate-react"
 import PropTypes from "prop-types";
 
-import { deserializeSlateContent } from '../utils'
-
 import { Container, Box, Text, Button, Flex } from "@chakra-ui/react";
 import Navbar from "../components/Navbar";
 
@@ -72,7 +70,7 @@ const Practice = () => {
                 const response = await fetch(`http://localhost:3001/worksheets/${id}`);
                 if (!response.ok) throw new Error("Algo salió mal")
                 const result = await response.json();
-                result.content = deserializeSlateContent(result.content);
+                result.content = JSON.parse(result.content);
 
                 setWorksheet(result);
 

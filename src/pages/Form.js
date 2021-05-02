@@ -3,8 +3,6 @@ import React, { useEffect, useState, Fragment } from 'react'
 import { useParams } from "react-router-dom"
 import { Slate, Editable } from "slate-react"
 
-import { deserializeSlateContent, serializeSlateContent } from '../utils';
-
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Toolbar from "../components/Slate/Toolbar";
@@ -59,8 +57,8 @@ const Form = () => {
         }
         //get and set the initial state from the fake server
         getWorksheetInfo().then(result => {
-            // deserialize the string and turn it into a valid json object
-            result.content = deserializeSlateContent(result.content);
+            // parse the string and turn it into a valid json object
+            result.content = JSON.parse(result.content);
 
             setWorksheet(result);
         })
@@ -82,16 +80,17 @@ const Form = () => {
     async function sentToServer() {
         try {
             let updatedWorksheet = { ...worksheet };
-            //Turn the content (json) into a string 
-            updatedWorksheet.content = serializeSlateContent(updatedWorksheet.content);
+            //Turn the content into a stringified json 
+            updatedWorksheet.content = JSON.stringify(updatedWorksheet.content);
 
             //do a fetch request to the server to update the current state
             const response = await updateWorksheetInfo({ body: updatedWorksheet });
             if (!response.ok) throw new Error("Algo salió mal")
             const data = await response.json();
             //Update the state with the latest data from the server
-            //But first deserialize the string and turn it into a valid json object
-            data.content = deserializeSlateContent(data.content);
+            //But first parse the string and turn it into a valid json object
+            data.content = JSON.parse(data.content);
+
             setWorksheet(data);
             alert("Actividad Guardada");
         } catch (error) {
