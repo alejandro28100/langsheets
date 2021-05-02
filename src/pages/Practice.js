@@ -35,7 +35,7 @@ const Practice = () => {
     const { id } = useParams();
 
     const editor = useSlateEditor();
-    const [renderLeaf, renderElement] = useSlateRender();
+    const [renderLeaf, renderElement] = useSlateRender({ readOnly: true });
 
     // Keep track of state for the value of the editor.
     const [worksheet, setWorksheet] = useState(defaultValue)

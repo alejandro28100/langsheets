@@ -19,7 +19,6 @@ import { FaSave, FaChalkboardTeacher } from "react-icons/fa";
 import useSlateRender from '../hooks/useSlateRender';
 import useSlateEditor from '../hooks/useSlateEditor';
 import Logo from '../components/Logo';
-import useBodyBackground from '../hooks/useBodyBackground';
 
 
 const defaultValue = {
@@ -42,7 +41,7 @@ const Form = () => {
     //Slate editor component
     const editor = useSlateEditor();
     //Slate editor render functions
-    const [renderLeaf, renderElement] = useSlateRender();
+    const [renderLeaf, renderElement] = useSlateRender({ readOnly: false });
 
     const [worksheet, setWorksheet] = useState(defaultValue);
 
@@ -112,7 +111,6 @@ const Form = () => {
     }
     function handlePrint(e) {
         //set print preview scale to 100%
-
         document.body.style.zoom = "100%";
 
         //Deselect the button
@@ -126,14 +124,12 @@ const Form = () => {
 
     }
 
-    // const [isPrintPreview] = useMediaQuery(["print"]);
-
     const title = !!worksheet.title
         ? `LangSheets | ${worksheet.title}`
         : "LangSheets";
     useDocumentTitle(title);
 
-    // console.log(isPrintPreview);
+
     return (
         <Fragment>
             <Navbar

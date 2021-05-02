@@ -1,16 +1,15 @@
 import React, { useCallback } from 'react'
-
 //Slate elements
 import Leaf from "../components/Slate/Inline/Leaf";
 import DefaultElement from "../components/Slate/Block/DefaultElement";
 import Heading from "../components/Slate/Block/Heading";
 
 
-const useSlateRender = () => {
+const useSlateRender = ({ readOnly }) => {
     //method to render inline leaves in the slate editor
     const renderLeaf = useCallback(props => {
-        return <Leaf {...props} />
-    }, [])
+        return <Leaf {...{ ...props, readOnly }} />
+    }, [readOnly])
     //method to render block/void elements in the slate editor
     const renderElement = useCallback(props => {
         const type = props.element.type;

@@ -33,16 +33,14 @@ const ToolbarButton = ({ format, label, type, customOnClick, variant, icon, form
         return isBlockActive(formatKey, format, editor);
     }
 
-    console.log(isActive(), format);
-
     if (variant === "button") {
         return (
 
             <Tooltip hasArrow label={label} fontSize="md">
-                <Button variant={isActive() ? "solid" : "ghost"} onClick={handleClick} >
+                <Button background={isActive() ? "blue.50" : ""} variant="ghost" onClick={handleClick} >
                     {icon}
                 </Button>
-            </Tooltip>
+            </Tooltip >
 
         )
     };
