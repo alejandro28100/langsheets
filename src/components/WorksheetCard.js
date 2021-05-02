@@ -27,9 +27,9 @@ function WorksheetCard({ lang, title, id, createdAt, deleteSheet, isPublic }) {
     return (
         <Fragment>
 
-            <Flex boxShadow="base" background="white" height="40" borderRadius="xl">
+            <Flex boxShadow="base" background="white" height="40" borderRadius="xl" width="full">
                 <Flex padding="5" flexDirection="column">
-                    <Text fontFamily="sans-serif" fontSize="large" fontWeight="semibold">{title === "" ? "Sin título" : title}</Text>
+                    <Text title={title === "" ? "Sin título" : title} noOfLines={2} fontFamily="sans-serif" fontSize="large" fontWeight="semibold">{title === "" ? "Sin título" : title}</Text>
                     <Spacer />
 
                     {LANGUAGES[lang] && <Text >
@@ -37,7 +37,7 @@ function WorksheetCard({ lang, title, id, createdAt, deleteSheet, isPublic }) {
                         {LANGUAGES[lang]}
                     </Text>}
 
-                    <Text>
+                    <Text noOfLines={1} title={`Actividad ${isPublic ? "Pública" : "Privada"}`}>
                         <Icon mr="2" as={isPublic ? MdPublic : RiGitRepositoryPrivateFill} />
                         Actividad {isPublic ? "Pública" : "Privada"}
                     </Text>
@@ -89,7 +89,7 @@ function WorksheetCard({ lang, title, id, createdAt, deleteSheet, isPublic }) {
                     </AlertDialogContent>
                 </AlertDialogOverlay>
             </AlertDialog>
-        </Fragment>
+        </Fragment >
     )
 }
 

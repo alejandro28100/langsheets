@@ -8,7 +8,7 @@ import Sidebar from "../components/Sidebar";
 import Toolbar from "../components/Slate/Toolbar";
 import WorksheetTitle from "../components/WorksheetTitle";
 
-import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem } from "@chakra-ui/react";
+import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem } from "@chakra-ui/react";
 
 import useDocumentTitle from "../hooks/useDocumentTitle";
 
@@ -132,11 +132,20 @@ const Form = () => {
     return (
         <Fragment>
             <Navbar
+                sm={
+                    <Fragment>
+                        <MenuItem as="a" href="/" icon={<Icon as={IoIosArrowBack} />}>Regresar</MenuItem>
+                        <MenuItem onClick={sentToServer} icon={<Icon as={FaSave} />}>Guardar Actividad</MenuItem>
+                        <MenuItem onClick={handlePrint} icon={<Icon as={IoMdPrint} />}>Imprimir Actividad</MenuItem>
+                        <MenuItem as="a" target="_blank" referrerPolicy="no-referrer" href={`/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />}>Visualizar Actividad</MenuItem>
+                    </Fragment>
+                }
                 leftActions={
                     <Tooltip label="Regresar">
                         <IconButton size="lg" icon={<Icon as={IoIosArrowBack} />} variant="ghost" colorScheme="blue" as="a" href="/" />
                     </Tooltip>
                 }
+
                 rightActions={
                     <Fragment>
                         <ButtonGroup size="lg" variant="ghost" colorScheme="blue" spacing="2">
@@ -197,7 +206,7 @@ const Form = () => {
                     </Slate>
 
                 </GridItem>
-                <GridItem colSpan={[1, 1, 3]} p="5" flex="1" justifyContent="center" shadow="md"
+                <GridItem colSpan={[1, 1, 3]} p={{ md: "5" }} flex="1" justifyContent="center" shadow="md"
                     sx={{
                         "@media print": {
                             display: "none",
@@ -205,7 +214,7 @@ const Form = () => {
                     }}
                 >
 
-                    <Box position="sticky" top="0.5" zIndex="sticky">
+                    <Box position="sticky" top="0.5" zIndex="docked">
                         <Sidebar {...{ handleChangeProp, sentToServer, lang: worksheet.lang, isPublic: worksheet.isPublic }} />
                     </Box>
 

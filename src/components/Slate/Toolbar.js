@@ -1,7 +1,7 @@
 import { Fragment, cloneElement, useState, Children } from "react";
 import { Range } from "slate";
 import { useSlate } from "slate-react";
-import { Icon, Text, Box, Menu, MenuButton, MenuList, ButtonGroup, Button, Tooltip, useMediaQuery } from "@chakra-ui/";
+import { Icon, Text, Box, Menu, MenuButton, MenuList, ButtonGroup, Button, Tooltip, useMediaQuery } from "@chakra-ui/react";
 import ToolbarButton from "./ToolbarButton";
 
 import { FaHeading, FaFont, FaBold, FaItalic, FaStrikethrough, FaUnderline, FaAlignJustify, FaAlignLeft, FaAlignCenter, FaAlignRight } from "react-icons/fa"
@@ -38,7 +38,7 @@ function Toolbar() {
     }
 
     return (
-        <Box className="toolbar" background="white" position="sticky" top="0.5" zIndex="sticky" py="2" px="6" border="1px" borderColor="whitesmoke" shadow="sm"
+        <Box className="toolbar" background="white" position="sticky" top="0.5" zIndex="docked" py="2" px="6" border="1px" borderColor="whitesmoke" shadow="sm"
             sx={{
                 "@media print": {
                     display: "none",

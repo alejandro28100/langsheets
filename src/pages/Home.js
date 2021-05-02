@@ -97,14 +97,17 @@ const Home = () => {
             <Navbar />
 
             <Container maxW="container.lg" >
-                <Text fontSize="xx-large" fontWeight="semibold" my="5"> Mis Worksheets </Text>
+                <Text fontSize="xx-large" fontWeight="semibold" my="5" textAlign={["center", "left"]}> Mis Worksheets </Text>
 
                 {
                     worksheets.length !== 0
                         ? (
                             <Grid
-                                gap="4"
-                                templateColumns={["1fr", "repeat(2,1fr)", "repeat(3,1fr)"]}
+                                mx={{ md: "7", lg: "0" }}
+                                gap="5"
+                                justifyContent="center"
+                                placeItems="center"
+                                templateColumns={{ base: "", md: "repeat(2, var(--chakra-sizes-72))", lg: "repeat(3, minmax(var(--chakra-sizes-72),var(--chakra-sizes-80)))" }}
                             >
                                 {worksheets.map(worksheet =>
                                     <WorksheetCard
@@ -112,7 +115,7 @@ const Home = () => {
                                         {...{ ...worksheet, ...worksheetsHandler }}
                                     />)
                                 }
-                                <Flex as={Button} colorScheme="blue" variant="ghost" background="white" onClick={worksheetsHandler.createSheet} leftIcon={<Icon as={HiDocumentAdd} />} size="lg" boxShadow="base" height="40" borderRadius="xl">
+                                <Flex width="full" as={Button} colorScheme="blue" variant="ghost" background="white" onClick={worksheetsHandler.createSheet} leftIcon={<Icon as={HiDocumentAdd} />} size="lg" boxShadow="base" height="40" borderRadius="xl">
                                     Crear Nueva actividad
                                 </Flex>
                             </Grid>
