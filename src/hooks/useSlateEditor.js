@@ -3,10 +3,13 @@ import { createEditor } from 'slate';
 import { withReact } from 'slate-react';
 
 //slate plugins
-import withMissingWord from "../components/Slate/plugins/withMissingWord";
+
+import { withMissingWord, withTextAlignment } from "../components/Slate/plugins";
 
 function useSlateEditor() {
-    const editor = useMemo(() => withMissingWord(withReact(createEditor())), [])
+    const editor = useMemo(() =>
+        withTextAlignment(withMissingWord(withReact(createEditor())))
+        , [])
     return editor;
 }
 

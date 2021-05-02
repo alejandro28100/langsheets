@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from "prop-types";
 import { Button, Text, Icon } from "@chakra-ui/react"
-import { ReactComponent as LogoIcon } from "../logo.svg";
+import { Logo as LogoIcon } from "../svgs"
 
 const getIconSize = (size) => {
     switch (size) {

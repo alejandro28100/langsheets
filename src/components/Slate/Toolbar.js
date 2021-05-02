@@ -1,19 +1,12 @@
 import { Fragment, cloneElement, useState, Children } from "react";
 import { Range } from "slate";
 import { useSlate } from "slate-react";
-import { Tooltip } from "@chakra-ui/tooltip";
-import { Button } from "@chakra-ui/button";
-import { ButtonGroup } from "@chakra-ui/button";
-import { Menu, MenuButton } from "@chakra-ui/menu";
-import { Text, Box } from "@chakra-ui/layout";
+import { Icon, Text, Box, Menu, MenuButton, MenuList, ButtonGroup, Button, Tooltip, useMediaQuery } from "@chakra-ui/";
 import ToolbarButton from "./ToolbarButton";
-import Icon from "@chakra-ui/icon";
 
 import { FaHeading, FaFont, FaBold, FaItalic, FaStrikethrough, FaUnderline, FaAlignJustify, FaAlignLeft, FaAlignCenter, FaAlignRight } from "react-icons/fa"
-import { ReactComponent as MissingWord } from "../../missingWord.svg";
+import { MissingWord as MissingWordIcon } from "../../svgs";
 import { toggleMark } from "../../utils/slate";
-import { MenuList } from "@chakra-ui/menu";
-import { useMediaQuery } from "@chakra-ui/media-query";
 
 function ToogleButtonGroup({ children, value, setValue }) {
     //create a clone element of each child with the value and setValue properties
@@ -136,7 +129,7 @@ function Toolbar() {
                     </ToogleButtonGroup>)
                 }
 
-                <ToolbarButton type="mark" customOnClick={handleCreateMissingWord} format="missingWord" label="Palabra faltante" icon={<Icon width="2em" as={MissingWord} />} />
+                <ToolbarButton type="mark" customOnClick={handleCreateMissingWord} format="missingWord" label="Palabra faltante" icon={<Icon width="2em" as={MissingWordIcon} />} />
 
             </ButtonGroup>
         </Box>
