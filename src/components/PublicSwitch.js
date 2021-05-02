@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Box, Text } from '@chakra-ui/layout'
 import { Tooltip, Switch } from '@chakra-ui/react'
 
-const PublicSwitch = ({ handleChangeProp, sentToServer, isPublic }) => {
+const PublicSwitch = ({ handleChangeProp, isPublic }) => {
     return (
         <Box my="4">
             <Tooltip label="Si la actividad es pública, será listada en la página global de actividades">

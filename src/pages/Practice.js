@@ -8,6 +8,8 @@ import PropTypes from "prop-types";
 import { Container, Box, Text, Button, Flex } from "@chakra-ui/react";
 import Navbar from "../components/Navbar";
 
+import { getWorksheet } from "../utils/localStorage";
+
 import useBodyBackground from '../hooks/useBodyBackground';
 import useSlateRender from '../hooks/useSlateRender';
 import useSlateEditor from '../hooks/useSlateEditor';
@@ -26,7 +28,6 @@ const defaultValue = {
         }
     ]
 }
-
 
 const Practice = () => {
     //Get the id of the worksheet from the url 
@@ -67,22 +68,14 @@ const Practice = () => {
         }
         async function getWorksheetInfo() {
             try {
-                const response = await fetch(`http://localhost:3001/worksheets/${id}`);
-                if (!response.ok) throw new Error("Algo salió mal")
-                const result = await response.json();
-                result.content = JSON.parse(result.content);
-
-                setWorksheet(result);
-
-
+                setWorksheet(getWorksheet(id));
                 const itemsCount = getItemsCount();
                 setActivity(prevActivity => ({ ...prevActivity, itemsCount }));
-                // return json;
             } catch (error) {
                 alert(error)
             }
         }
-        //get and set the initial state from the fake server
+        //get and set the initial state from localStorage
         getWorksheetInfo();
 
     }, [id, editor])

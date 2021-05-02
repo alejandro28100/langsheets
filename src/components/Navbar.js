@@ -32,6 +32,7 @@ function Navbar({ leftActions, rightActions, withIcon, sm }) {
                     )
                     : (
                         <Fragment>
+
                             {leftActions}
                             <Spacer />
                             {rightActions}
@@ -48,7 +49,7 @@ Navbar.defaultProps = {
 }
 
 Navbar.propTypes = {
-    sm: PropTypes.node.isRequired,
+    sm: PropTypes.node,
     leftActions: PropTypes.node,
     rightActions: PropTypes.node,
     withIcon: PropTypes.bool.isRequired,

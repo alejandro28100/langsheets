@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 import { Editable, EditablePreview, EditableInput, Box } from "@chakra-ui/react"
 
-function WorksheetTitle({ title, handleChangeProp, sentToServer }) {
+function WorksheetTitle({ title, handleChangeProp, sendToLocalStorage }) {
     return (
         <Box my="4" mx="6"
             sx={{
@@ -17,7 +17,7 @@ function WorksheetTitle({ title, handleChangeProp, sentToServer }) {
                 required
                 id="title"
                 value={title}
-                onBlur={sentToServer}
+                onBlur={sendToLocalStorage}
                 onChange={newValue => handleChangeProp({ propery: "title", value: newValue })}
                 type="text"
                 placeholder="Escribe un tílulo aquí..."
@@ -34,6 +34,7 @@ WorksheetTitle.defaultProps = {
 
 WorksheetTitle.propTypes = {
     title: PropTypes.string.isRequired,
+    sendToLocalStorage: PropTypes.func.isRequired,
 }
 
 export default WorksheetTitle

@@ -10,13 +10,16 @@ import WorksheetTitle from "../components/WorksheetTitle";
 
 import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem } from "@chakra-ui/react";
 
-import useDocumentTitle from "../hooks/useDocumentTitle";
 
 import { IoIosArrowBack, IoMdPrint } from "react-icons/io"
 import { FaSave, FaChalkboardTeacher } from "react-icons/fa";
+import Logo from '../components/Logo';
+
+import { getWorksheet } from "../utils/localStorage";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 import useSlateRender from '../hooks/useSlateRender';
 import useSlateEditor from '../hooks/useSlateEditor';
-import Logo from '../components/Logo';
+
 
 
 const defaultValue = {
@@ -44,54 +47,29 @@ const Form = () => {
     const [worksheet, setWorksheet] = useState(defaultValue);
 
     useEffect(() => {
-
-        async function getWorksheetInfo() {
-            try {
-                const response = await fetch(`http://localhost:3001/worksheets/${id}`);
-                if (!response.ok) throw new Error("Algo salió mal")
-                const json = await response.json();
-                return json;
-            } catch (error) {
-                alert(error)
-            }
-        }
-        //get and set the initial state from the fake server
-        getWorksheetInfo().then(result => {
-            // parse the string and turn it into a valid json object
-            result.content = JSON.parse(result.content);
-
-            setWorksheet(result);
-        })
-
+        setWorksheet(getWorksheet(id));
     }, [id])
 
-
-    //Worksheet methods
-    function updateWorksheetInfo({ body }) {
-        return fetch(`http://localhost:3001/worksheets/${id}`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(body)
-        })
-    };
-
-    async function sentToServer() {
+    async function sendToLocalStorage() {
         try {
             let updatedWorksheet = { ...worksheet };
-            //Turn the content into a stringified json 
+            //turn Slate JSON-like-content into a string to save storage
             updatedWorksheet.content = JSON.stringify(updatedWorksheet.content);
 
-            //do a fetch request to the server to update the current state
-            const response = await updateWorksheetInfo({ body: updatedWorksheet });
-            if (!response.ok) throw new Error("Algo salió mal")
-            const data = await response.json();
-            //Update the state with the latest data from the server
-            //But first parse the string and turn it into a valid json object
-            data.content = JSON.parse(data.content);
+            //Update the worksheet from the worksheets value in localStorage API
+            const worksheets = JSON.parse(localStorage.getItem("worksheets"))
+                .map(worksheet => {
+                    if (worksheet.id === id) {
+                        worksheet = updatedWorksheet;
+                    }
+                    return worksheet;
+                });
 
-            setWorksheet(data);
+            //save the worksheets updated in localStorage 
+            localStorage.setItem("worksheets", JSON.stringify(worksheets));
+
+            //update the state
+            setWorksheet(getWorksheet(id));
             alert("Actividad Guardada");
         } catch (error) {
             alert(error);
@@ -106,7 +84,7 @@ const Form = () => {
 
     function handleSubmit(e) {
         e.preventDefault();
-        sentToServer();
+        sendToLocalStorage();
     }
     function handlePrint(e) {
         //set print preview scale to 100%
@@ -135,7 +113,7 @@ const Form = () => {
                 sm={
                     <Fragment>
                         <MenuItem as="a" href="/" icon={<Icon as={IoIosArrowBack} />}>Regresar</MenuItem>
-                        <MenuItem onClick={sentToServer} icon={<Icon as={FaSave} />}>Guardar Actividad</MenuItem>
+                        <MenuItem onClick={sendToLocalStorage} icon={<Icon as={FaSave} />}>Guardar Actividad</MenuItem>
                         <MenuItem onClick={handlePrint} icon={<Icon as={IoMdPrint} />}>Imprimir Actividad</MenuItem>
                         <MenuItem as="a" target="_blank" referrerPolicy="no-referrer" href={`/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />}>Visualizar Actividad</MenuItem>
                     </Fragment>
@@ -150,7 +128,7 @@ const Form = () => {
                     <Fragment>
                         <ButtonGroup size="lg" variant="ghost" colorScheme="blue" spacing="2">
                             <Tooltip label="Guardar Actividad">
-                                <IconButton onClick={sentToServer} icon={<Icon as={FaSave} />} />
+                                <IconButton onClick={sendToLocalStorage} icon={<Icon as={FaSave} />} />
                             </Tooltip>
                             <Tooltip label="Imprimir Actividad">
                                 <IconButton onClick={handlePrint} icon={<Icon as={IoMdPrint} />} />
@@ -167,7 +145,7 @@ const Form = () => {
             <Grid templateColumns="repeat(12,1fr)" as="form" onSubmit={handleSubmit}>
                 <GridItem colSpan={[11, 11, 9]}>
 
-                    <WorksheetTitle {...{ handleChangeProp, sentToServer, title: worksheet.title }} />
+                    <WorksheetTitle {...{ handleChangeProp, sendToLocalStorage, title: worksheet.title }} />
 
                     <Text my="4" fontSize="xl" textAlign="center"
                         sx={{
@@ -215,7 +193,7 @@ const Form = () => {
                 >
 
                     <Box position="sticky" top="0.5" zIndex="docked">
-                        <Sidebar {...{ handleChangeProp, sentToServer, lang: worksheet.lang, isPublic: worksheet.isPublic }} />
+                        <Sidebar {...{ handleChangeProp, lang: worksheet.lang, isPublic: worksheet.isPublic }} />
                     </Box>
 
                 </GridItem>

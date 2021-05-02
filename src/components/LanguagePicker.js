@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from "prop-types";
 import { Select, Box, Text } from '@chakra-ui/react';
 
-const LanguagePicker = ({ handleChangeProp, lang, sentToServer }) => {
+const LanguagePicker = ({ handleChangeProp, lang }) => {
     return (
         <Box my="4">
             <Text my="2" fontWeight="medium">Idioma</Text>
@@ -30,7 +30,6 @@ LanguagePicker.defaultProps = {
 }
 
 LanguagePicker.propTypes = {
-    sentToServer: PropTypes.func.isRequired,
     handleChangeProp: PropTypes.func.isRequired,
     lang: PropTypes.string.isRequired,
 }

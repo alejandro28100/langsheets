@@ -9,7 +9,7 @@ import PropTypes from "prop-types"
 
 import { AiOutlineMenuFold, AiOutlineMenuUnfold } from "react-icons/ai";
 
-const Sidebar = ({ handleChangeProp, sentToServer, lang, isPublic }) => {
+const Sidebar = ({ handleChangeProp, lang, isPublic }) => {
     const [isTablet] = useMediaQuery(["(max-width: 768px)", "(min-width: 1024px)"]);
     const { isOpen: isDrawerOpen, onOpen: onDrawerOpen, onClose: onDrawerClose } = useDisclosure()
 
@@ -26,8 +26,8 @@ const Sidebar = ({ handleChangeProp, sentToServer, lang, isPublic }) => {
                                 <Text textAlign="center" fontSize="2xl" my="4" fontWeight="medium" letterSpacing="wider">Ajustes</Text>
                             </DrawerHeader>
                             <DrawerBody>
-                                <LanguagePicker {...{ handleChangeProp, sentToServer, lang }} />
-                                <PublicSwitch {...{ handleChangeProp, sentToServer, isPublic }} />
+                                <LanguagePicker {...{ handleChangeProp, lang }} />
+                                <PublicSwitch {...{ handleChangeProp, isPublic }} />
                             </DrawerBody>
                         </DrawerContent>
                     </DrawerOverlay>
@@ -35,15 +35,14 @@ const Sidebar = ({ handleChangeProp, sentToServer, lang, isPublic }) => {
             </Fragment>
             : <Fragment>
                 <Text textAlign="center" fontSize="2xl" my="4" fontWeight="medium" letterSpacing="wider">Ajustes</Text>
-                <LanguagePicker {...{ handleChangeProp, sentToServer, lang }} />
-                <PublicSwitch {...{ handleChangeProp, sentToServer, isPublic }} />
+                <LanguagePicker {...{ handleChangeProp, lang }} />
+                <PublicSwitch {...{ handleChangeProp, isPublic }} />
             </Fragment>
     )
 }
 
 Sidebar.propTypes = {
     handleChangeProp: PropTypes.func.isRequired,
-    sentToServer: PropTypes.func.isRequired,
     lang: PropTypes.string,
     isPublic: PropTypes.bool,
 }
