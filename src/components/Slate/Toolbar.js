@@ -45,7 +45,13 @@ function Toolbar() {
     }
 
     return (
-        <Box className="toolbar" background="white" position="sticky" top="0.5" zIndex="sticky" py="2" px="6" border="1px" borderColor="whitesmoke" shadow="sm">
+        <Box className="toolbar" background="white" position="sticky" top="0.5" zIndex="sticky" py="2" px="6" border="1px" borderColor="whitesmoke" shadow="sm"
+            sx={{
+                "@media print": {
+                    display: "none",
+                }
+            }}
+        >
             <ButtonGroup variant="ghost" colorScheme="blue" spacing="2">
                 <Menu>
 

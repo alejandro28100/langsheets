@@ -130,7 +130,6 @@ const Practice = () => {
             <Navbar />
             <Box >
 
-
                 <Text background="blue.400" color="white" width="full" zIndex="banner" pl="52" mt="16" py="6" fontSize="5xl" fontWeight="bold" position="absolute" >{worksheet.title}</Text>
 
                 <Container maxWidth="container.lg" my="20">

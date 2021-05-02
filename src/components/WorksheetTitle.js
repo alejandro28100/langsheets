@@ -5,7 +5,13 @@ import { Editable, EditablePreview, EditableInput, Box } from "@chakra-ui/react"
 
 function WorksheetTitle({ title, handleChangeProp, sentToServer }) {
     return (
-        <Box my="4" mx="6">
+        <Box my="4" mx="6"
+            sx={{
+                "@media print": {
+                    textAlign: "center",
+                }
+            }}
+        >
             <Editable
                 fontSize="2em"
                 required

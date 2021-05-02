@@ -4,6 +4,7 @@
 	"description": "Crea actividades digitales en minútos",
 	"start_url": "/",
 	"display": "standalone",
+	"display_override": [ "tabbed" ],
 	"theme_color": "#000000",
 	"background_color": "#ffffff",
 	"icons": [
