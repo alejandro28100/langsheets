@@ -1,24 +1,4 @@
-# Proyecto del Curso React - BEDU / Santander
-
-## Comandos disponibles
-
-En este proyecto puedes correr:
-
-### `npm start`
-
-Corre la aplicación en modo de desarollo.
-Abre [http://localhost:3000](http://localhost:3000) para vizualizarlo en el navegador.
-
-
-### `npm run json-server`
-
-Corre json-server en [http://localhost:3001](http://localhost:3001) para simular un servidor y base de datos.
-
-
-### `npm run dev`
-
-Shortcut de los comandos `npm start ` & `npm run json-server`
-
+# Proyecto Final del Curso React - BEDU / Santander
 
 ## Descripción del Proyecto
 
@@ -34,5 +14,19 @@ Se utiliza el framework [Slate JS](https://docs.slatejs.org/) para crear un edit
 
 Esta página traduce todo el contenido del [RTE](https://en.wikipedia.org/wiki/Online_rich-text_editor) a una versión interactiva que se pueda contestar usando elementos HTML nativos (select, input, etc.)
 
+### Link del Prototipo
+
+<https://determined-mayer-9f15a9.netlify.app/>
+
+
+### Capturas del prototipo
+
+## Página principal
+
+## Editor de texto
+
+## Página de práctica
+
 
 [rte link]: https://en.wikipedia.org/wiki/Online_rich-text_editor
+
