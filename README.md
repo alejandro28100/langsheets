@@ -22,11 +22,11 @@ Esta página traduce todo el contenido del [RTE](https://en.wikipedia.org/wiki/O
 ## Capturas del prototipo
 
 ### Página principal
-    !["Página principal"] (https://github.com/alejandro28100/langsheets/blob/main/screenshots/homepage.png)
+    ![Página principal] (https://github.com/alejandro28100/langsheets/blob/main/screenshots/homepage.png)
 ### Editor de texto
-    !["Editor de texto"] (https://github.com/alejandro28100/langsheets/blob/main/screenshots/form.png)
+    ![Editor de texto] (https://github.com/alejandro28100/langsheets/blob/main/screenshots/form.png)
 ### Página de práctica
-    !["Página de práctica"] (https://github.com/alejandro28100/langsheets/blob/main/screenshots/practice.png)
+    ![Página de práctica] (https://github.com/alejandro28100/langsheets/blob/main/screenshots/practice.png)
 
 [rte link]: https://en.wikipedia.org/wiki/Online_rich-text_editor
 
