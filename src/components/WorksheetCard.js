@@ -23,7 +23,6 @@ function WorksheetCard({ lang, title, id, createdAt, deleteSheet, isPublic }) {
     const [isAlertOpen, setIsAlertOpen] = useState(false);
     const onClose = () => setIsAlertOpen(false);
     const cancelRef = useRef();
-    const host = window.location.host
     return (
         <Fragment>
 
