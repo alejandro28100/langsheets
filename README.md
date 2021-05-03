@@ -19,14 +19,14 @@ Esta página traduce todo el contenido del [RTE](https://en.wikipedia.org/wiki/O
 <https://determined-mayer-9f15a9.netlify.app/>
 
 
-### Capturas del prototipo
+## Capturas del prototipo
 
-## Página principal
-
-## Editor de texto
-
-## Página de práctica
-
+### Página principal
+    (https://github.com/alejandro28100/langsheets/blob/main/screenshots/homepage.png)
+### Editor de texto
+    (https://github.com/alejandro28100/langsheets/blob/main/screenshots/form.png)
+### Página de práctica
+    (https://github.com/alejandro28100/langsheets/blob/main/screenshots/practice.png)
 
 [rte link]: https://en.wikipedia.org/wiki/Online_rich-text_editor
 
