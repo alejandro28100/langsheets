@@ -7,8 +7,7 @@ import { FaCheck, FaTimes } from "react-icons/fa";
 import { useMediaQuery } from "@chakra-ui/media-query";
 
 export const MissingWordInput = (props) => {
-
-    const { text: correctAnswer, userAnswer = "", isChecked = false, isCorrect = false } = props.leaf;
+    const { text: correctAnswer, userAnswer = "", showAnswer = false, isChecked = false, isCorrect = false } = props.leaf;
 
     const editor = useSlate();
 
@@ -31,16 +30,22 @@ export const MissingWordInput = (props) => {
         return userAnswer.toLowerCase().trim() === correctAnswer.toLowerCase().trim();
     }
 
-    const Mark = isChecked
-        ? isCorrect
-            ? <InputRightElement as="span" children={<Icon as={FaCheck} color="green.400" />} />
-            : <InputRightElement as="span" children={<Icon as={FaTimes} color="red.400" />} />
-        : null
+    const inputValue = showAnswer ? correctAnswer : userAnswer;
 
+    function renderMark() {
+        //if the exercises is not checked or the answers are shown render nothing
+        if (!isChecked || showAnswer) return null;
+        //render correct mark
+        if (isCorrect) {
+            return <InputRightElement as="span" children={<Icon as={FaCheck} color="green.400" />} />
+        }
+        //render wrong mark
+        return <InputRightElement as="span" children={<Icon as={FaTimes} color="red.400" />} />
+    }
     return (
         <InputGroup w="32" as="span" display="inline-block">
-            <Input variant="filled" readOnly={isChecked} value={userAnswer} onChange={handleOnChange} />
-            { Mark}
+            <Input variant="filled" readOnly={isChecked} value={inputValue} onChange={handleOnChange} />
+            { renderMark()}
         </InputGroup>
     )
 

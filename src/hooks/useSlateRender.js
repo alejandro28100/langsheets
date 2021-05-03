@@ -5,11 +5,11 @@ import DefaultElement from "../components/Slate/Block/DefaultElement";
 import Heading from "../components/Slate/Block/Heading";
 
 
-const useSlateRender = ({ readOnly }) => {
+const useSlateRender = () => {
     //method to render inline leaves in the slate editor
     const renderLeaf = useCallback(props => {
-        return <Leaf {...{ ...props, readOnly }} />
-    }, [readOnly])
+        return <Leaf {...props} />
+    })
     //method to render block/void elements in the slate editor
     const renderElement = useCallback(props => {
         const type = props.element.type;
@@ -21,7 +21,7 @@ const useSlateRender = ({ readOnly }) => {
             default:
                 return <DefaultElement {...props} />
         }
-    }, [])
+    })
     return [renderLeaf, renderElement];
 }
 

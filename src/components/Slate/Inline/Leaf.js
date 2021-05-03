@@ -1,13 +1,13 @@
+import { useReadOnly } from "slate-react"
 import { MissingWordEditable, MissingWordInput } from "./MissingWord";
-
 const Leaf = (props) => {
-
     let { leaf, children, attributes } = props
+    const isReadOnly = useReadOnly();
     const isMissingWord = leaf.missingWord === true;
 
     if (isMissingWord) {
-        //If readOnly render an input to be answered by a student
-        if (props.readOnly) {
+        //If the editor is in readOnly mode render an input to be answered by a student
+        if (isReadOnly) {
             return <MissingWordInput {...props} />
         }
         return <MissingWordEditable {...props} />
@@ -34,10 +34,5 @@ const Leaf = (props) => {
         <span {...attributes}>{children}</span>
     )
 };
-
-Leaf.defaultProps = {
-    readOnly: false
-}
-
 
 export default Leaf

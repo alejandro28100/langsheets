@@ -34,7 +34,7 @@ const Practice = () => {
     const { id } = useParams();
 
     const editor = useSlateEditor();
-    const [renderLeaf, renderElement] = useSlateRender({ readOnly: true });
+    const [renderLeaf, renderElement] = useSlateRender();
 
     // Keep track of state for the value of the editor.
     const [worksheet, setWorksheet] = useState(defaultValue)
@@ -74,7 +74,6 @@ const Practice = () => {
     }, [worksheet, editor])
 
     function handleCheckExercise() {
-
         let correctAnswers = 0;
 
         // Iterate over every node in the editor.
@@ -88,6 +87,18 @@ const Practice = () => {
 
         setActivity(prevActivity => ({ ...prevActivity, isFinished: true, correctAnswersCount: correctAnswers }));
     }
+
+    function handleShowAnswers() {
+        // Iterate over every node in the editor.
+        for (const [node, path] of Node.descendants(editor)) {
+            if (node.missingWord === true) {
+                // set showAnswer property to show the answers
+                Transforms.setNodes(editor, { showAnswer: true }, { at: path })
+            }
+        }
+
+    }
+
 
     function getScorePercentage() {
         //Use math abs to avoid returning values with 0s as decimals 
@@ -136,7 +147,8 @@ const Practice = () => {
                         isFinished: activity.isFinished,
                         scoreString: getScoreString(),
                         scorePercentage: getScorePercentage(),
-                        handleCheckExercise
+                        handleCheckExercise,
+                        handleShowAnswers
                     }} />
 
                 }
@@ -145,15 +157,19 @@ const Practice = () => {
     )
 }
 
-function ExercisesSection({ isFinished, scorePercentage, scoreString, handleCheckExercise }) {
+function ExercisesSection({ isFinished, scorePercentage, scoreString, handleCheckExercise, handleShowAnswers }) {
     return (
         <Flex justifyContent="center" my="4">
             {isFinished
                 ? (
                     <Box textAlign="center" m="5">
+
                         <Text fontSize="4xl">Resultados</Text>
                         <Text> {scorePercentage}% </Text>
                         <Text> {scoreString}</Text>
+
+                        <Button my="4" variant="solid" colorScheme="blue" onClick={handleShowAnswers}>Mostrar Respuestas</Button>
+
                     </Box>)
                 :
                 <Button variant="solid" colorScheme="blue" onClick={handleCheckExercise}>Calificar Respuestas</Button>
@@ -168,6 +184,7 @@ ExercisesSection.proptTypes = {
     scorePercentage: PropTypes.number.isRequired,
     scoreString: PropTypes.string.isRequired,
     handleCheckExercise: PropTypes.func.isRequired,
+    handleShowAnswers: PropTypes.func.isRequired,
 }
 
 export default Practice
