@@ -48,7 +48,6 @@ const examples = [
 
 const Home = () => {
     const history = useHistory();
-    const host = window.location.host;
     const [worksheets, setWorksheets] = useState([]);
 
     useEffect(() => {
@@ -89,7 +88,7 @@ const Home = () => {
             setWorksheets(data);
 
             //Redirect to the form page with the id of the record created
-            history.push(`${host}/worksheets/${newWorksheet.id}/edit`);
+            history.push(`/worksheets/${newWorksheet.id}/edit`);
         } catch (err) {
             //show error in case if the user has disabled storage for the site, or if the quota has been exceeded
             alert(err);

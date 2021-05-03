@@ -105,7 +105,6 @@ const Form = () => {
         ? `LangSheets | ${worksheet.title}`
         : "LangSheets";
     useDocumentTitle(title);
-
     const host = window.location.host;
     return (
         <Fragment>
@@ -115,7 +114,7 @@ const Form = () => {
                         <MenuItem as="a" href="/" icon={<Icon as={IoIosArrowBack} />}>Regresar</MenuItem>
                         <MenuItem onClick={sendToLocalStorage} icon={<Icon as={FaSave} />}>Guardar Actividad</MenuItem>
                         <MenuItem onClick={handlePrint} icon={<Icon as={IoMdPrint} />}>Imprimir Actividad</MenuItem>
-                        <MenuItem as="a" target="_blank" referrerPolicy="no-referrer" href={`${host}/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />}>Visualizar Actividad</MenuItem>
+                        <MenuItem as="a" target="_blank" referrerPolicy="no-referrer" href={`/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />}>Visualizar Actividad</MenuItem>
                     </Fragment>
                 }
                 leftActions={
@@ -135,7 +134,7 @@ const Form = () => {
                             </Tooltip>
 
                             <Tooltip label="Visualizar Actividad">
-                                <IconButton as="a" target="_blank" referrerPolicy="no-referrer" href={`${host}/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />} />
+                                <IconButton as="a" target="_blank" referrerPolicy="no-referrer" href={`/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />} />
                             </Tooltip>
                         </ButtonGroup>
                     </Fragment>
