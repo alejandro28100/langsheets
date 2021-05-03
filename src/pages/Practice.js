@@ -114,9 +114,9 @@ const Practice = () => {
             <Navbar />
             <Box >
 
-                <Text background="blue.400" color="white" width="full" zIndex="banner" pl="52" mt="16" py="6" fontSize="5xl" fontWeight="bold" position="absolute" >{worksheet.title}</Text>
+                <Text background="blue.400" textAlign="center" color="white" width="full" mt="4" px="4" py="6" fontSize={["4xl", "4xl", "5xl"]} fontWeight="bold" >{worksheet.title}</Text>
 
-                <Container maxWidth="container.lg" my="20">
+                < Container maxWidth="container.lg" my="4" >
                     <Slate
                         {...{
                             editor,
@@ -124,7 +124,7 @@ const Practice = () => {
                             onChange: (newContent) => handleChangeProp({ propery: "content", value: newContent })
                         }}
                     >
-                        <Box background="white" px="16" pt="56" pb="16" as={Editable} shadow="sm"
+                        <Box background="white" px={["8", "16"]} py="16" as={Editable} shadow="sm"
                             {...{ renderElement, renderLeaf, readOnly: true, style: { textAlign: "left" } }}
                         />
                     </Slate>

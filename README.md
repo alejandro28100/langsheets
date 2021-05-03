@@ -15,11 +15,11 @@ Se utiliza el framework [Slate JS](https://docs.slatejs.org/) para crear un edit
 
 ### Página de práctica
 
-Esta página traduce todo el contenido del [RTE](https://en.wikipedia.org/wiki/Online_rich-text_editor) a una versión interactiva que se pueda contestar usando elementos HTML nativos (select, input, etc.). Actualmente las actividades se pueden realizar así como recibir una calificación dependiento de las respuestas correctas.
+Esta página traduce todo el contenido del [RTE](https://en.wikipedia.org/wiki/Online_rich-text_editor) a una versión interactiva que se pueda contestar usando elementos HTML nativos (select, input, etc.). Actualmente las actividades se pueden realizar y se puede recibir una calificación dependiento de las respuestas correctas.
 
 ### Link del Prototipo
 
-Se creó una versión prototipo de la aplicación que funciona usando localStorage para asegurar la persistencia de los datos de manera local.El proyecto esta hosteado en la plataforma Netlify
+Se creó una versión prototipo de la aplicación que funciona usando localStorage para asegurar la persistencia de los datos de manera local. El proyecto esta hosteado en la plataforma Netlify
 
 <https://determined-mayer-9f15a9.netlify.app/>
 
