@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import * as ServiceWorker from "./serviceWorker";
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
@@ -10,8 +9,6 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('root')
 );
-
-ServiceWorker.register();
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

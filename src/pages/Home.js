@@ -48,70 +48,70 @@ const examples = [
 
 const Home = () => {
     const history = useHistory();
-
+    const host = window.location.host;
     const [worksheets, setWorksheets] = useState([]);
 
     useEffect(() => {
         //if user has worksheets record in localStorage 
         //get the worksheets
         if (localStorage.getItem("worksheets")) {
-            const data = JSON.parse(localStorage.getItem("worksheets"))
-                .map(worksheet => {
-                    //turn the string content into valid JSON 
-                    worksheet.content = JSON.parse(worksheet.content)
-                    return worksheet;
-                })
+            console.log("Getting existing record");
+            const data = JSON.parse(localStorage.getItem("worksheets"));
             setWorksheets(data);
         } else {
             //create example worksheets
             localStorage.setItem("worksheets", JSON.stringify(examples));
-            // console.log("Worksheet examples created");
 
-            const data = examples.map(worksheet => {
-                //turn the string content into valid JSON 
-                worksheet.content = JSON.parse(worksheet.content)
-                return worksheet;
-            })
+            const data = JSON.parse(localStorage.getItem("worksheets"));
 
             setWorksheets(data);
         }
     }, [])
 
-    async function handleCreateWorksheet() {
+    function handleCreateWorksheet() {
         const newWorksheet = {
             id: uuid(),
             title: "",
             content: JSON.stringify([{
                 type: 'paragraph',
-                children: [{ text: '' }],
+                children: [{ text: '' }]
             }]),
             createdAt: new Date()
         }
 
         try {
+            const updatedWorksheets = [...worksheets, newWorksheet];
             //save the worksheet into localStorage
-            localStorage.setItem("worksheets", JSON.stringify([...worksheets, newWorksheet]));
-            //id the item was added , update the state
-            //Add the worksheet to the state
-            setWorksheets(JSON.stringify(localStorage.getItem("worksheets")));
+            localStorage.setItem("worksheets", JSON.stringify(updatedWorksheets));
+
+            const data = JSON.parse(localStorage.getItem("worksheets"));
+            //if the item was added , update the state
+            setWorksheets(data);
 
             //Redirect to the form page with the id of the record created
-            history.push(`/worksheets/${newWorksheet.id}/edit`);
+            history.push(`${host}/worksheets/${newWorksheet.id}/edit`);
         } catch (err) {
             //show error in case if the user has disabled storage for the site, or if the quota has been exceeded
             alert(err);
         }
     }
 
-    async function handleDeleteWorksheet(id) {
+    function handleDeleteWorksheet(id) {
         try {
-            const updatedWorksheets = [...worksheets].filter(worksheet => worksheet.id !== id);
+            const updatedWorksheets = [...worksheets]
+                .filter(worksheet => worksheet.id !== id);
+
+            console.log(updatedWorksheets);
+
             localStorage.setItem("worksheets", JSON.stringify(updatedWorksheets));
-            //if the worksheet was successfully deleted, update the state 
-            setWorksheets(updatedWorksheets);
+
+            const data = JSON.parse(localStorage.getItem("worksheets"));
+
+            // if the worksheet was successfully deleted, update the state 
+            setWorksheets(data);
 
         } catch (err) {
-            //show error in case if the user has disabled storage for the site, or if the quota has been exceeded
+            //show error in case if the user has disabled storage for the site
             alert(err);
         }
     }

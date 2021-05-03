@@ -1,6 +1,6 @@
-import React, { Children, Fragment } from 'react'
+import React, { Fragment } from 'react'
 import PropTypes from "prop-types";
-import { Flex, Spacer, Icon, Menu, MenuList, MenuButton, MenuItem, Button, useMediaQuery } from "@chakra-ui/react"
+import { Flex, Spacer, Icon, Menu, MenuList, MenuButton, Button, useMediaQuery } from "@chakra-ui/react"
 import { HiMenuAlt4 } from "react-icons/hi";
 import Logo from "./Logo";
 
@@ -20,7 +20,7 @@ function Navbar({ leftActions, rightActions, withIcon, sm }) {
             {
                 isTabletOrLower
                     ? (
-                        <Fragment>
+                        sm && <Fragment>
                             <Spacer />
                             <Menu>
                                 <MenuButton colorScheme="blue" variant="ghost" as={Button} children={<Icon as={HiMenuAlt4} />} />

@@ -50,7 +50,7 @@ const Form = () => {
         setWorksheet(getWorksheet(id));
     }, [id])
 
-    async function sendToLocalStorage() {
+    function sendToLocalStorage() {
         try {
             let updatedWorksheet = { ...worksheet };
             //turn Slate JSON-like-content into a string to save storage
@@ -76,7 +76,7 @@ const Form = () => {
         }
     }
 
-    async function handleChangeProp({ propery, value }) {
+    function handleChangeProp({ propery, value }) {
         setWorksheet(prevValue => {
             return { ...prevValue, [propery]: value }
         })
@@ -106,7 +106,7 @@ const Form = () => {
         : "LangSheets";
     useDocumentTitle(title);
 
-
+    const host = window.location.host;
     return (
         <Fragment>
             <Navbar
@@ -115,7 +115,7 @@ const Form = () => {
                         <MenuItem as="a" href="/" icon={<Icon as={IoIosArrowBack} />}>Regresar</MenuItem>
                         <MenuItem onClick={sendToLocalStorage} icon={<Icon as={FaSave} />}>Guardar Actividad</MenuItem>
                         <MenuItem onClick={handlePrint} icon={<Icon as={IoMdPrint} />}>Imprimir Actividad</MenuItem>
-                        <MenuItem as="a" target="_blank" referrerPolicy="no-referrer" href={`/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />}>Visualizar Actividad</MenuItem>
+                        <MenuItem as="a" target="_blank" referrerPolicy="no-referrer" href={`${host}/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />}>Visualizar Actividad</MenuItem>
                     </Fragment>
                 }
                 leftActions={
@@ -135,7 +135,7 @@ const Form = () => {
                             </Tooltip>
 
                             <Tooltip label="Visualizar Actividad">
-                                <IconButton as="a" target="_blank" referrerPolicy="no-referrer" href={`/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />} />
+                                <IconButton as="a" target="_blank" referrerPolicy="no-referrer" href={`${host}/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />} />
                             </Tooltip>
                         </ButtonGroup>
                     </Fragment>
@@ -207,7 +207,7 @@ const Form = () => {
                 }}
             >
                 <Logo size="sm" />
-                <Text fontSize="smaller"> {window.location.host}/worksheets/{id}/practice </Text>
+                <Text fontSize="smaller"> {host}/worksheets/{id}/practice </Text>
             </Box>
 
         </Fragment >

@@ -54,7 +54,10 @@ const Practice = () => {
     }
 
     useEffect(() => {
+        setWorksheet(getWorksheet(id));
+    }, [id])
 
+    useEffect(() => {
         function getItemsCount() {
             let itemsCount = 0;
             // Iterate over every node in the editor and get the missing-word-type nodes
@@ -65,20 +68,10 @@ const Practice = () => {
             }
 
             return itemsCount;
-        }
-        async function getWorksheetInfo() {
-            try {
-                setWorksheet(getWorksheet(id));
-                const itemsCount = getItemsCount();
-                setActivity(prevActivity => ({ ...prevActivity, itemsCount }));
-            } catch (error) {
-                alert(error)
-            }
-        }
-        //get and set the initial state from localStorage
-        getWorksheetInfo();
-
-    }, [id, editor])
+        };
+        const itemsCount = getItemsCount();
+        setActivity(prevActivity => ({ ...prevActivity, itemsCount }));
+    }, [worksheet, editor])
 
     function handleCheckExercise() {
 

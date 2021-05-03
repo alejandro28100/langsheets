@@ -23,7 +23,7 @@ function WorksheetCard({ lang, title, id, createdAt, deleteSheet, isPublic }) {
     const [isAlertOpen, setIsAlertOpen] = useState(false);
     const onClose = () => setIsAlertOpen(false);
     const cancelRef = useRef();
-
+    const host = window.location.host
     return (
         <Fragment>
 
@@ -49,11 +49,11 @@ function WorksheetCard({ lang, title, id, createdAt, deleteSheet, isPublic }) {
                     <ButtonGroup as={Flex} flexDirection="column" alignItems="center" justifyContent="space-evenly" spacing="0" size="lg" colorScheme="blue" variant="ghost">
 
                         <Tooltip hasArrow label="Comenzar Actividad" >
-                            <IconButton as="a" href={`http://localhost:3000/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />} />
+                            <IconButton as="a" href={`${host}/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />} />
                         </Tooltip>
 
                         <Tooltip hasArrow label="Editar Actividad">
-                            <IconButton as="a" href={`http://localhost:3000/worksheets/${id}/edit`} icon={<Icon as={RiFileEditFill} />} />
+                            <IconButton as="a" href={`${host}/worksheets/${id}/edit`} icon={<Icon as={RiFileEditFill} />} />
                         </Tooltip>
 
                         <Tooltip hasArrow label="Eliminar Actividad">
