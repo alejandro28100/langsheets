@@ -1,7 +1,7 @@
 # Proyecto Final del Curso React - BEDU / Santander
 
 ## Justificación
-La creación de actividades personalizadas es una problemática presente en campo de la enseñanza de idiomas. Encontrar en libros o internet actividades que conincidan con los objetivos y necesidades de cada salón de clases puede ser una tarea muy agotante. Con la pandemia , la necesidad de creación actividades digitales y personalizadas incrementó. Este proyecto intenta crear una herramienta que pueda ser útil para la enseñanza de idiomas de manera personal y virtual.      
+La creación de actividades personalizadas es una problemática presente en campo de la enseñanza de idiomas. Encontrar en libros o internet actividades que conincidan con los objetivos y necesidades de cada salón de clases puede ser una tarea muy agotante. Con la pandemia , la necesidad de creación de actividades digitales y personalizadas incrementó. Este proyecto intenta crear una herramienta que pueda ser útil para la enseñanza de idiomas de manera personal y virtual.      
 
 ## Descripción del Proyecto
 
