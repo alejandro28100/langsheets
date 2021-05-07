@@ -1,5 +1,5 @@
 // @refresh reset
-import React, { useEffect, useState, Fragment } from 'react'
+import React, { useEffect, Fragment, useReducer } from 'react'
 import { useParams } from "react-router-dom"
 import { Slate, Editable } from "slate-react"
 
@@ -8,7 +8,7 @@ import Sidebar from "../components/Sidebar";
 import Toolbar from "../components/Slate/Toolbar";
 import WorksheetTitle from "../components/WorksheetTitle";
 
-import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem } from "@chakra-ui/react";
+import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Switch, Alert, AlertIcon } from "@chakra-ui/react";
 
 
 import { IoIosArrowBack, IoMdPrint } from "react-icons/io"
@@ -20,20 +20,55 @@ import useDocumentTitle from "../hooks/useDocumentTitle";
 import useSlateRender from '../hooks/useSlateRender';
 import useSlateEditor from '../hooks/useSlateEditor';
 
+const ACTIONS = {
+    TOGGLE_WRITTING_MODE: "toggle-writting-mode",
+    CHANGE_WORKSHEET_PROP: "change-worksheet-prop",
+    SET_WORKSHEET: "set-worksheet",
+    SUCESS: "sucess",
+    ERROR: "error",
+}
 
 
-const defaultValue = {
-    "title": "",
-    "content": [
-        {
-            "type": "paragraph",
-            "children": [
-                {
-                    "text": ""
-                }
-            ]
+function reducer(state, action) {
+    switch (action.type) {
+        case ACTIONS.TOGGLE_WRITTING_MODE:
+            return {
+                ...state,
+                isWritingMode: !state.isWritingMode
+            }
+        case ACTIONS.CHANGE_WORKSHEET_PROP: {
+            const updatedWorksheet = { ...state.worksheet };
+            updatedWorksheet[action.payload.property] = action.payload.value;
+            return {
+                ...state,
+                worksheet: updatedWorksheet,
+            }
         }
-    ]
+
+        case ACTIONS.SET_WORKSHEET:
+            return {
+                ...state,
+                loading: false,
+                worksheet: action.payload.worksheet,
+                error: undefined
+            }
+        case ACTIONS.ERROR:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload.error
+            }
+        default:
+            console.warn("Action provided did not matched", action);
+            return state;
+    }
+}
+
+const initialValue = {
+    isWritingMode: true,
+    loading: true,
+    error: "",
+    worksheet: undefined,
 }
 
 const Form = () => {
@@ -42,21 +77,23 @@ const Form = () => {
     //Slate editor component
     const editor = useSlateEditor();
     //Slate editor render functions
-    const [renderLeaf, renderElement] = useSlateRender({ readOnly: false });
+    const [renderLeaf, renderElement] = useSlateRender();
 
-    const [worksheet, setWorksheet] = useState(defaultValue);
+    const [state, dispatch] = useReducer(reducer, initialValue);
 
     useEffect(() => {
-        setWorksheet(getWorksheet(id));
+        const { worksheet, error } = getWorksheet(id);
+        if (error) return dispatch({ type: ACTIONS.ERROR, payload: { error } })
+        dispatch({ type: ACTIONS.SET_WORKSHEET, payload: { worksheet } })
     }, [id])
 
     function sendToLocalStorage() {
         try {
-            let updatedWorksheet = { ...worksheet };
+            let updatedWorksheet = state.worksheet;
             //turn Slate JSON-like-content into a string to save storage
             updatedWorksheet.content = JSON.stringify(updatedWorksheet.content);
 
-            //Update the worksheet from the worksheets value in localStorage API
+            //Update the worksheet from the worksheets value in localStorage
             const worksheets = JSON.parse(localStorage.getItem("worksheets"))
                 .map(worksheet => {
                     if (worksheet.id === id) {
@@ -69,17 +106,11 @@ const Form = () => {
             localStorage.setItem("worksheets", JSON.stringify(worksheets));
 
             //update the state
-            setWorksheet(getWorksheet(id));
+            dispatch({ type: "set-worksheet", payload: { worksheet: getWorksheet(id) } })
             alert("Actividad Guardada");
         } catch (error) {
             alert(error);
         }
-    }
-
-    function handleChangeProp({ propery, value }) {
-        setWorksheet(prevValue => {
-            return { ...prevValue, [propery]: value }
-        })
     }
 
     function handleSubmit(e) {
@@ -101,8 +132,8 @@ const Form = () => {
 
     }
 
-    const title = !!worksheet.title
-        ? `LangSheets | ${worksheet.title}`
+    const title = !!state?.worksheet?.title
+        ? `LangSheets | ${state?.worksheet?.title}`
         : "LangSheets";
     useDocumentTitle(title);
     const host = window.location.host;
@@ -140,75 +171,90 @@ const Form = () => {
                     </Fragment>
                 }
             />
+            {state.loading ? (
+                <p>Cargando...</p>
+            ) : state.error ? (
+                <Box>
+                    <Alert status="error">
+                        <AlertIcon />
+                        {state.error}
+                    </Alert>
+                </Box>
+            ) : (
+                <Fragment>
 
-            <Grid templateColumns="repeat(12,1fr)" as="form" onSubmit={handleSubmit}>
-                <GridItem colSpan={[11, 11, 9]}>
+                    <Grid templateColumns="repeat(12,1fr)" as="form" onSubmit={handleSubmit}>
+                        <GridItem colSpan={[11, 11, 9]}>
 
-                    <WorksheetTitle {...{ handleChangeProp, sendToLocalStorage, title: worksheet.title }} />
+                            <WorksheetTitle {...{ dispatch, sendToLocalStorage, title: state.worksheet.title }} />
 
-                    <Text my="4" fontSize="xl" textAlign="center"
-                        sx={{
-                            "@media print": {
-                                display: "none",
-                            }
-                        }}
-                    >Contenido de la actividad</Text>
+                        Modo de edición: <Switch isChecked={state.isWritingMode} onChange={() => dispatch({ type: "toggle-writting-mode" })} />
 
-                    <Slate
-                        {...{
-                            editor,
-                            value: worksheet.content,
-                            onChange: (newContent) => handleChangeProp({ propery: "content", value: newContent })
-                        }}
-                    >
-                        <Toolbar />
-                        <Box background="gray.100" py={["5", "7"]} px={["5", "14"]}
+                            <Text my="4" fontSize="xl" textAlign="center"
+                                sx={{
+                                    "@media print": {
+                                        display: "none",
+                                    }
+                                }}
+                            >Contenido de la actividad</Text>
+
+                            <Slate
+                                {...{
+                                    editor,
+                                    value: state.worksheet.content,
+                                    onChange: newContent => dispatch({ type: "change-worksheet-prop", payload: { propery: "content", value: newContent } })
+                                }}
+                            >
+                                <Toolbar />
+                                <Box background="gray.100" py={["5", "7"]} px={["5", "14"]}
+                                    sx={{
+                                        "@media print": {
+                                            background: "white",
+                                        }
+                                    }}>
+                                    <Box
+                                        background="white"
+                                        p="5"
+                                        as={Editable}
+                                        {...{
+                                            renderElement,
+                                            renderLeaf,
+                                            readOnly: !state.isWritingMode,
+                                            placeholder: "Escribe aquí...",
+                                            required: true,
+                                        }}
+                                    />
+                                </Box>
+                            </Slate>
+
+                        </GridItem>
+                        <GridItem colSpan={[1, 1, 3]} p={{ md: "5" }} flex="1" justifyContent="center" shadow="md"
                             sx={{
                                 "@media print": {
-                                    background: "white",
+                                    display: "none",
                                 }
-                            }}>
-                            <Box
-                                background="white"
-                                p="5"
-                                as={Editable}
-                                {...{
-                                    renderElement,
-                                    renderLeaf,
-                                    placeholder: "Escribe aquí...",
-                                    required: true,
-                                }}
-                            />
-                        </Box>
-                    </Slate>
+                            }}
+                        >
 
-                </GridItem>
-                <GridItem colSpan={[1, 1, 3]} p={{ md: "5" }} flex="1" justifyContent="center" shadow="md"
-                    sx={{
-                        "@media print": {
-                            display: "none",
-                        }
-                    }}
-                >
+                            <Box position="sticky" top="0.5" zIndex="docked">
+                                <Sidebar {...{ dispatch, lang: state.worksheet.lang, isPublic: state.worksheet.isPublic }} />
+                            </Box>
 
-                    <Box position="sticky" top="0.5" zIndex="docked">
-                        <Sidebar {...{ handleChangeProp, lang: worksheet.lang, isPublic: worksheet.isPublic }} />
+                        </GridItem>
+                    </Grid>
+
+                    <Box display="none" flexDirection="column" alignItems="flex-start" position="fixed" zIndex="banner" bottom="0.5" width="full"
+                        sx={{
+                            "@media print": {
+                                display: "flex",
+                            }
+                        }}
+                    >
+                        <Logo size="sm" />
+                        <Text fontSize="smaller"> {host}/worksheets/{id}/practice </Text>
                     </Box>
-
-                </GridItem>
-            </Grid>
-
-            <Box display="none" flexDirection="column" alignItems="flex-start" position="fixed" zIndex="banner" bottom="0.5" width="full"
-                sx={{
-                    "@media print": {
-                        display: "flex",
-                    }
-                }}
-            >
-                <Logo size="sm" />
-                <Text fontSize="smaller"> {host}/worksheets/{id}/practice </Text>
-            </Box>
-
+                </Fragment>
+            )}
         </Fragment >
     )
 }

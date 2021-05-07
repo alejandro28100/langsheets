@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from "prop-types";
 import { Select, Box, Text } from '@chakra-ui/react';
 
-const LanguagePicker = ({ handleChangeProp, lang }) => {
+const LanguagePicker = ({ dispatch, lang }) => {
     return (
         <Box my="4">
             <Text my="2" fontWeight="medium">Idioma</Text>
@@ -10,7 +10,7 @@ const LanguagePicker = ({ handleChangeProp, lang }) => {
                 background="white"
                 required
                 value={lang}
-                onChange={e => handleChangeProp({ propery: "lang", value: e.target.value })}
+                onChange={e => dispatch({ type: "change-worksheet-prop", payload: { property: "lang", value: e.target.value } })}
             >
                 <option value=""></option>
                 <option value="de">Alemán</option>
@@ -30,7 +30,7 @@ LanguagePicker.defaultProps = {
 }
 
 LanguagePicker.propTypes = {
-    handleChangeProp: PropTypes.func.isRequired,
+    dispatch: PropTypes.func.isRequired,
     lang: PropTypes.string.isRequired,
 }
 
