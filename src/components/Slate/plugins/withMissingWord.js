@@ -1,13 +1,12 @@
 import { Node, Element, Transforms, Path } from 'slate';
 
-const withBlankSpace = (editor) => {
+const withMissingWord = (editor) => {
 
     const { normalizeNode } = editor;
 
     editor.normalizeNode = entry => {
         const [node, path] = entry;
-
-        if (Element.isElement(node)) {
+        if (Node.isNode(node) && Element.isElement(node)) {
             const firstNodePath = Node.first(editor, path)[1];
             const lastNodePath = Node.last(editor, path)[1];
 
@@ -54,4 +53,4 @@ const withBlankSpace = (editor) => {
     return editor;
 }
 
-export default withBlankSpace;
+export default withMissingWord;

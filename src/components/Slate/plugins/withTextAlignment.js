@@ -1,13 +1,12 @@
-import { Transforms } from 'slate';
+import { Editor, Transforms } from 'slate';
 
 const withTextAlignment = (editor) => {
 	const { normalizeNode } = editor;
 
 	editor.normalizeNode = (entry) => {
 		const [node, path] = entry;
-
-		// make sure, every paragraph has a standard alignment of 'left'
-		if (node.type === 'paragraph' && !node.alignment) {
+		// make sure, every block has a standard alignment of 'left'
+		if (Editor.isBlock(node) && !node.alignment) {
 			Transforms.setNodes(editor, { textAlign: 'left' }, { at: path });
 			return;
 		}
