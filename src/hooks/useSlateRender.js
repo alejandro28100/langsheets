@@ -3,6 +3,7 @@ import React, { useCallback } from 'react'
 import Leaf from "../components/Slate/Inline/Leaf";
 import DefaultElement from "../components/Slate/Block/DefaultElement";
 import Heading from "../components/Slate/Block/Heading";
+import { ExerciseList, ExerciseBlock } from '../components/Slate/Block/ExerciseBlock';
 
 
 const useSlateRender = () => {
@@ -18,6 +19,10 @@ const useSlateRender = () => {
             return <Heading {...props} />
         }
         switch (type) {
+            case 'exercise-block':
+                return <ExerciseBlock {...props} />
+            case 'exercise-list-items':
+                return <ExerciseList {...props} />
             default:
                 return <DefaultElement {...props} />
         }
