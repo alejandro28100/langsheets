@@ -8,8 +8,7 @@ import Sidebar from "../components/Sidebar";
 import Toolbar from "../components/Slate/Toolbar";
 import WorksheetTitle from "../components/WorksheetTitle";
 
-import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Switch, Alert, AlertIcon } from "@chakra-ui/react";
-
+import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Switch, Alert, AlertIcon, Button } from "@chakra-ui/react";
 
 import { IoIosArrowBack, IoMdPrint } from "react-icons/io"
 import { FaSave, FaChalkboardTeacher } from "react-icons/fa";
@@ -37,14 +36,16 @@ function reducer(state, action) {
                 isWritingMode: !state.isWritingMode
             }
         case ACTIONS.CHANGE_WORKSHEET_PROP: {
+            if (!action.payload.property) throw new Error("Prop 'property' is required but is not defined");
+
             const updatedWorksheet = { ...state.worksheet };
             updatedWorksheet[action.payload.property] = action.payload.value;
+            // console.log(updatedWorksheet);
             return {
                 ...state,
                 worksheet: updatedWorksheet,
             }
         }
-
         case ACTIONS.SET_WORKSHEET:
             return {
                 ...state,
@@ -188,21 +189,11 @@ const Form = () => {
 
                             <WorksheetTitle {...{ dispatch, sendToLocalStorage, title: state.worksheet.title }} />
 
-                        Modo de edición: <Switch isChecked={state.isWritingMode} onChange={() => dispatch({ type: "toggle-writting-mode" })} />
-
-                            <Text my="4" fontSize="xl" textAlign="center"
-                                sx={{
-                                    "@media print": {
-                                        display: "none",
-                                    }
-                                }}
-                            >Contenido de la actividad</Text>
-
                             <Slate
                                 {...{
                                     editor,
                                     value: state.worksheet.content,
-                                    onChange: newContent => dispatch({ type: "change-worksheet-prop", payload: { propery: "content", value: newContent } })
+                                    onChange: newContent => dispatch({ type: "change-worksheet-prop", payload: { property: "content", value: newContent } })
                                 }}
                             >
                                 <Toolbar />
@@ -235,14 +226,11 @@ const Form = () => {
                                 }
                             }}
                         >
-
                             <Box position="sticky" top="0.5" zIndex="docked">
-                                <Sidebar {...{ dispatch, lang: state.worksheet.lang, isPublic: state.worksheet.isPublic }} />
+                                <Sidebar {...{ dispatch, lang: state.worksheet.lang, isWritingMode: state.isWritingMode, isPublic: state.worksheet.isPublic }} />
                             </Box>
-
                         </GridItem>
                     </Grid>
-
                     <Box display="none" flexDirection="column" alignItems="flex-start" position="fixed" zIndex="banner" bottom="0.5" width="full"
                         sx={{
                             "@media print": {
