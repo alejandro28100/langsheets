@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { Transforms } from "slate";
 import { ReactEditor, useSlate } from "slate-react";
-import { Icon, Text, Box, Menu, MenuButton, MenuList, ButtonGroup, Button, Tooltip, useMediaQuery, MenuItem } from "@chakra-ui/react";
+import { Icon, Text, Box, Menu, MenuButton, MenuList, ButtonGroup, Button, Tooltip, useMediaQuery, MenuItem, IconButton } from "@chakra-ui/react";
 import ToolbarButton from "./ToolbarButton";
 
 import { HiViewGridAdd } from "react-icons/hi";
@@ -139,14 +139,22 @@ function Toolbar() {
                 }
 
                 <Menu>
-                    <MenuButton as={Button} size="sm" variant="solid"> <Icon mr="2" as={HiViewGridAdd} /> Insertar Ejercicio </MenuButton>
+                    <Tooltip hasArrow label="Insertar Ejercicio" fontSize="md">
+                        {isTabletOrLower
+                            ? (
+                                <MenuButton variant="solid" as={Button} >
+                                    <Icon as={HiViewGridAdd} />
+                                </MenuButton>
+                            )
+                            : (<MenuButton as={Button} size="sm" variant="solid"> <Icon mr="2" as={HiViewGridAdd} /> Insertar Ejercicio </MenuButton>)
+                        }
+                    </Tooltip>
                     <MenuList>
                         <MenuItem icon={<Icon width="2em" as={MissingWordIcon} />} onClick={e => createExercise({ type: "missing-word" })}>
                             Palabra faltante
                         </MenuItem>
                     </MenuList>
                 </Menu>
-
             </ButtonGroup>
         </Box >
     )
