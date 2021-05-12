@@ -105,9 +105,8 @@ const Form = () => {
 
             //save the worksheets updated in localStorage 
             localStorage.setItem("worksheets", JSON.stringify(worksheets));
-
             //update the state
-            dispatch({ type: "set-worksheet", payload: { worksheet: getWorksheet(id) } })
+            dispatch({ type: "set-worksheet", payload: { worksheet: getWorksheet(id).worksheet } })
             alert("Actividad Guardada");
         } catch (error) {
             alert(error);
