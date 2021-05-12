@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Drawer, DrawerContent, DrawerOverlay, DrawerHeader, DrawerBody, Icon, IconButton, Text } from "@chakra-ui/react";
+import { Drawer, DrawerContent, DrawerOverlay, DrawerHeader, DrawerBody, Icon, IconButton, Text, Switch } from "@chakra-ui/react";
 import { useDisclosure } from '@chakra-ui/hooks';
 import { useMediaQuery } from '@chakra-ui/media-query';
 import LanguagePicker from './LanguagePicker';
@@ -9,7 +9,7 @@ import PropTypes from "prop-types"
 
 import { AiOutlineMenuFold, AiOutlineMenuUnfold } from "react-icons/ai";
 
-const Sidebar = ({ dispatch, lang, isPublic }) => {
+const Sidebar = ({ dispatch, lang, isPublic, isWritingMode }) => {
     const [isTablet] = useMediaQuery(["(max-width: 768px)", "(min-width: 1024px)"]);
     const { isOpen: isDrawerOpen, onOpen: onDrawerOpen, onClose: onDrawerClose } = useDisclosure()
 
@@ -28,6 +28,9 @@ const Sidebar = ({ dispatch, lang, isPublic }) => {
                             <DrawerBody>
                                 <LanguagePicker {...{ dispatch, lang }} />
                                 <PublicSwitch {...{ dispatch, isPublic }} />
+                                <Text my="2" fontWeight="medium">
+                                    Modo de edición: <Switch ml="4" isChecked={isWritingMode} onChange={() => dispatch({ type: "toggle-writting-mode" })} />
+                                </Text>
                             </DrawerBody>
                         </DrawerContent>
                     </DrawerOverlay>
@@ -37,6 +40,9 @@ const Sidebar = ({ dispatch, lang, isPublic }) => {
                 <Text textAlign="center" fontSize="2xl" my="4" fontWeight="medium" letterSpacing="wider">Ajustes</Text>
                 <LanguagePicker {...{ dispatch, lang }} />
                 <PublicSwitch {...{ dispatch, isPublic }} />
+                <Text my="2" fontWeight="medium">
+                    Modo de edición: <Switch ml="4" isChecked={isWritingMode} onChange={() => dispatch({ type: "toggle-writting-mode" })} />
+                </Text>
             </Fragment>
     )
 }
@@ -45,5 +51,6 @@ Sidebar.propTypes = {
     dispatch: PropTypes.func.isRequired,
     lang: PropTypes.string,
     isPublic: PropTypes.bool,
+    isWritingMode: PropTypes.bool,
 }
 export default Sidebar
