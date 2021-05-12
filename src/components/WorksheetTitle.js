@@ -5,7 +5,6 @@ import { Editable, EditablePreview, EditableInput, Box } from "@chakra-ui/react"
 
 
 function WorksheetTitle({ title, sendToLocalStorage, dispatch }) {
-    console.log(title);
     const textRef = useRef();
     return (
         <Box my="4" mx="6"
