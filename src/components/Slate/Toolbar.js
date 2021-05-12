@@ -7,6 +7,7 @@ import ToolbarButton from "./ToolbarButton";
 import { HiViewGridAdd } from "react-icons/hi";
 import { FaHeading, FaFont, FaBold, FaItalic, FaStrikethrough, FaUnderline, FaAlignJustify, FaAlignLeft, FaAlignCenter, FaAlignRight } from "react-icons/fa"
 import { MissingWord as MissingWordIcon } from "../../svgs";
+import { AiOutlineProfile } from "react-icons/ai";
 
 function Toolbar() {
     //get the editor reference from the slate context using the hook
@@ -15,42 +16,38 @@ function Toolbar() {
     const [isTabletOrLower] = useMediaQuery(["(max-width:900px)"]);
 
     function createExercise({ type }) {
-        switch (type) {
-            case 'missing-word': {
-                const newNode = {
-                    type: 'exercise-block',
-                    exerciseType: "missing-word",
+
+        const newNode = {
+            type: 'exercise-block',
+            exerciseType: type,
+            children: [
+                {
+                    type: 'exercise-list-items',
                     children: [
                         {
-                            type: 'exercise-list-items',
+                            type: 'paragraph',
                             children: [
                                 {
-                                    type: 'paragraph',
-                                    children: [
-                                        {
-                                            text: ''
-                                        }
-                                    ]
+                                    text: ''
                                 }
                             ]
                         }
                     ]
                 }
-                if (editor.selection) {
-                    const [node] = Node.fragment(editor, editor.selection);
-                    //Prevent the user from creating embeded exercise-block s
-                    if (node.type === "exercise-block") {
-                        alert("No es posible crear un ejercicio dentro de otro ejercicio, selecciona una linea de texto vacía fuera del cuadro de ejercicio");
-                        return;
-                    }
-                }
-                Transforms.insertNodes(editor, newNode, { select: true });
-                ReactEditor.focus(editor);
-            }
-                break;
-            default:
-                break;
+            ]
         }
+
+        if (editor.selection) {
+            const [node] = Node.fragment(editor, editor.selection);
+            //Prevent the user from creating embeded exercise-block s
+            if (node.type === "exercise-block") {
+                alert("No es posible crear un ejercicio dentro de otro ejercicio, selecciona una linea de texto vacía fuera del cuadro de ejercicio");
+                return;
+            }
+        }
+
+        Transforms.insertNodes(editor, newNode, { select: true });
+        ReactEditor.focus(editor);
 
     }
 
@@ -62,7 +59,7 @@ function Toolbar() {
                 }
             }}
         >
-            <ButtonGroup alignItems="center" variant="ghost" colorScheme="blue" spacing="2">
+            <ButtonGroup alignItems="center" variant="ghost" colorScheme="blue" spacing="1">
                 <Menu>
 
                     <Tooltip hasArrow label="Estilos de tipografía" fontSize="md">
@@ -159,7 +156,10 @@ function Toolbar() {
                     </Tooltip>
                     <MenuList>
                         <MenuItem icon={<Icon width="2em" as={MissingWordIcon} />} onClick={e => createExercise({ type: "missing-word" })}>
-                            Palabra faltante
+                            Palabras faltantes
+                        </MenuItem>
+                        <MenuItem icon={<Icon width="2em" as={AiOutlineProfile} />} onClick={e => createExercise({ type: "word-order" })}>
+                            Ordernar oraciones
                         </MenuItem>
                     </MenuList>
                 </Menu>
