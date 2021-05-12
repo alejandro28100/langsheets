@@ -8,7 +8,7 @@ import { useSlate } from 'slate-react';
 import { toggleBlock, toggleMark, isBlockActive, isMarkActive } from "../../utils/slate";
 
 
-const ToolbarButton = ({ format, label, type, customOnClick, variant, icon, formatKey }) => {
+const ToolbarButton = ({ format, label, type, customOnClick, variant, icon, formatKey, ...rest }) => {
 
     const editor = useSlate();
 
@@ -17,11 +17,9 @@ const ToolbarButton = ({ format, label, type, customOnClick, variant, icon, form
             //run custom click function
             return customOnClick.call()
         }
-
         if (type === "mark") {
             return toggleMark(format, editor);
         }
-
         return toggleBlock(formatKey, format, editor);
     }
 
@@ -29,19 +27,16 @@ const ToolbarButton = ({ format, label, type, customOnClick, variant, icon, form
         if (type === "mark") {
             return isMarkActive(format, editor);
         };
-
         return isBlockActive(formatKey, format, editor);
     }
 
     if (variant === "button") {
         return (
-
             <Tooltip hasArrow label={label} fontSize="md">
-                <Button background={isActive() ? "blue.50" : ""} variant="ghost" onClick={handleClick} >
+                <Button {...rest} background={isActive() ? "blue.50" : ""} variant="ghost" onClick={handleClick} >
                     {icon}
                 </Button>
             </Tooltip >
-
         )
     };
 

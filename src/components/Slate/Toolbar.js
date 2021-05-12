@@ -1,18 +1,12 @@
-import { Fragment, cloneElement, useState, Children } from "react";
-import { Range } from "slate";
-import { useSlate } from "slate-react";
-import { Icon, Text, Box, Menu, MenuButton, MenuList, ButtonGroup, Button, Tooltip, useMediaQuery } from "@chakra-ui/react";
+import { Fragment } from "react";
+import { Transforms } from "slate";
+import { ReactEditor, useSlate } from "slate-react";
+import { Icon, Text, Box, Menu, MenuButton, MenuList, ButtonGroup, Button, Tooltip, useMediaQuery, MenuItem } from "@chakra-ui/react";
 import ToolbarButton from "./ToolbarButton";
 
+import { HiViewGridAdd } from "react-icons/hi";
 import { FaHeading, FaFont, FaBold, FaItalic, FaStrikethrough, FaUnderline, FaAlignJustify, FaAlignLeft, FaAlignCenter, FaAlignRight } from "react-icons/fa"
 import { MissingWord as MissingWordIcon } from "../../svgs";
-import { toggleMark } from "../../utils/slate";
-
-function ToogleButtonGroup({ children, value, setValue }) {
-    //create a clone element of each child with the value and setValue properties
-    return Children.map(children, (child) => cloneElement(child, { value, setValue }))
-}
-
 
 function Toolbar() {
     //get the editor reference from the slate context using the hook
@@ -20,21 +14,36 @@ function Toolbar() {
 
     const [isTabletOrLower] = useMediaQuery(["(max-width:900px)"]);
 
-    function handleCreateMissingWord() {
-        //Make sure there's text selected
-        if (Range.isCollapsed(editor.selection)) {
-            alert("Para crear una palabra faltante , seleciona primero la palabra")
-            return
+    function createExercise({ type }) {
+        switch (type) {
+            case 'missing-word': {
+                const node = {
+                    type: 'exercise-block',
+                    exerciseType: "missing-word",
+                    children: [
+                        {
+                            type: 'exercise-list-items',
+                            children: [
+                                {
+                                    type: 'paragraph',
+                                    children: [
+                                        {
+                                            text: ''
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+                Transforms.insertNodes(editor, node);
+                ReactEditor.focus(editor);
+            }
+                break;
+            default:
+                break;
         }
 
-        //Asign the property missingWord into the selected text in the editor 
-        toggleMark("missingWord", editor)
-    }
-
-    const [alignment, setAlignment] = useState("left");
-
-    function handleSetAlignment(format) {
-        setAlignment(format)
     }
 
     return (
@@ -45,7 +54,7 @@ function Toolbar() {
                 }
             }}
         >
-            <ButtonGroup variant="ghost" colorScheme="blue" spacing="2">
+            <ButtonGroup alignItems="center" variant="ghost" colorScheme="blue" spacing="2">
                 <Menu>
 
                     <Tooltip hasArrow label="Estilos de tipografía" fontSize="md">
@@ -121,18 +130,25 @@ function Toolbar() {
                             <ToolbarButton variant="menuListItem" type="block" formatKey="textAlign" format="justify" label="Justificar" icon={<Icon as={FaAlignJustify} />} />
                         </MenuList>
                     </Menu>)
-                    : (<ToogleButtonGroup value={alignment} setValue={handleSetAlignment}>
+                    : (<Fragment>
                         <ToolbarButton type="block" formatKey="textAlign" format="left" label="Alinear a la izquierda" icon={<Icon as={FaAlignLeft} />} />
                         <ToolbarButton type="block" formatKey="textAlign" format="center" label="Alinear al centro" icon={<Icon as={FaAlignCenter} />} />
                         <ToolbarButton type="block" formatKey="textAlign" format="right" label="Alinear a la derecha" icon={<Icon as={FaAlignRight} />} />
                         <ToolbarButton type="block" formatKey="textAlign" format="justify" label="Justificar" icon={<Icon as={FaAlignJustify} />} />
-                    </ToogleButtonGroup>)
+                    </Fragment>)
                 }
 
-                <ToolbarButton type="mark" customOnClick={handleCreateMissingWord} format="missingWord" label="Palabra faltante" icon={<Icon width="2em" as={MissingWordIcon} />} />
+                <Menu>
+                    <MenuButton as={Button} size="sm" variant="solid"> <Icon mr="2" as={HiViewGridAdd} /> Insertar Ejercicio </MenuButton>
+                    <MenuList>
+                        <MenuItem icon={<Icon width="2em" as={MissingWordIcon} />} onClick={e => createExercise({ type: "missing-word" })}>
+                            Palabra faltante
+                        </MenuItem>
+                    </MenuList>
+                </Menu>
 
             </ButtonGroup>
-        </Box>
+        </Box >
     )
 }
 
