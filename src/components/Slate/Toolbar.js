@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { Transforms } from "slate";
+import { Editor, Node, Operation, Path, Point, Transforms } from "slate";
 import { ReactEditor, useSlate } from "slate-react";
 import { Icon, Text, Box, Menu, MenuButton, MenuList, ButtonGroup, Button, Tooltip, useMediaQuery, MenuItem, IconButton } from "@chakra-ui/react";
 import ToolbarButton from "./ToolbarButton";
@@ -17,7 +17,7 @@ function Toolbar() {
     function createExercise({ type }) {
         switch (type) {
             case 'missing-word': {
-                const node = {
+                const newNode = {
                     type: 'exercise-block',
                     exerciseType: "missing-word",
                     children: [
@@ -36,7 +36,15 @@ function Toolbar() {
                         }
                     ]
                 }
-                Transforms.insertNodes(editor, node);
+                if (editor.selection) {
+                    const [node] = Node.fragment(editor, editor.selection);
+                    //Prevent the user from creating embeded exercise-block s
+                    if (node.type === "exercise-block") {
+                        alert("No es posible crear un ejercicio dentro de otro ejercicio, selecciona una linea de texto vacía fuera del cuadro de ejercicio");
+                        return;
+                    }
+                }
+                Transforms.insertNodes(editor, newNode, { select: true });
                 ReactEditor.focus(editor);
             }
                 break;
