@@ -1,8 +1,12 @@
-import { Input } from '@chakra-ui/input';
 import { Box, Text } from '@chakra-ui/layout';
-import React from 'react'
+import React, { useState } from 'react'
 import { Node } from 'slate';
 import { ReactEditor, useReadOnly, useSlate } from 'slate-react';
+
+import { nanoid } from "nanoid";
+import { Flex } from '@chakra-ui/layout';
+
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const DefaultElement = (props) => {
     const { attributes, element, children } = props;
@@ -36,46 +40,114 @@ const Paragraph = ({ attributes, element, children }) => {
     )
 }
 
+function shuffleArray(array) {
+    let currentIndex = array.length, temporaryValue, randomIndex;
 
-function getDivisions(string) {
-    let divisions;
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
 
-    const withDiagonal = string.split("/");
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
 
-    if (withDiagonal.length <= 1) {
-        return divisions = string.split(" ");
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
     }
-    divisions = withDiagonal;
 
-    return divisions;
+    return array;
 }
+
+function getDivisions(string, config) {
+    let words;
+    const withDiagonal = string.split("/");
+    words = withDiagonal;
+    if (withDiagonal.length <= 1) {
+        words = string.split(" ");
+    }
+    let withIDs = words.map(word => ({ word, id: nanoid() }));
+
+    return config.shuffle ? shuffleArray(withIDs) : withIDs;
+
+}
+
+const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+};
 
 const WordOrderParagraph = props => {
     const { element } = props;
     const textContent = Node.string(element);
 
-    const divisions = getDivisions(textContent);
+    const correctAnswers = (getDivisions(textContent, { shuffle: false }));
+    const [words, setWords] = useState(getDivisions(textContent, { shuffle: true }));
+
+    console.log(correctAnswers, words);
+
+    function handleOnDragEnd(result) {
+        // `destination` is `undefined` if the item was dropped outside the list
+        // In this case, do nothing
+        if (!result.destination) {
+            return
+        }
+
+        const items = reorder(
+            words,
+            result.source.index,
+            result.destination.index
+        );
+
+        setWords(items);
+    }
 
     return (
-        <Box as="p" my="6">
-            <Box my="2">
-                {divisions.map(word => {
-                    return <WordComponent word={word} />
-                })}
-            </Box>
-            <Box color="gray.400" border="solid var(--chakra-colors-purple-400) 2px" borderRadius="base" p="3">
-                Arrastra las palabras aquí
-            </Box>
-        </Box>
+        <DragDropContext onDragEnd={handleOnDragEnd} >
+            <Droppable droppableId="droppable" direction="horizontal">
+                {(provided, snapshot) => (
+                    <Flex flexWrap="wrap" alignItems="center" my="6" p="4" borderRadius="base" border="2px var(--chakra-colors-purple-600) solid"
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                    // className={`${ && 'draggingOver'}`}
+                    >
+                        {words.map(({ word, id }, index) => (
+                            <WordComponent {...{ word, id, index }} />
+                        ))}
+                        {provided.placeholder}
+                    </Flex>
+                )}
+            </Droppable>
+        </DragDropContext>
     )
 };
 
-const WordComponent = props => {
-    return (
-        <Text as="span" px="2" py="1" borderRadius="base" bg="purple.600" color="white" fontWeight="medium" mx="2">
-            {props.word}
-        </Text>
-    );
-};
+const WordComponent = ({ id, word, index }) => (
+    <Draggable key={id} draggableId={id} index={index}>
+        {(provided, snapshot) => (
+            <Text
+                userSelect="none"
+                m="1"
+                px="2"
+                py="1"
+                borderRadius="base"
+                as="span"
+                cursor="move"
+                bg="purple.500"
+                fontWeight="medium"
+                color="white"
+                style={provided.draggableProps.style}
+                ref={provided.innerRef}
+                {...provided.draggableProps}
+                {...provided.dragHandleProps}
+            >
+                {word}
+            </Text>
+        )}
+    </Draggable>
+)
 
 export default DefaultElement
