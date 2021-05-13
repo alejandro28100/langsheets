@@ -138,7 +138,7 @@ const Home = () => {
                                         {...{ ...worksheet, ...worksheetsHandler }}
                                     />)
                                 }
-                                <Flex width="full" as={Button} colorScheme="blue" variant="ghost" background="white" onClick={worksheetsHandler.createSheet} leftIcon={<Icon as={HiDocumentAdd} />} size="lg" boxShadow="base" height="40" borderRadius="xl">
+                                <Flex width="full" as={Button} colorScheme="purple" variant="ghost" background="white" onClick={worksheetsHandler.createSheet} leftIcon={<Icon as={HiDocumentAdd} />} size="lg" boxShadow="base" height="40" borderRadius="xl">
                                     Crear Nueva actividad
                                 </Flex>
                             </Grid>
@@ -146,7 +146,7 @@ const Home = () => {
                         : (
                             <Fragment>
                                 <Text fontSize="lg" fontWeight="semibold">Aun no has creado una worksheet</Text>
-                                <Flex as={Button} colorScheme="blue" variant="ghost" background="white" onClick={worksheetsHandler.createSheet} leftIcon={<Icon as={HiDocumentAdd} />} size="lg" boxShadow="base" height="40" borderRadius="xl">
+                                <Flex as={Button} colorScheme="purple" variant="ghost" background="white" onClick={worksheetsHandler.createSheet} leftIcon={<Icon as={HiDocumentAdd} />} size="lg" boxShadow="base" height="40" borderRadius="xl">
                                     Crear Nueva actividad
                                 </Flex>
                             </Fragment>

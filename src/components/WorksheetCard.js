@@ -45,7 +45,7 @@ function WorksheetCard({ lang, title, id, createdAt, deleteSheet, isPublic }) {
                 </Flex>
                 <Spacer />
                 <Flex pr="5" py="5">
-                    <ButtonGroup as={Flex} flexDirection="column" alignItems="center" justifyContent="space-evenly" spacing="0" size="lg" colorScheme="blue" variant="ghost">
+                    <ButtonGroup as={Flex} flexDirection="column" alignItems="center" justifyContent="space-evenly" spacing="0" size="lg" colorScheme="purple" variant="ghost">
 
                         <Tooltip hasArrow label="Comenzar Actividad" >
                             <IconButton as="a" href={`/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />} />

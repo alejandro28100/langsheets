@@ -59,7 +59,7 @@ function Toolbar() {
                 }
             }}
         >
-            <ButtonGroup alignItems="center" variant="ghost" colorScheme="blue" spacing="1">
+            <ButtonGroup alignItems="center" variant="ghost" colorScheme="purple" spacing="1">
                 <Menu>
 
                     <Tooltip hasArrow label="Estilos de tipografía" fontSize="md">

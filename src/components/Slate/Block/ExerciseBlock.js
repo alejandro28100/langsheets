@@ -44,15 +44,14 @@ function handleCreateMissingWord(editor, node) {
     toggleMark("missingWord", editor)
 }
 
-const FooterTools = (props) => {
+const Tools = (props) => {
     const editor = useSlate();
     // console.log(props);
     switch (props.exerciseType) {
         case 'missing-word':
             return (
                 <Fragment>
-                    <ToolbarButton colorScheme="blue" type="mark" customOnClick={() => handleCreateMissingWord(editor)} format="missingWord" label="Añadir Palabra faltante" icon={<Icon width="2.5em" as={MissingWordIcon} />} />
-                    <Divider size="lg" />
+                    <ToolbarButton colorScheme="purple" type="mark" customOnClick={() => handleCreateMissingWord(editor)} format="missingWord" label="Añadir Palabra faltante" icon={<Icon width="2.5em" as={MissingWordIcon} />} />
                 </Fragment>
             )
         case 'word-order':
@@ -72,11 +71,11 @@ export const ExerciseBlock = (props) => {
     const isActive = isFocused && isSelected;
 
     return (
-        <Box {...props.attributes} transition="all ease 300ms" position="relative">
+        <Box borderLeft={!isActive && "var(--chakra-colors-purple-600) solid 3px"} pl={!isActive && "2"} {...props.attributes} transition="all ease 300ms" position="relative">
 
             <Collapse in={isActive} animateOpacity contentEditable={false}>
                 {!isReadOnly &&
-                    (<Box w={["full", "full", "auto"]} bg="blue.400" px="4" py="2" color="white">
+                    (<Box borderTopRadius="base" w={["full", "full", "auto"]} bg="purple.500" px="4" py="2" color="white">
                         Actividad: <b> {EXERCISES_TYPES[props.element.exerciseType]} </b>
 
                         <Popover>
@@ -93,11 +92,11 @@ export const ExerciseBlock = (props) => {
 
                     </Box>)
                 }
-                <Box w="full" py="2">
-                    <FooterTools isActive={isActive} exerciseType={props.element.exerciseType} />
+                <Box w="full" py="2" px="4" bg={isActive && "purple.50"}>
+                    <Tools isActive={isActive} exerciseType={props.element.exerciseType} />
                 </Box>
             </Collapse>
-            <Box pt="4" pb="14" >
+            <Box borderBottomRadius="base" py="4" px={isActive && "2"} bg={isActive && "purple.50"} >
                 {props.children}
             </Box>
 

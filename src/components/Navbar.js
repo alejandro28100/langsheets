@@ -23,7 +23,7 @@ function Navbar({ leftActions, rightActions, withIcon, sm }) {
                         sm && <Fragment>
                             <Spacer />
                             <Menu>
-                                <MenuButton colorScheme="blue" variant="ghost" as={Button} children={<Icon as={HiMenuAlt4} />} />
+                                <MenuButton colorScheme="purple" variant="ghost" as={Button} children={<Icon as={HiMenuAlt4} />} />
                                 <MenuList zIndex="dropdown">
                                     {sm}
                                 </MenuList>

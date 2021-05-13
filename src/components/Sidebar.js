@@ -41,7 +41,7 @@ const Sidebar = ({ dispatch, lang, isPublic, isWritingMode }) => {
                 <LanguagePicker {...{ dispatch, lang }} />
                 <PublicSwitch {...{ dispatch, isPublic }} />
                 <Text my="2" fontWeight="medium">
-                    Modo de edición: <Switch ml="4" isChecked={isWritingMode} onChange={() => dispatch({ type: "toggle-writting-mode" })} />
+                    Modo de edición: <Switch colorScheme="purple" ml="4" isChecked={isWritingMode} onChange={() => dispatch({ type: "toggle-writting-mode" })} />
                 </Text>
             </Fragment>
     )

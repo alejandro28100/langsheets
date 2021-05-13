@@ -7,7 +7,7 @@ const PublicSwitch = ({ dispatch, isPublic }) => {
     return (
         <Box my="4">
             <Tooltip label="Si la actividad es pública, será listada en la página global de actividades">
-                <Text my="2" fontWeight="medium">Actividad Pública <Switch ml="4" onChange={(e) => dispatch({ type: "change-worksheet-prop", payload: { property: "isPublic", value: !isPublic } })} isChecked={isPublic} /> </Text>
+                <Text my="2" fontWeight="medium">Actividad Pública <Switch colorScheme="purple" ml="4" onChange={(e) => dispatch({ type: "change-worksheet-prop", payload: { property: "isPublic", value: !isPublic } })} isChecked={isPublic} /> </Text>
             </Tooltip>
         </Box>
     )

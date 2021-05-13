@@ -67,7 +67,7 @@ export const MissingWordEditable = props => {
             color={isPrinting ? "transparent" : ""}
             borderRadius="sm"
             px="1"
-            background="blue.200"
+            background="purple.200"
             {...props.attributes}
             sx={{
                 "@media print": {

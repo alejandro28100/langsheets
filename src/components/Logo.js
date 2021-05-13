@@ -20,8 +20,8 @@ const Logo = ({ withIcon, size }) => {
     const iconSize = getIconSize(size);
     return (
         <Button variant="unstyled" display="flex" as="a" href="/">
-            {withIcon && <Icon mr="2" color="white" {...iconSize} as={LogoIcon} title="LangSheets" />}
-            <Text fontFamily="cursive" fontSize="x-large" fontWeight="semibold" color="blue.500" mr="2">LangSheets</Text>
+            {withIcon && <Icon mr="2" {...iconSize} as={LogoIcon} title="LangSheets" />}
+            <Text fontFamily="cursive" fontSize="x-large" fontWeight="semibold" color="purple.500" mr="2">LangSheets</Text>
         </Button>
     )
 }

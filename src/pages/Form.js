@@ -150,13 +150,13 @@ const Form = () => {
                 }
                 leftActions={
                     <Tooltip label="Regresar">
-                        <IconButton size="lg" icon={<Icon as={IoIosArrowBack} />} variant="ghost" colorScheme="blue" as="a" href="/" />
+                        <IconButton size="lg" icon={<Icon as={IoIosArrowBack} />} variant="ghost" colorScheme="purple" as="a" href="/" />
                     </Tooltip>
                 }
 
                 rightActions={
                     <Fragment>
-                        <ButtonGroup size="lg" variant="ghost" colorScheme="blue" spacing="2">
+                        <ButtonGroup size="lg" variant="ghost" colorScheme="purple" spacing="2">
                             <Tooltip label="Guardar Actividad">
                                 <IconButton onClick={sendToLocalStorage} icon={<Icon as={FaSave} />} />
                             </Tooltip>
