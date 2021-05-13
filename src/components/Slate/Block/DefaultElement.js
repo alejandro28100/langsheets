@@ -18,13 +18,17 @@ const DefaultElement = (props) => {
         const path = ReactEditor.findPath(editor, element);
         const parent = Node.parent(editor, path);
 
+        //If node has no text return an empty paragraph
+        if (!Node.string(element)) {
+            return <Paragraph {...props} />
+        }
+
+
         if (parent.type === "exercise-list-items") {
             const ExerciseBlock = Node.parent(editor, ReactEditor.findPath(editor, parent));
-            switch (ExerciseBlock.exerciseType) {
-                case 'word-order':
-                    return <WordOrderParagraph {...props} />;
-                default:
-                    return <Paragraph {...props} />
+
+            if (ExerciseBlock.exerciseType === 'word-order') {
+                return <WordOrderParagraph {...props} />;
             }
         }
     }
@@ -66,7 +70,7 @@ function getDivisions(string, config) {
     if (withDiagonal.length <= 1) {
         words = string.split(" ");
     }
-    let withIDs = words.map(word => ({ word, id: nanoid() }));
+    let withIDs = words.map(word => ({ word, id: nanoid(), isCorrect: undefined }));
 
     return config.shuffle ? shuffleArray(withIDs) : withIDs;
 
@@ -87,7 +91,7 @@ const WordOrderParagraph = props => {
     const correctAnswers = (getDivisions(textContent, { shuffle: false }));
     const [words, setWords] = useState(getDivisions(textContent, { shuffle: true }));
 
-    console.log(correctAnswers, words);
+    // console.log(correctAnswers, words);
 
     function handleOnDragEnd(result) {
         // `destination` is `undefined` if the item was dropped outside the list
@@ -109,13 +113,13 @@ const WordOrderParagraph = props => {
         <DragDropContext onDragEnd={handleOnDragEnd} >
             <Droppable droppableId="droppable" direction="horizontal">
                 {(provided, snapshot) => (
-                    <Flex flexWrap="wrap" alignItems="center" my="6" p="4" borderRadius="base" border="2px var(--chakra-colors-purple-600) solid"
+                    <Flex flexWrap="wrap" alignItems="center" my="4" p="4" borderRadius="base" border="2px var(--chakra-colors-purple-600) solid"
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                    // className={`${ && 'draggingOver'}`}
+                        className={`${snapshot.isDraggingOver && 'draggingOver'}`}
                     >
                         {words.map(({ word, id }, index) => (
-                            <WordComponent {...{ word, id, index }} />
+                            <WordComponent key={id} {...{ word, id, index }} />
                         ))}
                         {provided.placeholder}
                     </Flex>
@@ -136,9 +140,10 @@ const WordComponent = ({ id, word, index }) => (
                 borderRadius="base"
                 as="span"
                 cursor="move"
-                bg="purple.500"
                 fontWeight="medium"
                 color="white"
+                transition="all ease 300"
+                bg={snapshot.isDragging ? 'purple.600' : 'purple.500'}
                 style={provided.draggableProps.style}
                 ref={provided.innerRef}
                 {...provided.draggableProps}

@@ -16,19 +16,16 @@ const EXERCISES_TYPES = {
 
 const EXERCISES_HELP_TEXT = {
     "word-order": <Fragment>
-        <p>Ayuda</p>
-        <hr />
-        <p>
-            Cada oración debe tener al menos <b> 3 </b> divisiones.
-        </p>
-        <br />
-        <p>
-            Para dividir una oración puedes utilizar una linea digonal ( <code>/</code>)
-        </p>
-        <br />
-        <p>
-            Si ninguna diagonal divide la oración esta será dividida por palabras.
-        </p>
+        <Text fontSize="large" fontWeight="semibold">Ayuda</Text >
+        <Text my="2">
+            Cada oración escrita dentro de este bloque será transformada en un ejercicio.
+        </Text>
+        <Text my="2">
+            Cada oración puede ser dividida usando una diagonal <Text as="kbd" bg="purple.100">/</Text>
+        </Text>
+        <Text my="2">
+            Cada oración que no contenga alguna diagonal será dividida por palabras.
+        </Text>
     </Fragment>
 }
 
@@ -40,7 +37,7 @@ function handleCreateMissingWord(editor, node) {
         return
     }
 
-    //Asign the property missingWord into the selected text in the editor 
+    //Asign the property missingWord into the selected text in the editor
     toggleMark("missingWord", editor)
 }
 
