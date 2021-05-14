@@ -1,20 +1,22 @@
-import { Transforms, Element, Node, Editor, Path } from 'slate';
+import { Transforms, Node, Path } from 'slate';
 
 const withExerciseBlock = (editor) => {
     const { normalizeNode } = editor;
-
+    //NEED TO REWRITE THIS 
     editor.normalizeNode = entry => {
         const [node, path] = entry;
-        //insert a paragraph block below the exercise-block 
-        // to allow user to continue writing outside the exercise - block
-        if (Editor.isBlock(editor, node) && Node.last(editor, path) && node.type === "exercise-block") {
-            Transforms.insertNodes(editor,
-                {
-                    type: "paragraph", children: [{ text: "" }]
-                },
-                { at: Path.next(path) }
-            )
-            return;
+        if (node.type === 'exercise-block') {
+
+            //Add a paragraph below if there's not a block below the exercise block 
+            if (!Node.has(editor, Path.next(path))) {
+                return Transforms.insertNodes(editor, { type: "paragraph", children: [{ text: "" }] }, { at: Path.next(path) });
+            }
+
+            // if (!Node.has(editor, Path.previous(path))) {
+            //     console.log("Paragraph inserted");
+            //     return Transforms.insertNodes(editor, { type: "paragraph", children: [{ text: "" }] }, { at: Path.previous(path) });
+            // }
+
         }
         normalizeNode(entry);
     }
