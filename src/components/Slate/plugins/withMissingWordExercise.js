@@ -1,6 +1,6 @@
 import { Node, Element, Transforms, Path, Editor } from 'slate';
 
-const withMissingWord = (editor) => {
+const withMissingWordExercise = (editor) => {
 
     const { normalizeNode } = editor;
 
@@ -80,4 +80,4 @@ const withMissingWord = (editor) => {
     return editor;
 }
 
-export default withMissingWord;
+export default withMissingWordExercise;

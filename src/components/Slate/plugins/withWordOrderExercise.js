@@ -1,4 +1,4 @@
-import { Node, Element, Transforms, Path, Editor } from 'slate';
+import { Node, Transforms, Editor } from 'slate';
 
 const withWordOrderExercise = (editor) => {
 

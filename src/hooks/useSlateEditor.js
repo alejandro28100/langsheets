@@ -4,14 +4,14 @@ import { withReact } from 'slate-react';
 import { withHistory } from "slate-history";
 
 //slate Custom plugins
-import { withMissingWord, withTextAlignment, withExerciseBlock, withWordOrderExercise } from "../components/Slate/plugins";
+import { withMissingWordExercise, withTextAlignment, withExerciseBlock, withWordOrderExercise } from "../components/Slate/plugins";
 
 function useSlateEditor() {
     const editor = useMemo(() =>
         withTextAlignment(
             withWordOrderExercise(
                 withExerciseBlock(
-                    withMissingWord(
+                    withMissingWordExercise(
                         withHistory(
                             withReact(createEditor())
                         )

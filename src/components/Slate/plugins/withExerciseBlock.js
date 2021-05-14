@@ -2,7 +2,7 @@ import { Transforms, Node, Path } from 'slate';
 
 const withExerciseBlock = (editor) => {
     const { normalizeNode } = editor;
-    //NEED TO REWRITE THIS 
+
     editor.normalizeNode = entry => {
         const [node, path] = entry;
         if (node.type === 'exercise-block') {
