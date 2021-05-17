@@ -230,6 +230,9 @@ const Form = () => {
                             </Box>
                         </GridItem>
                     </Grid>
+                    <pre>
+                        {JSON.stringify(state.worksheet.content, null, 2)}
+                    </pre>
                     <Box display="none" flexDirection="column" alignItems="flex-start" position="fixed" zIndex="banner" bottom="0.5" width="full"
                         sx={{
                             "@media print": {

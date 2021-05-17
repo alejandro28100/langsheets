@@ -1,13 +1,14 @@
 import React, { Fragment } from "react";
 import { useReadOnly, useSelected, useFocused, useSlate } from "slate-react";
-import { Box, Collapse, Divider, Flex, Icon, IconButton, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Text, Tooltip } from "@chakra-ui/react";
+import { Box, Collapse, Flex, Icon, IconButton, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Text } from "@chakra-ui/react";
 import ToolbarButton from "../ToolbarButton";
+import ScoringSection from "../../ScoringSection";
+import { Range } from "slate";
 
 import { toggleMark } from "../../../utils/slate";
 import { shuffleArray } from "../../../utils/objects";
 
 import { MissingWord as MissingWordIcon } from "../../../svgs";
-import { Editor, Node, Range } from "slate";
 import { IoMdHelpCircleOutline } from "react-icons/io";
 
 const EXERCISES_TYPES = {
@@ -17,7 +18,6 @@ const EXERCISES_TYPES = {
 
 const EXERCISES_HELP_TEXT = {
     "word-order": <Fragment>
-        <Text fontSize="large" fontWeight="semibold">Ayuda</Text >
         <Text my="2">
             Cada oración tiene que ser dividida usando diagonales <Text as="kbd" bg="purple.100">/</Text>
         </Text>
@@ -50,7 +50,6 @@ const EXERCISES_HELP_TEXT = {
 
 function handleCreateMissingWord(editor, node) {
     //Make sure there's text selected
-
     if (Range.isCollapsed(editor.selection)) {
         alert("Para crear una palabra faltante , seleciona primero la palabra")
         return
@@ -77,19 +76,6 @@ const Tools = (props) => {
     }
 };
 
-const ExerciseScoring = props => {
-    const editor = useSlate();
-    console.log('render', editor);
-    // // for (const [node, path] of Editor.nodes(editor, { match: (node) => node.missingWord })) {
-    // //     console.log(node);
-    // // }
-    // for (const [node, path] of Editor.nodes(editor)) {
-    //     console.log(node);
-    // }
-
-    return null;
-}
-
 
 export const ExerciseBlock = (props) => {
     const editor = useSlate();
@@ -100,14 +86,13 @@ export const ExerciseBlock = (props) => {
 
     const isActive = isFocused && isSelected && Range.isCollapsed(editor.selection);
 
-
     if (isReadOnly) {
         return (
             <Fragment>
                 <Box {...props.attributes} borderBottomRadius="base" py="4" px={isActive && "2"} bg={isActive && "purple.50"} >
                     {props.children}
                 </Box>
-                {/* <ExerciseScoring {...props} /> */}
+                <ScoringSection {...props} />
             </Fragment>
         )
     }
@@ -125,6 +110,7 @@ export const ExerciseBlock = (props) => {
                             </PopoverTrigger>
                             <PopoverContent>
                                 <PopoverCloseButton />
+                                <PopoverHeader color="black">Ayuda</PopoverHeader>
                                 <PopoverBody color="black">
                                     {EXERCISES_HELP_TEXT[props.element.exerciseType]}
                                 </PopoverBody>

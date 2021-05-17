@@ -5,14 +5,28 @@ import { Input, InputGroup, InputRightElement } from "@chakra-ui/input";
 import Icon from "@chakra-ui/icon";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import { useMediaQuery } from "@chakra-ui/media-query";
+import { useEffect, useState } from "react";
+
+
+const Mark = ({ isCorrect, isChecked, showAnswer }) => {
+    //if the exercises is not checked or the answers are shown render nothing
+    if (!isChecked || showAnswer) return null;
+    //render correct mark
+    if (isCorrect) {
+        return <InputRightElement as="span" children={<Icon as={FaCheck} color="green.400" />} />
+    }
+    //render wrong mark
+    return <InputRightElement as="span" children={<Icon as={FaTimes} color="red.400" />} />
+}
 
 export const MissingWordInput = (props) => {
     const { text: correctAnswer, userAnswer = "", showAnswer = false, isChecked = false, isCorrect = false } = props.leaf;
-
+    // const [userAnswer, setUserAnswer] = useState(answer);
     const editor = useSlate();
 
     function setLeafProps(properties) {
         const path = ReactEditor.findPath(editor, props.text);
+        // console.log(path);
         Transforms.setNodes(editor, properties, { at: path })
     }
 
@@ -32,20 +46,12 @@ export const MissingWordInput = (props) => {
 
     const inputValue = showAnswer ? correctAnswer : userAnswer;
 
-    function renderMark() {
-        //if the exercises is not checked or the answers are shown render nothing
-        if (!isChecked || showAnswer) return null;
-        //render correct mark
-        if (isCorrect) {
-            return <InputRightElement as="span" children={<Icon as={FaCheck} color="green.400" />} />
-        }
-        //render wrong mark
-        return <InputRightElement as="span" children={<Icon as={FaTimes} color="red.400" />} />
-    }
+    return <Input variant="filled" readOnly={isChecked} value={userAnswer} onChange={handleOnChange} />
+
     return (
-        <InputGroup w="32" as="span" display="inline-block">
-            <Input variant="filled" readOnly={isChecked} value={inputValue} onChange={handleOnChange} />
-            { renderMark()}
+        <InputGroup w="32" as="span" display="inline-block" >
+            <Input variant="filled" readOnly={isChecked} value={userAnswer} onChange={handleOnChange} />
+            <Mark {...{ isCorrect, isChecked, showAnswer }} />
         </InputGroup>
     )
 

@@ -34,18 +34,19 @@ const Practice = () => {
     const { id } = useParams();
 
     const editor = useSlateEditor();
+    // console.log(editor.children);
     const [renderLeaf, renderElement] = useSlateRender();
 
     // Keep track of state for the value of the editor.
     const [worksheet, setWorksheet] = useState(defaultValue)
 
-    const [activity, setActivity] = useState({
-        isFinished: false,
-        //user correct answers count
-        correctAnswersCount: 0,
-        //exercises total count
-        itemsCount: 0
-    });
+    // const [activity, setActivity] = useState({
+    //     isFinished: false,
+    //     //user correct answers count
+    //     correctAnswersCount: 0,
+    //     //exercises total count
+    //     itemsCount: 0
+    // });
 
     function handleChangeProp({ propery, value }) {
         setWorksheet(prevValue => {
@@ -54,67 +55,66 @@ const Practice = () => {
     }
 
     useEffect(() => {
-        setWorksheet(getWorksheet(id));
+        setWorksheet(getWorksheet(id).worksheet);
     }, [id])
 
-    useEffect(() => {
-        function getItemsCount() {
-            let itemsCount = 0;
-            // Iterate over every node in the editor and get the missing-word-type nodes
-            for (const [node] of Node.descendants(editor)) {
-                if (node.missingWord === true) {
-                    itemsCount++
-                }
-            }
+    // useEffect(() => {
+    //     function getItemsCount() {
+    //         let itemsCount = 0;
+    //         // Iterate over every node in the editor and get the missing-word-type nodes
+    //         for (const [node] of Node.descendants(editor)) {
+    //             if (node.missingWord === true) {
+    //                 itemsCount++
+    //             }
+    //         }
 
-            return itemsCount;
-        };
-        const itemsCount = getItemsCount();
-        setActivity(prevActivity => ({ ...prevActivity, itemsCount }));
-    }, [worksheet, editor])
+    //         return itemsCount;
+    //     };
+    //     const itemsCount = getItemsCount();
+    //     setActivity(prevActivity => ({ ...prevActivity, itemsCount }));
+    // }, [worksheet, editor])
 
-    function handleCheckExercise() {
-        let correctAnswers = 0;
+    // function handleCheckExercise() {
+    //     let correctAnswers = 0;
 
-        // Iterate over every node in the editor.
-        for (const [node, path] of Node.descendants(editor)) {
-            if (node.isCorrect === true) {
-                correctAnswers++
-            }
-            // set isCheck property to change the styling of the exercises
-            Transforms.setNodes(editor, { isChecked: true }, { at: path })
-        }
+    //     // Iterate over every node in the editor.
+    //     for (const [node, path] of Node.descendants(editor)) {
+    //         if (node.isCorrect === true) {
+    //             correctAnswers++
+    //         }
+    //         // set isCheck property to change the styling of the exercises
+    //         Transforms.setNodes(editor, { isChecked: true }, { at: path })
+    //     }
 
-        setActivity(prevActivity => ({ ...prevActivity, isFinished: true, correctAnswersCount: correctAnswers }));
-    }
+    //     setActivity(prevActivity => ({ ...prevActivity, isFinished: true, correctAnswersCount: correctAnswers }));
+    // }
 
-    function handleShowAnswers() {
-        // Iterate over every node in the editor.
-        for (const [node, path] of Node.descendants(editor)) {
-            if (node.missingWord === true) {
-                // set showAnswer property to show the answers
-                Transforms.setNodes(editor, { showAnswer: true }, { at: path })
-            }
-        }
+    // function handleShowAnswers() {
+    //     // Iterate over every node in the editor.
+    //     for (const [node, path] of Node.descendants(editor)) {
+    //         if (node.missingWord === true) {
+    //             // set showAnswer property to show the answers
+    //             Transforms.setNodes(editor, { showAnswer: true }, { at: path })
+    //         }
+    //     }
+    // }
 
-    }
 
+    // function getScorePercentage() {
+    //     //Use math abs to avoid returning values with 0s as decimals 
+    //     // 70.00 will be turn into => 70
+    //     return Math.abs(
+    //         ((activity.correctAnswersCount * 100) / activity.itemsCount)
+    //             .toFixed(2)
+    //     );
+    // }
 
-    function getScorePercentage() {
-        //Use math abs to avoid returning values with 0s as decimals 
-        // 70.00 will be turn into => 70
-        return Math.abs(
-            ((activity.correctAnswersCount * 100) / activity.itemsCount)
-                .toFixed(2)
-        );
-    }
-
-    function getScoreString() {
-        const isResultSingular = activity.correctAnswersCount === 1;
-        return `${activity.correctAnswersCount} ${isResultSingular ? "ejercicio correcto" : "ejercicios correctos"} de ${activity.itemsCount}`
-    }
+    // function getScoreString() {
+    //     const isResultSingular = activity.correctAnswersCount === 1;
+    //     return `${activity.correctAnswersCount} ${isResultSingular ? "ejercicio correcto" : "ejercicios correctos"} de ${activity.itemsCount}`
+    // }
     //Check whether a worksheet has only content or includes exercises
-    const hasExercises = activity.itemsCount > 0;
+    // const hasExercises = activity.itemsCount > 0;
 
     //Set a custom background color
     useBodyBackground("var(--chakra-colors-gray-100)");
@@ -125,7 +125,7 @@ const Practice = () => {
             <Navbar />
             <Box >
 
-                <Text background="blue.400" textAlign="center" color="white" width="full" mt="4" px="4" py="6" fontSize={["4xl", "4xl", "5xl"]} fontWeight="bold" >{worksheet.title}</Text>
+                <Text background="purple.400" textAlign="center" color="white" width="full" mt="4" px="4" py="6" fontSize={["4xl", "4xl", "5xl"]} fontWeight="bold" >{worksheet.title}</Text>
 
                 < Container maxWidth="container.lg" my="4" >
                     <Slate
@@ -136,11 +136,11 @@ const Practice = () => {
                         }}
                     >
                         <Box background="white" px={["8", "16"]} py="16" as={Editable} shadow="sm"
-                            {...{ renderElement, renderLeaf, readOnly: true, style: { textAlign: "left" } }}
+                            {...{ renderElement, renderLeaf, readOnly: true }}
                         />
                     </Slate>
                 </Container>
-
+                {/* 
                 {
                     hasExercises &&
                     <ExercisesSection {...{
@@ -151,7 +151,7 @@ const Practice = () => {
                         handleShowAnswers
                     }} />
 
-                }
+                } */}
             </Box >
         </Fragment>
     )
