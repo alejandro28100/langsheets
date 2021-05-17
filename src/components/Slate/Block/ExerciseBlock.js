@@ -1,12 +1,13 @@
 import React, { Fragment } from "react";
 import { useReadOnly, useSelected, useFocused, useSlate } from "slate-react";
-import { Box, Collapse, Divider, Icon, IconButton, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Text, Tooltip } from "@chakra-ui/react";
+import { Box, Collapse, Divider, Flex, Icon, IconButton, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Text, Tooltip } from "@chakra-ui/react";
 import ToolbarButton from "../ToolbarButton";
 
 import { toggleMark } from "../../../utils/slate";
+import { shuffleArray } from "../../../utils/objects";
 
 import { MissingWord as MissingWordIcon } from "../../../svgs";
-import { Range } from "slate";
+import { Editor, Node, Range } from "slate";
 import { IoMdHelpCircleOutline } from "react-icons/io";
 
 const EXERCISES_TYPES = {
@@ -18,14 +19,32 @@ const EXERCISES_HELP_TEXT = {
     "word-order": <Fragment>
         <Text fontSize="large" fontWeight="semibold">Ayuda</Text >
         <Text my="2">
-            Cada oración escrita dentro de este bloque será transformada en un ejercicio.
+            Cada oración tiene que ser dividida usando diagonales <Text as="kbd" bg="purple.100">/</Text>
+        </Text>
+        <Text my="2" color="purple.500" fontWeight="semibold">
+            Ejemplo:
         </Text>
         <Text my="2">
-            Cada oración puede ser dividida usando una diagonal <Text as="kbd" bg="purple.100">/</Text>
+            <em>
+                Escribiendo la siguiente oración
+            </em>
+        </Text>
+        <Text my="2" as="samp">
+            Si quieres <Text as="span" color="purple.500" fontSize="x-large">/</Text> cambiar <Text as="span" color="purple.500" fontSize="x-large">/</Text>el mundo, cámbiate<Text as="span" color="purple.500" fontSize="x-large">/</Text> a ti mismo.
         </Text>
         <Text my="2">
-            Cada oración que no contenga alguna diagonal será dividida por palabras.
+            <em>
+                Se creara el siguiente ejercicio :
+            </em>
         </Text>
+        <Flex flexWrap="wrap">
+            {
+                shuffleArray(["Si quieres", "cambiar", "el mundo, cámbiate", "a ti mismo."]).map((word, index) => (
+                    <Text key={`${word}-${index}`} as="span" borderRadius="base" m="1" px="1" py="2" color="white" bg="purple.500">{word}</Text>
+                ))
+            }
+        </Flex>
+
     </Fragment>
 }
 
@@ -58,17 +77,42 @@ const Tools = (props) => {
     }
 };
 
-export const ExerciseBlock = (props) => {
+const ExerciseScoring = props => {
+    const editor = useSlate();
+    console.log('render', editor);
+    // // for (const [node, path] of Editor.nodes(editor, { match: (node) => node.missingWord })) {
+    // //     console.log(node);
+    // // }
+    // for (const [node, path] of Editor.nodes(editor)) {
+    //     console.log(node);
+    // }
 
+    return null;
+}
+
+
+export const ExerciseBlock = (props) => {
+    const editor = useSlate();
     const isReadOnly = useReadOnly();
 
     const isFocused = useFocused();
     const isSelected = useSelected();
 
-    const isActive = isFocused && isSelected;
+    const isActive = isFocused && isSelected && Range.isCollapsed(editor.selection);
 
+
+    if (isReadOnly) {
+        return (
+            <Fragment>
+                <Box {...props.attributes} borderBottomRadius="base" py="4" px={isActive && "2"} bg={isActive && "purple.50"} >
+                    {props.children}
+                </Box>
+                {/* <ExerciseScoring {...props} /> */}
+            </Fragment>
+        )
+    }
     return (
-        <Box borderLeft={!isActive && "var(--chakra-colors-purple-600) solid 3px"} pl={!isActive && "2"} {...props.attributes} transition="all ease 300ms" position="relative">
+        <Box {...props.attributes} borderLeft={(!isActive && !isReadOnly) && "var(--chakra-colors-purple-600) solid 3px"} pl={!isActive && "2"} transition="all ease 300ms" position="relative" >
 
             <Collapse in={isActive} animateOpacity contentEditable={false}>
                 {!isReadOnly &&
@@ -96,7 +140,6 @@ export const ExerciseBlock = (props) => {
             <Box borderBottomRadius="base" py="4" px={isActive && "2"} bg={isActive && "purple.50"} >
                 {props.children}
             </Box>
-
         </Box >
     )
 }

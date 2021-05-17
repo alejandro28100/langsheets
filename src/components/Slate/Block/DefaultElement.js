@@ -1,12 +1,12 @@
-import { Box, Text } from '@chakra-ui/layout';
-import React, { useState } from 'react'
 import { Node } from 'slate';
-import { ReactEditor, useReadOnly, useSlate } from 'slate-react';
+import React, { useState } from 'react'
+import { Text, Flex } from '@chakra-ui/layout';
 
 import { nanoid } from "nanoid";
-import { Flex } from '@chakra-ui/layout';
-
+import { ReactEditor, useReadOnly, useSlate } from 'slate-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+
+import { shuffleArray } from "../../../utils/objects";
 
 const DefaultElement = (props) => {
     const { attributes, element, children } = props;
@@ -14,24 +14,24 @@ const DefaultElement = (props) => {
     const editor = useSlate();
     const isReadOnly = useReadOnly();
 
-    if (isReadOnly) {
-        const path = ReactEditor.findPath(editor, element);
-        const parent = Node.parent(editor, path);
+    // if (isReadOnly) {
+    //     const path = ReactEditor.findPath(editor, element);
+    //     const parent = Node.parent(editor, path);
 
-        //If node has no text return an empty paragraph
-        if (!Node.string(element)) {
-            return <Paragraph {...props} />
-        }
+    //     //If node has no text return an empty paragraph
+    //     if (!Node.string(element)) {
+    //         return <Paragraph {...props} />
+    //     }
 
 
-        if (parent.type === "exercise-list-items") {
-            const ExerciseBlock = Node.parent(editor, ReactEditor.findPath(editor, parent));
+    //     if (parent.type === "exercise-list-items") {
+    //         const ExerciseBlock = Node.parent(editor, ReactEditor.findPath(editor, parent));
 
-            if (ExerciseBlock.exerciseType === 'word-order') {
-                return <WordOrderParagraph {...props} />;
-            }
-        }
-    }
+    //         if (ExerciseBlock.exerciseType === 'word-order') {
+    //             return <WordOrderParagraph {...props} />;
+    //         }
+    //     }
+    // }
     return <Paragraph {...props} />
 }
 
@@ -44,24 +44,6 @@ const Paragraph = ({ attributes, element, children }) => {
     )
 }
 
-function shuffleArray(array) {
-    let currentIndex = array.length, temporaryValue, randomIndex;
-
-    // While there remain elements to shuffle...
-    while (0 !== currentIndex) {
-
-        // Pick a remaining element...
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex -= 1;
-
-        // And swap it with the current element.
-        temporaryValue = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temporaryValue;
-    }
-
-    return array;
-}
 
 function getDivisions(string, config) {
     let words;
