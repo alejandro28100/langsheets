@@ -5,7 +5,6 @@ import { Input, InputGroup, InputRightElement } from "@chakra-ui/input";
 import Icon from "@chakra-ui/icon";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import { useMediaQuery } from "@chakra-ui/media-query";
-import { useEffect, useState } from "react";
 import { getExerciseBlockProps } from "../../../utils/exerciseBlocks";
 
 

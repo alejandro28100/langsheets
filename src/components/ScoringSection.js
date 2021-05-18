@@ -1,33 +1,10 @@
 import { Button, ButtonGroup } from '@chakra-ui/button';
-import React, { Fragment, useState } from 'react'
-import { Editor, Node, Transforms } from 'slate';
+import React, { Fragment } from 'react'
+import { Transforms } from 'slate';
 import { ReactEditor, useSlate } from 'slate-react';
 
 const ScoringSection = (props) => {
-    const editor = useSlate();
 
-    function getScore() {
-        let totalItemsCount = 0;
-        let totalCorrectAnswersCount = 0
-        for (const [node] of Editor.nodes(editor, { match: (node) => node.type === "word-order-exercise-paragraph", at: [] })) {
-            totalCorrectAnswersCount += getAnswers(node.userAnswers);
-            totalItemsCount += Node.string(node).split("/").length;
-        }
-
-        return [totalCorrectAnswersCount, totalItemsCount];
-    }
-
-    function getAnswers(userAnswers) {
-        if (!userAnswers) return 0;
-        let correctAnswersCount = 0;
-        userAnswers.forEach(({ isCorrect }) => {
-            if (isCorrect)
-                correctAnswersCount++
-        });
-        return correctAnswersCount
-    }
-
-    // const [totalCorrectAnswers, totalItems] = getScore();
     return (
         <Fragment>
             <ButtonsSection {...props} />

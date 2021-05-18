@@ -8,7 +8,7 @@ import Sidebar from "../components/Sidebar";
 import Toolbar from "../components/Slate/Toolbar";
 import WorksheetTitle from "../components/WorksheetTitle";
 
-import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Switch, Alert, AlertIcon, Button } from "@chakra-ui/react";
+import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Alert, AlertIcon } from "@chakra-ui/react";
 
 import { IoIosArrowBack, IoMdPrint } from "react-icons/io"
 import { FaSave, FaChalkboardTeacher } from "react-icons/fa";
@@ -230,9 +230,9 @@ const Form = () => {
                             </Box>
                         </GridItem>
                     </Grid>
-                    <pre>
+                    {/* <pre>
                         {JSON.stringify(state.worksheet.content, null, 2)}
-                    </pre>
+                    </pre> */}
                     <Box display="none" flexDirection="column" alignItems="flex-start" position="fixed" zIndex="banner" bottom="0.5" width="full"
                         sx={{
                             "@media print": {

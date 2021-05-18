@@ -1,7 +1,7 @@
 import { Fragment } from "react";
-import { Editor, Node, Operation, Path, Point, Transforms } from "slate";
+import { Node, Transforms } from "slate";
 import { ReactEditor, useSlate } from "slate-react";
-import { Icon, Text, Box, Menu, MenuButton, MenuList, ButtonGroup, Button, Tooltip, useMediaQuery, MenuItem, IconButton } from "@chakra-ui/react";
+import { Icon, Text, Box, Menu, MenuButton, MenuList, ButtonGroup, Button, Tooltip, useMediaQuery, MenuItem } from "@chakra-ui/react";
 import ToolbarButton from "./ToolbarButton";
 
 import { HiViewGridAdd } from "react-icons/hi";
