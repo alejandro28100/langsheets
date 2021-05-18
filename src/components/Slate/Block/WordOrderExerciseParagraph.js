@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { ReactEditor, useReadOnly, useSlate } from 'slate-react';
 
@@ -24,8 +24,9 @@ const WordOrderPractice = props => {
     const { showAnswers, checkExercise } = getExerciseBlockProps(editor, path)
 
     const textContent = Node.string(element);
-
-    const { userAnswers = getDivisions(textContent, { shuffle: true }) } = element;
+    //save the shuffled words in a ref to prevent them from being shuffled on each render
+    const userAnswersRef = useRef(getDivisions(textContent, { shuffle: true }));
+    const { userAnswers = userAnswersRef.current } = element;
 
     const correctAnswers = getDivisions(textContent, { shuffle: false });
 

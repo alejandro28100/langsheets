@@ -1,9 +1,9 @@
 import React, { Fragment } from "react";
 import { useReadOnly, useSelected, useFocused, useSlate } from "slate-react";
-import { Box, Collapse, Flex, Icon, IconButton, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Text } from "@chakra-ui/react";
+import { Box, Collapse, Flex, Icon, IconButton, Input, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Text } from "@chakra-ui/react";
 import ToolbarButton from "../ToolbarButton";
 import ScoringSection from "../../ScoringSection";
-import { Range } from "slate";
+import { Editor, Range } from "slate";
 
 import { toggleMark } from "../../../utils/slate";
 import { shuffleArray } from "../../../utils/objects";
@@ -17,6 +17,39 @@ const EXERCISES_TYPES = {
 }
 
 const EXERCISES_HELP_TEXT = {
+    "missing-word": <Fragment>
+        <Text my="2">
+            Cada oración puede contener una o múltiple palabras faltantes.
+        </Text>
+        <Text my="2">
+            Para añadir una palabra faltante seleccione la palabra(s) y presione el boton de añadir palabra faltante. <Icon color="purple.500" w="2.5em" as={MissingWordIcon} />
+        </Text>
+
+        <Text my="2">
+            Cada palabra faltante lucirá con un fondo de color púrpura.
+        </Text>
+
+        <Text my="2" color="purple.500" fontWeight="semibold">
+            Ejemplo:
+    </Text>
+        <Text my="2">
+            <em>
+                Escribiendo la siguiente oración
+        </em>
+        </Text>
+        <Text my="2" as="samp">
+            Si quieres cambiar el <Text px="2" as="span" bg="purple.200" borderRadius="base" >mundo</Text>, cámbiate a ti mismo.
+    </Text>
+        <Text my="2">
+            <em>
+                Se creara el siguiente ejercicio :
+        </em>
+        </Text>
+        <Flex alignItems="center" flexWrap="wrap">
+            Si quieres cambiar el <Input w="24" bg="gray.100" />, cámbiate a ti mismo.
+    </Flex>
+
+    </Fragment>,
     "word-order": <Fragment>
         <Text my="2">
             Cada oración tiene que ser dividida usando diagonales <Text as="kbd" bg="purple.100">/</Text>
@@ -44,7 +77,6 @@ const EXERCISES_HELP_TEXT = {
                 ))
             }
         </Flex>
-
     </Fragment>
 }
 
@@ -84,7 +116,24 @@ export const ExerciseBlock = (props) => {
     const isFocused = useFocused();
     const isSelected = useSelected();
 
-    const isActive = isFocused && isSelected && Range.isCollapsed(editor.selection);
+    function isActive() {
+        if (isFocused && isSelected) {
+            if (editor.selection) {
+                if (Range.isExpanded(editor.selection)) {
+                    const [element] = Editor.fragment(editor, editor.selection);
+                    if (element.exerciseType === "missing-word") {
+                        return true;
+                    }
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+
+            return true;
+        }
+        return false;
+    }
 
     if (isReadOnly) {
         return (
@@ -99,23 +148,27 @@ export const ExerciseBlock = (props) => {
     return (
         <Box {...props.attributes} borderLeft={(!isActive && !isReadOnly) && "var(--chakra-colors-purple-600) solid 3px"} pl={!isActive && "2"} transition="all ease 300ms" position="relative" >
 
-            <Collapse in={isActive} animateOpacity contentEditable={false}>
+            <Collapse in={isActive()} animateOpacity contentEditable={false}>
                 {!isReadOnly &&
                     (<Box borderTopRadius="base" w={["full", "full", "auto"]} bg="purple.500" px="4" py="2" color="white">
                         Actividad: <b> {EXERCISES_TYPES[props.element.exerciseType]} </b>
 
-                        <Popover>
-                            <PopoverTrigger>
-                                <IconButton variant="ghost" colorScheme="white" icon={<Icon as={IoMdHelpCircleOutline} />} />
-                            </PopoverTrigger>
-                            <PopoverContent>
-                                <PopoverCloseButton />
-                                <PopoverHeader color="black">Ayuda</PopoverHeader>
-                                <PopoverBody color="black">
-                                    {EXERCISES_HELP_TEXT[props.element.exerciseType]}
-                                </PopoverBody>
-                            </PopoverContent>
-                        </Popover>
+                        {
+                            !!EXERCISES_HELP_TEXT[props.element.exerciseType] &&
+                            <Popover>
+                                <PopoverTrigger>
+                                    <IconButton variant="ghost" colorScheme="white" icon={<Icon as={IoMdHelpCircleOutline} />} />
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                    <PopoverCloseButton />
+                                    <PopoverHeader color="black">Ayuda</PopoverHeader>
+                                    <PopoverBody color="black">
+                                        {EXERCISES_HELP_TEXT[props.element.exerciseType]}
+                                    </PopoverBody>
+                                </PopoverContent>
+                            </Popover>
+                        }
+
 
                     </Box>)
                 }
