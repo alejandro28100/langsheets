@@ -38,6 +38,12 @@ function reducer(state, action) {
         case ACTIONS.CHANGE_WORKSHEET_PROP: {
             if (!action.payload.property) throw new Error("Prop 'property' is required but is not defined");
 
+            //prevent user from updating content prop when being in preview mode
+            if (action.payload.property === "content" && !state.isWritingMode) {
+                console.log("Cannot update activity state in preview mode");
+                return state;
+            }
+
             const updatedWorksheet = { ...state.worksheet };
             updatedWorksheet[action.payload.property] = action.payload.value;
             // console.log(updatedWorksheet);
