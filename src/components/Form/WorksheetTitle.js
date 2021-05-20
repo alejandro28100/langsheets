@@ -7,7 +7,7 @@ import { Editable, EditablePreview, EditableInput, Box } from "@chakra-ui/react"
 function WorksheetTitle({ title, sendToLocalStorage, dispatch }) {
     const textRef = useRef();
     return (
-        <Box my="4" mx="6"
+        <Box
             onClick={() => textRef.current.focus()}
             sx={{
                 "@media print": {
@@ -16,7 +16,7 @@ function WorksheetTitle({ title, sendToLocalStorage, dispatch }) {
             }}
         >
             <Editable
-                fontSize="2em"
+                fontSize="x-large"
                 required
                 id="title"
                 value={title}

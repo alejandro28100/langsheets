@@ -5,7 +5,7 @@ import { Select, Box, Text } from '@chakra-ui/react';
 const LanguagePicker = ({ dispatch, lang }) => {
     return (
         <Box my="4">
-            <Text my="2" fontWeight="medium">Idioma</Text>
+            <Text my="2">Idioma</Text>
             <Select
                 background="white"
                 required

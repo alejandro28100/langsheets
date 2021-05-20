@@ -3,21 +3,28 @@ import React, { useEffect, Fragment, useReducer } from 'react'
 import { useParams } from "react-router-dom"
 import { Slate, Editable } from "slate-react"
 
-import Navbar from "../components/Navbar";
+import Navbar from "../components/Form/Navbar";
+// import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Toolbar from "../components/Slate/Toolbar";
-import WorksheetTitle from "../components/WorksheetTitle";
+import WorksheetTitle from "../components/Form/WorksheetTitle";
 
-import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Alert, AlertIcon } from "@chakra-ui/react";
+import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Alert, AlertIcon, Flex, Menu, MenuButton, Button, MenuList, Divider, Switch } from "@chakra-ui/react";
 
 import { IoIosArrowBack, IoMdPrint } from "react-icons/io"
-import { FaSave, FaChalkboardTeacher } from "react-icons/fa";
+import { FaSave, FaChalkboardTeacher, FaArrowLeft, FaHeading, FaAlignCenter, FaAlignJustify, FaAlignRight, FaAlignLeft, FaBold, FaIceCream, FaItalic, FaUnderline, FaStrikethrough } from "react-icons/fa";
 import Logo from '../components/Logo';
 
 import { getWorksheet } from "../utils/localStorage";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import useSlateRender from '../hooks/useSlateRender';
 import useSlateEditor from '../hooks/useSlateEditor';
+import ToolbarButton from '../components/Slate/ToolbarButton';
+import { HiViewGrid, HiViewGridAdd } from 'react-icons/hi';
+import { MissingWord as MissingWordIcon } from '../svgs';
+import { AiOutlineProfile } from 'react-icons/ai';
+import LanguagePicker from '../components/LanguagePicker';
+import PublicSwitch from '../components/PublicSwitch';
 
 const ACTIONS = {
     TOGGLE_WRITTING_MODE: "toggle-writting-mode",
@@ -142,116 +149,184 @@ const Form = () => {
         ? `LangSheets | ${state?.worksheet?.title}`
         : "LangSheets";
     useDocumentTitle(title);
+
     const host = window.location.host;
     return (
-        <Fragment>
-            <Navbar
-                sm={
-                    <Fragment>
-                        <MenuItem as="a" href="/" icon={<Icon as={IoIosArrowBack} />}>Regresar</MenuItem>
-                        <MenuItem onClick={sendToLocalStorage} icon={<Icon as={FaSave} />}>Guardar Actividad</MenuItem>
-                        <MenuItem onClick={handlePrint} icon={<Icon as={IoMdPrint} />}>Imprimir Actividad</MenuItem>
-                        <MenuItem as="a" target="_blank" referrerPolicy="no-referrer" href={`/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />}>Visualizar Actividad</MenuItem>
-                    </Fragment>
-                }
-                leftActions={
-                    <Tooltip label="Regresar">
-                        <IconButton size="lg" icon={<Icon as={IoIosArrowBack} />} variant="ghost" colorScheme="purple" as="a" href="/" />
-                    </Tooltip>
-                }
+        <Slate
+            {...{
+                editor,
+                value: state.loading ? [{ children: [{ text: 'Cargando...' }] }] : state.error ? state.error : state.worksheet.content,
+                onChange: newContent => dispatch({ type: "change-worksheet-prop", payload: { property: "content", value: newContent } })
+            }}
+        >
 
-                rightActions={
-                    <Fragment>
-                        <ButtonGroup size="lg" variant="ghost" colorScheme="purple" spacing="2">
-                            <Tooltip label="Guardar Actividad">
-                                <IconButton onClick={sendToLocalStorage} icon={<Icon as={FaSave} />} />
-                            </Tooltip>
-                            <Tooltip label="Imprimir Actividad">
-                                <IconButton onClick={handlePrint} icon={<Icon as={IoMdPrint} />} />
-                            </Tooltip>
+            <Grid h="100vh" templateColumns="repeat(12, 1fr)" templateRows="auto 1fr">
+                <GridItem rowSpan={2} colSpan={1} bg="#05043E" py="10" position="sticky" top="0" zIndex="docked">
+                    <Navbar {...{ handlePrint, id }} />
+                </GridItem>
 
-                            <Tooltip label="Visualizar Actividad">
-                                <IconButton as="a" target="_blank" referrerPolicy="no-referrer" href={`/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />} />
-                            </Tooltip>
-                        </ButtonGroup>
-                    </Fragment>
-                }
-            />
-            {state.loading ? (
-                <p>Cargando...</p>
-            ) : state.error ? (
-                <Box>
-                    <Alert status="error">
-                        <AlertIcon />
-                        {state.error}
-                    </Alert>
-                </Box>
-            ) : (
-                <Fragment>
+                <GridItem rowSpan={1} colSpan={11} >
+                    {!state.loading
+                        ? (
+                            <Grid gridTemplateRows="auto auto auto" gridTemplateColumns="50px 1fr auto" h="full" bg="white">
 
-                    <Grid templateColumns="repeat(12,1fr)" as="form" onSubmit={handleSubmit}>
-                        <GridItem colSpan={[11, 11, 9]}>
+                                <GridItem rowSpan="1" colSpan="1" display="grid" placeItems="center" >
+                                    <Box as="a" href="/" mx="4">
+                                        <Icon as={FaArrowLeft} />
+                                    </Box>
+                                </GridItem>
 
-                            <WorksheetTitle {...{ dispatch, sendToLocalStorage, title: state.worksheet.title }} />
+                                <GridItem rowSpan="1" display="flex" flexDirection="row" alignItems="center">
+                                    <WorksheetTitle {...{ dispatch, sendToLocalStorage, title: state.worksheet.title }} />
+                                </GridItem>
 
-                            <Slate
-                                {...{
-                                    editor,
-                                    value: state.worksheet.content,
-                                    onChange: newContent => dispatch({ type: "change-worksheet-prop", payload: { property: "content", value: newContent } })
-                                }}
-                            >
-                                <Toolbar />
-                                <Box background="gray.100" py={["5", "7"]} px={["5", "14"]}
-                                    sx={{
-                                        "@media print": {
-                                            background: "white",
-                                        }
-                                    }}>
-                                    <Box
-                                        background="white"
-                                        p="5"
-                                        as={Editable}
-                                        {...{
-                                            renderElement,
-                                            renderLeaf,
-                                            readOnly: !state.isWritingMode,
-                                            placeholder: "Escribe aquí...",
-                                            required: true,
-                                        }}
-                                    />
-                                </Box>
-                            </Slate>
+                                <GridItem display="flex" alignItems="center" px="4" colStart={3} rowSpan={2}>
+                                    <ButtonGroup>
+                                        <Button colorScheme="brand" variant="ghost">
+                                            Guardar Borrador
+                                            </Button>
+                                        <Button colorScheme="brand">
+                                            Publicar
+                                            </Button>
+                                    </ButtonGroup>
+                                </GridItem>
 
-                        </GridItem>
-                        <GridItem colSpan={[1, 1, 3]} p={{ md: "5" }} flex="1" justifyContent="center" shadow="md"
-                            sx={{
-                                "@media print": {
-                                    display: "none",
-                                }
-                            }}
-                        >
-                            <Box position="sticky" top="0.5" zIndex="docked">
-                                <Sidebar {...{ dispatch, lang: state.worksheet.lang, isWritingMode: state.isWritingMode, isPublic: state.worksheet.isPublic }} />
-                            </Box>
-                        </GridItem>
-                    </Grid>
-                    {/* <pre>
-                        {JSON.stringify(state.worksheet.content, null, 2)}
-                    </pre> */}
-                    <Box display="none" flexDirection="column" alignItems="flex-start" position="fixed" zIndex="banner" bottom="0.5" width="full"
-                        sx={{
-                            "@media print": {
-                                display: "flex",
-                            }
+                                <GridItem colStart={2} rowSpan="1" display="inline-flex" alignItems="center">
+                                    <Menu>
+                                        <MenuButton>
+                                            Actividad
+                                        </MenuButton>
+                                    </Menu>
+                                    <Menu>
+                                        <MenuButton mx="4">
+                                            Insertar
+                                        </MenuButton>
+                                    </Menu>
+                                    <Menu>
+                                        <MenuButton mx="4">
+                                            Ver
+                                        </MenuButton>
+                                    </Menu>
+                                </GridItem>
+
+                                <GridItem py="2" px="5" colSpan={3} width="full">
+
+                                    <ButtonGroup as={Flex} alignItems="center">
+
+                                        <Menu>
+                                            <Tooltip hasArrow label="Estilos de tipografía" fontSize="md">
+                                                <MenuButton
+                                                    as={Button}
+                                                    aria-label="Estilos de tipografía"
+                                                    variant="ghost"
+                                                >
+                                                    <Icon as={FaHeading} />
+
+                                                </MenuButton>
+                                            </Tooltip>
+
+                                            <MenuList>
+                                                <ToolbarButton variant="menuListItem" type="block" format="heading 4xl" label={<Text fontSize="3xl">Título 1</Text>} />
+                                                <ToolbarButton variant="menuListItem" type="block" format="heading 3xl" label={<Text fontSize="2xl">Título 2</Text>} />
+                                                <ToolbarButton variant="menuListItem" type="block" format="heading 2xl" label={<Text fontSize="xl">Subtítulo 1</Text>} />
+                                                <ToolbarButton variant="menuListItem" type="block" format="heading xl" label={<Text fontSize="lg">Subtítulo 2</Text>} />
+                                                <ToolbarButton variant="menuListItem" type="block" format="" label={<Text fontSize="md">Texto normal</Text>} />
+                                            </MenuList>
+
+                                            <ToolbarButton type="mark" format="bold" label="Negrita" icon={<Icon as={FaBold} />} />
+                                            <ToolbarButton type="mark" format="italic" label="Cursiva" icon={<Icon as={FaItalic} />} />
+                                            <ToolbarButton type="mark" format="underline" label="Subrayado" icon={<Icon as={FaUnderline} />} />
+                                            <ToolbarButton type="mark" format="strike" label="Tachado" icon={<Icon as={FaStrikethrough} />} />
+
+                                            <ToolbarButton type="block" formatKey="textAlign" format="left" label="Alinear a la izquierda" icon={<Icon as={FaAlignLeft} />} />
+                                            <ToolbarButton type="block" formatKey="textAlign" format="center" label="Alinear al centro" icon={<Icon as={FaAlignCenter} />} />
+                                            <ToolbarButton type="block" formatKey="textAlign" format="right" label="Alinear a la derecha" icon={<Icon as={FaAlignRight} />} />
+                                            <ToolbarButton type="block" formatKey="textAlign" format="justify" label="Justificar" icon={<Icon as={FaAlignJustify} />} />
+
+                                        </Menu>
+
+                                        <Menu>
+                                            <MenuButton as={Button} size="sm" colorScheme="brand" variant="solid">
+                                                <Icon w={5} h={5} mr="2" as={HiViewGridAdd} /> Insertar Ejercicio
+                                                </MenuButton>
+                                            <MenuList>
+                                                <MenuItem icon={<Icon width="2em" as={MissingWordIcon} />}
+                                                // onClick={e => createExercise({ type: "missing-word" })}
+                                                >
+                                                    Palabras faltantes
+                                                    </MenuItem>
+                                                <MenuItem icon={<Icon width="2em" as={AiOutlineProfile} />}
+                                                // onClick={e => createExercise({ type: "word-order" })}
+                                                >
+                                                    Ordernar oraciones
+                                                    </MenuItem>
+                                            </MenuList>
+                                        </Menu>
+                                    </ButtonGroup>
+                                </GridItem>
+                            </Grid>
+                        )
+                        : null
+                    }
+                </GridItem>
+
+                <GridItem rowSpan={1} colSpan={8} p="12" bg="gray.100">
+
+                    <Box
+                        background="white"
+                        p="5"
+                        as={Editable}
+                        {...{
+                            renderElement,
+                            renderLeaf,
+                            readOnly: !state.isWritingMode,
+                            placeholder: "Escribe aquí...",
+                            required: true,
                         }}
-                    >
-                        <Logo size="sm" />
-                        <Text fontSize="smaller"> {host}/worksheets/{id}/practice </Text>
+                    />
+
+                </GridItem>
+
+                <GridItem rowSpan={1} colSpan={3} >
+                    <Divider />
+                    <Box p="4">
+                        <Text fontWeight="semibold" fontSize="lg">Detalles de la actividad</Text>
+                        {
+                            !state.loading &&
+                            <Fragment>
+                                <LanguagePicker {...{ dispatch, lang: state.worksheet.lang }} />
+                                <PublicSwitch {...{ dispatch, isPublic: state.worksheet.isPublic }} />
+
+                            </Fragment>
+                        }
                     </Box>
-                </Fragment>
-            )}
-        </Fragment >
+
+                    <Divider />
+                    <Box p="4">
+                        <Text fontWeight="semibold" fontSize="lg">Ajustes</Text>
+                        <Text my="2" >
+                            Modo de edición: <Switch colorScheme="brand" ml="4" isChecked={state.isWritingMode} onChange={() => dispatch({ type: "toggle-writting-mode" })} />
+                        </Text>
+                    </Box>
+
+                </GridItem>
+            </Grid>
+
+
+            {/* <pre>
+                {state.worksheet && JSON.stringify(state.worksheet.content, null, 2)}
+            </pre> */}
+            <Box display="none" flexDirection="column" alignItems="flex-start" position="fixed" zIndex="banner" bottom="0.5" width="full"
+                sx={{
+                    "@media print": {
+                        display: "flex",
+                    }
+                }}
+            >
+                <Logo size="sm" />
+                <Text fontSize="smaller"> {host}/worksheets/{id}/practice </Text>
+            </Box>
+        </Slate>
     )
 }
 
