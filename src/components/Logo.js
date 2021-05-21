@@ -6,7 +6,7 @@ import { Logo as LogoIcon } from "../svgs"
 const getIconSize = (size) => {
     switch (size) {
         case "sm":
-            return { w: "1.5em,", h: "1.5em" };
+            return { w: "1em,", h: "1em" };
         case "lg":
             return { w: "3em", h: "3m" };
         //Return md values as default
@@ -21,7 +21,7 @@ const Logo = ({ withIcon, size }) => {
     return (
         <Button variant="unstyled" display="flex" as="a" href="/">
             {withIcon && <Icon mr="2" {...iconSize} as={LogoIcon} title="LangSheets" />}
-            <Text fontFamily="cursive" fontSize="x-large" fontWeight="semibold" color="purple.500" mr="2">LangSheets</Text>
+            <Text fontFamily="cursive" fontSize="large" fontWeight="semibold" color="brand.500" mr="2">LangSheets</Text>
         </Button>
     )
 }

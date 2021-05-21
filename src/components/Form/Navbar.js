@@ -9,9 +9,7 @@ import { Logo } from '../../svgs'
 
 
 const Navbar = (props) => {
-    console.log(props);
-    const [isDesktop] = useMediaQuery("(min-width: 768px)");
-
+    const [isDesktop] = useMediaQuery(["(min-width: 768px)"]);
     return (
 
         isDesktop
@@ -22,7 +20,6 @@ const Navbar = (props) => {
                         <Box px="4" variant="unstyled" _focus={{ outline: "none" }} as="a" href="/">
                             <Logo width="70px" />
                         </Box>
-
 
                         <Flex mt="40" flexDirection="column" flexGrow="1" width="full">
 
@@ -71,7 +68,7 @@ const Navbar = (props) => {
                     </Flex>
                 </Fragment>
             )
-            : "Tablet or lower"
+            : null
 
     )
 }

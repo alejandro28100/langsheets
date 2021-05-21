@@ -33,7 +33,7 @@ const ToolbarButton = ({ format, label, type, customOnClick, variant, icon, form
     if (variant === "button") {
         return (
             <Tooltip hasArrow label={label} fontSize="md">
-                <Button {...rest} background={isActive() ? "purple.100" : ""} variant="ghost" onClick={handleClick} >
+                <Button size="sm" {...rest} color={isActive() ? 'brand.500' : '#616161'} background={isActive() ? "brand.100" : ""} variant="ghost" onClick={handleClick} >
                     {icon}
                 </Button>
             </Tooltip >
@@ -41,7 +41,7 @@ const ToolbarButton = ({ format, label, type, customOnClick, variant, icon, form
     };
 
     return (
-        <MenuItem color={isActive() ? "purple.500" : ""} background={isActive() ? "purple.100" : ""} onClick={handleClick} icon={icon} >
+        <MenuItem color={isActive() ? "brand.500" : ""} background={isActive() ? "brand.100" : ""} onClick={handleClick} icon={icon} >
             {label}
         </MenuItem>
     )

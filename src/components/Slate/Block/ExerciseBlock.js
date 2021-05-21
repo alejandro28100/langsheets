@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { useReadOnly, useSelected, useFocused, useSlate } from "slate-react";
-import { Box, Collapse, Flex, Icon, IconButton, Input, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Text } from "@chakra-ui/react";
+import { Box, Collapse, Divider, Flex, Icon, IconButton, Input, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Text } from "@chakra-ui/react";
 import ToolbarButton from "../ToolbarButton";
 import ScoringSection from "../../ScoringSection";
 import { Editor, Range } from "slate";
@@ -22,14 +22,14 @@ const EXERCISES_HELP_TEXT = {
             Cada oración puede contener una o múltiple palabras faltantes.
         </Text>
         <Text my="2">
-            Para añadir una palabra faltante seleccione la palabra(s) y presione el boton de añadir palabra faltante. <Icon color="purple.500" w="2.5em" as={MissingWordIcon} />
+            Para añadir una palabra faltante seleccione la palabra(s) y presione el boton de añadir palabra faltante. <Icon color="brand.500" w="2.5em" as={MissingWordIcon} />
         </Text>
 
         <Text my="2">
             Cada palabra faltante lucirá con un fondo de color púrpura.
         </Text>
 
-        <Text my="2" color="purple.500" fontWeight="semibold">
+        <Text my="2" color="brand.500" fontWeight="semibold">
             Ejemplo:
     </Text>
         <Text my="2">
@@ -38,7 +38,7 @@ const EXERCISES_HELP_TEXT = {
         </em>
         </Text>
         <Text my="2" as="samp">
-            Si quieres cambiar el <Text px="2" as="span" bg="purple.200" borderRadius="base" >mundo</Text>, cámbiate a ti mismo.
+            Si quieres cambiar el <Text px="2" as="span" bg="brand.200" borderRadius="base" >mundo</Text>, cámbiate a ti mismo.
     </Text>
         <Text my="2">
             <em>
@@ -52,9 +52,9 @@ const EXERCISES_HELP_TEXT = {
     </Fragment>,
     "word-order": <Fragment>
         <Text my="2">
-            Cada oración tiene que ser dividida usando diagonales <Text as="kbd" bg="purple.100">/</Text>
+            Cada oración tiene que ser dividida usando diagonales <Text as="kbd" bg="brand.100">/</Text>
         </Text>
-        <Text my="2" color="purple.500" fontWeight="semibold">
+        <Text my="2" color="brand.500" fontWeight="semibold">
             Ejemplo:
         </Text>
         <Text my="2">
@@ -63,7 +63,7 @@ const EXERCISES_HELP_TEXT = {
             </em>
         </Text>
         <Text my="2" as="samp">
-            Si quieres <Text as="span" color="purple.500" fontSize="x-large">/</Text> cambiar <Text as="span" color="purple.500" fontSize="x-large">/</Text>el mundo, cámbiate<Text as="span" color="purple.500" fontSize="x-large">/</Text> a ti mismo.
+            Si quieres <Text as="span" color="brand.500" fontSize="x-large">/</Text> cambiar <Text as="span" color="brand.500" fontSize="x-large">/</Text>el mundo, cámbiate<Text as="span" color="brand.500" fontSize="x-large">/</Text> a ti mismo.
         </Text>
         <Text my="2">
             <em>
@@ -73,7 +73,7 @@ const EXERCISES_HELP_TEXT = {
         <Flex flexWrap="wrap">
             {
                 shuffleArray(["Si quieres", "cambiar", "el mundo, cámbiate", "a ti mismo."]).map((word, index) => (
-                    <Text key={`${word}-${index}`} as="span" borderRadius="base" m="1" px="1" py="2" color="white" bg="purple.500">{word}</Text>
+                    <Text key={`${word}-${index}`} as="span" borderRadius="base" m="1" px="1" py="2" color="white" bg="brand.500">{word}</Text>
                 ))
             }
         </Flex>
@@ -98,7 +98,7 @@ const Tools = (props) => {
         case 'missing-word':
             return (
                 <Fragment>
-                    <ToolbarButton colorScheme="purple" type="mark" customOnClick={() => handleCreateMissingWord(editor)} format="missingWord" label="Añadir Palabra faltante" icon={<Icon width="2.5em" as={MissingWordIcon} />} />
+                    <ToolbarButton colorScheme="brand" type="mark" customOnClick={() => handleCreateMissingWord(editor)} format="missingWord" label="Añadir Palabra faltante" icon={<Icon width="2.5em" as={MissingWordIcon} />} />
                 </Fragment>
             )
         case 'word-order':
@@ -138,7 +138,7 @@ export const ExerciseBlock = (props) => {
     if (isReadOnly) {
         return (
             <Fragment>
-                <Box {...props.attributes} borderBottomRadius="base" py="4" px={isActive && "2"} bg={isActive && "purple.50"} >
+                <Box {...props.attributes} borderBottomRadius="base" py="4" >
                     {props.children}
                 </Box>
                 <ScoringSection {...props} />
@@ -146,11 +146,11 @@ export const ExerciseBlock = (props) => {
         )
     }
     return (
-        <Box {...props.attributes} borderLeft={(!isActive && !isReadOnly) && "var(--chakra-colors-purple-600) solid 3px"} pl={!isActive && "2"} transition="all ease 300ms" position="relative" >
+        <Box borderRadius="5px" border={`${isActive() ? "var(--chakra-colors-brand-100)" : "transparent"} 1px solid`} {...props.attributes} transition="all ease 300ms" position="relative"  >
 
             <Collapse in={isActive()} animateOpacity contentEditable={false}>
                 {!isReadOnly &&
-                    (<Box borderTopRadius="base" w={["full", "full", "auto"]} bg="purple.500" px="4" py="2" color="white">
+                    (<Box borderTopRadius="base" w={["full", "full", "auto"]} bg="brand.400" px="4" py="2" color="white">
                         Actividad: <b> {EXERCISES_TYPES[props.element.exerciseType]} </b>
 
                         {
@@ -172,11 +172,11 @@ export const ExerciseBlock = (props) => {
 
                     </Box>)
                 }
-                <Box w="full" py="2" px="4" bg={isActive && "purple.50"}>
-                    <Tools isActive={isActive} exerciseType={props.element.exerciseType} />
+                <Box w="full" py="2" px="4" >
+                    <Tools isActive={isActive()} exerciseType={props.element.exerciseType} />
                 </Box>
             </Collapse>
-            <Box borderBottomRadius="base" py="4" px={isActive && "2"} bg={isActive && "purple.50"} >
+            <Box borderBottomRadius="base" py="4" px={isActive() && "2"}  >
                 {props.children}
             </Box>
         </Box >
@@ -185,9 +185,9 @@ export const ExerciseBlock = (props) => {
 
 export const ExerciseList = (props) => {
     return (
-        <div {...props.attributes}>
+        <Box {...props.attributes}>
             {props.children}
-        </div>
+        </Box>
     )
 }
 

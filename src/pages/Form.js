@@ -1,5 +1,5 @@
 // @refresh reset
-import React, { useEffect, Fragment, useReducer } from 'react'
+import React, { useEffect, Fragment, useReducer, forwardRef } from 'react'
 import { useParams } from "react-router-dom"
 import { Slate, Editable } from "slate-react"
 
@@ -9,22 +9,30 @@ import Sidebar from "../components/Sidebar";
 import Toolbar from "../components/Slate/Toolbar";
 import WorksheetTitle from "../components/Form/WorksheetTitle";
 
-import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Alert, AlertIcon, Flex, Menu, MenuButton, Button, MenuList, Divider, Switch } from "@chakra-ui/react";
+import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Alert, AlertIcon, Flex, Menu, MenuButton, Button, MenuList, Divider, Switch, AlertTitle, AlertDescription, Portal, MenuGroup, useMediaQuery, Slide } from "@chakra-ui/react";
 
-import { IoIosArrowBack, IoMdPrint } from "react-icons/io"
-import { FaSave, FaChalkboardTeacher, FaArrowLeft, FaHeading, FaAlignCenter, FaAlignJustify, FaAlignRight, FaAlignLeft, FaBold, FaIceCream, FaItalic, FaUnderline, FaStrikethrough } from "react-icons/fa";
-import Logo from '../components/Logo';
-
-import { getWorksheet } from "../utils/localStorage";
-import useDocumentTitle from "../hooks/useDocumentTitle";
-import useSlateRender from '../hooks/useSlateRender';
-import useSlateEditor from '../hooks/useSlateEditor';
-import ToolbarButton from '../components/Slate/ToolbarButton';
-import { HiViewGrid, HiViewGridAdd } from 'react-icons/hi';
-import { MissingWord as MissingWordIcon } from '../svgs';
-import { AiOutlineProfile } from 'react-icons/ai';
 import LanguagePicker from '../components/LanguagePicker';
 import PublicSwitch from '../components/PublicSwitch';
+import Logo from '../components/Logo';
+
+import { FaArrowLeft, FaFileUpload, FaHeading, FaAlignCenter, FaAlignJustify, FaAlignRight, FaAlignLeft, FaBold, FaIceCream, FaItalic, FaUnderline, FaStrikethrough, FaChalkboardTeacher, FaPrint, FaHome, FaChevronUp, FaKeyboard, FaRegKeyboard } from "react-icons/fa";
+import { HiDotsVertical, HiViewGridAdd } from 'react-icons/hi';
+import { AiOutlineProfile } from 'react-icons/ai';
+import { RiDraftFill } from "react-icons/ri";
+import { MdDrafts, MdKeyboardHide } from "react-icons/md";
+
+import { createExercise } from '../components/Slate/commands';
+import { getWorksheet } from "../utils/localStorage";
+import useSlateEditor from '../hooks/useSlateEditor';
+import useSlateRender from '../hooks/useSlateRender';
+
+import useDocumentTitle from "../hooks/useDocumentTitle";
+import ToolbarButton from '../components/Slate/ToolbarButton';
+import { MissingWord as MissingWordIcon } from '../svgs';
+import { Editor, Transforms } from 'slate';
+
+
+
 
 const ACTIONS = {
     TOGGLE_WRITTING_MODE: "toggle-writting-mode",
@@ -83,6 +91,41 @@ const initialValue = {
     loading: true,
     error: "",
     worksheet: undefined,
+}
+
+function handleOpenFullscreen() {
+    const isFullscreen = document.fullscreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement;
+    if (isFullscreen) return;
+
+    let screen = document.documentElement;
+
+    if (screen.requestFullscreen) {
+        screen.requestFullscreen();
+    } else if (screen.mozRequestFullScreen) { /*Firefox*/
+        screen.mozRequestFullScreen();
+    } else if (screen.webkitRequestFullscreen) { /* Safari */
+        screen.webkitRequestFullscreen();
+    } else if (screen.msRequestFullscreen) { /* IE11 */
+        screen.msRequestFullscreen();
+    }
+}
+
+
+
+function handleCloseFullscreen() {
+    const isFullscreen = document.fullscreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement;
+
+    if (!isFullscreen) return;
+
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) { /*Firefox */
+        document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) { /* Safari */
+        document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) { /* IE11 */
+        document.msExitFullscreen();
+    }
 }
 
 const Form = () => {
@@ -151,182 +194,361 @@ const Form = () => {
     useDocumentTitle(title);
 
     const host = window.location.host;
+
+    const [isDesktop] = useMediaQuery("(min-width: 1024px)")
+
+
+    function handleHideKeyboard() {
+        // console.log("Blur editor");
+        Transforms.deselect(editor);
+    }
     return (
-        <Slate
-            {...{
-                editor,
-                value: state.loading ? [{ children: [{ text: 'Cargando...' }] }] : state.error ? state.error : state.worksheet.content,
-                onChange: newContent => dispatch({ type: "change-worksheet-prop", payload: { property: "content", value: newContent } })
-            }}
-        >
+        state.loading
+            ? 'Cargando'
+            : state.error
+                ? (
 
-            <Grid h="100vh" templateColumns="repeat(12, 1fr)" templateRows="auto 1fr">
-                <GridItem rowSpan={2} colSpan={1} bg="#05043E" py="10" position="sticky" top="0" zIndex="docked">
-                    <Navbar {...{ handlePrint, id }} />
-                </GridItem>
-
-                <GridItem rowSpan={1} colSpan={11} >
-                    {!state.loading
-                        ? (
-                            <Grid gridTemplateRows="auto auto auto" gridTemplateColumns="50px 1fr auto" h="full" bg="white">
-
-                                <GridItem rowSpan="1" colSpan="1" display="grid" placeItems="center" >
-                                    <Box as="a" href="/" mx="4">
-                                        <Icon as={FaArrowLeft} />
-                                    </Box>
-                                </GridItem>
-
-                                <GridItem rowSpan="1" display="flex" flexDirection="row" alignItems="center">
-                                    <WorksheetTitle {...{ dispatch, sendToLocalStorage, title: state.worksheet.title }} />
-                                </GridItem>
-
-                                <GridItem display="flex" alignItems="center" px="4" colStart={3} rowSpan={2}>
-                                    <ButtonGroup>
-                                        <Button colorScheme="brand" variant="ghost">
-                                            Guardar Borrador
-                                            </Button>
-                                        <Button colorScheme="brand">
-                                            Publicar
-                                            </Button>
-                                    </ButtonGroup>
-                                </GridItem>
-
-                                <GridItem colStart={2} rowSpan="1" display="inline-flex" alignItems="center">
-                                    <Menu>
-                                        <MenuButton>
-                                            Actividad
-                                        </MenuButton>
-                                    </Menu>
-                                    <Menu>
-                                        <MenuButton mx="4">
-                                            Insertar
-                                        </MenuButton>
-                                    </Menu>
-                                    <Menu>
-                                        <MenuButton mx="4">
-                                            Ver
-                                        </MenuButton>
-                                    </Menu>
-                                </GridItem>
-
-                                <GridItem py="2" px="5" colSpan={3} width="full">
-
-                                    <ButtonGroup as={Flex} alignItems="center">
-
-                                        <Menu>
-                                            <Tooltip hasArrow label="Estilos de tipografía" fontSize="md">
-                                                <MenuButton
-                                                    as={Button}
-                                                    aria-label="Estilos de tipografía"
-                                                    variant="ghost"
-                                                >
-                                                    <Icon as={FaHeading} />
-
-                                                </MenuButton>
-                                            </Tooltip>
-
-                                            <MenuList>
-                                                <ToolbarButton variant="menuListItem" type="block" format="heading 4xl" label={<Text fontSize="3xl">Título 1</Text>} />
-                                                <ToolbarButton variant="menuListItem" type="block" format="heading 3xl" label={<Text fontSize="2xl">Título 2</Text>} />
-                                                <ToolbarButton variant="menuListItem" type="block" format="heading 2xl" label={<Text fontSize="xl">Subtítulo 1</Text>} />
-                                                <ToolbarButton variant="menuListItem" type="block" format="heading xl" label={<Text fontSize="lg">Subtítulo 2</Text>} />
-                                                <ToolbarButton variant="menuListItem" type="block" format="" label={<Text fontSize="md">Texto normal</Text>} />
-                                            </MenuList>
-
-                                            <ToolbarButton type="mark" format="bold" label="Negrita" icon={<Icon as={FaBold} />} />
-                                            <ToolbarButton type="mark" format="italic" label="Cursiva" icon={<Icon as={FaItalic} />} />
-                                            <ToolbarButton type="mark" format="underline" label="Subrayado" icon={<Icon as={FaUnderline} />} />
-                                            <ToolbarButton type="mark" format="strike" label="Tachado" icon={<Icon as={FaStrikethrough} />} />
-
-                                            <ToolbarButton type="block" formatKey="textAlign" format="left" label="Alinear a la izquierda" icon={<Icon as={FaAlignLeft} />} />
-                                            <ToolbarButton type="block" formatKey="textAlign" format="center" label="Alinear al centro" icon={<Icon as={FaAlignCenter} />} />
-                                            <ToolbarButton type="block" formatKey="textAlign" format="right" label="Alinear a la derecha" icon={<Icon as={FaAlignRight} />} />
-                                            <ToolbarButton type="block" formatKey="textAlign" format="justify" label="Justificar" icon={<Icon as={FaAlignJustify} />} />
-
-                                        </Menu>
-
-                                        <Menu>
-                                            <MenuButton as={Button} size="sm" colorScheme="brand" variant="solid">
-                                                <Icon w={5} h={5} mr="2" as={HiViewGridAdd} /> Insertar Ejercicio
-                                                </MenuButton>
-                                            <MenuList>
-                                                <MenuItem icon={<Icon width="2em" as={MissingWordIcon} />}
-                                                // onClick={e => createExercise({ type: "missing-word" })}
-                                                >
-                                                    Palabras faltantes
-                                                    </MenuItem>
-                                                <MenuItem icon={<Icon width="2em" as={AiOutlineProfile} />}
-                                                // onClick={e => createExercise({ type: "word-order" })}
-                                                >
-                                                    Ordernar oraciones
-                                                    </MenuItem>
-                                            </MenuList>
-                                        </Menu>
-                                    </ButtonGroup>
-                                </GridItem>
-                            </Grid>
-                        )
-                        : null
-                    }
-                </GridItem>
-
-                <GridItem rowSpan={1} colSpan={8} p="12" bg="gray.100">
-
-                    <Box
-                        background="white"
-                        p="5"
-                        as={Editable}
+                    <Alert status="error">
+                        <AlertIcon />
+                        <AlertTitle mr={2}>Algo salió mal!</AlertTitle>
+                        <AlertDescription>{state.error}</AlertDescription>
+                    </Alert>
+                )
+                : (
+                    <Slate
                         {...{
-                            renderElement,
-                            renderLeaf,
-                            readOnly: !state.isWritingMode,
-                            placeholder: "Escribe aquí...",
-                            required: true,
+                            editor,
+                            value: state.loading ? [{ children: [{ text: 'Cargando...' }] }] : state.error ? state.error : state.worksheet.content,
+                            onChange: newContent => dispatch({ type: "change-worksheet-prop", payload: { property: "content", value: newContent } })
                         }}
-                    />
+                    >
 
-                </GridItem>
+                        { isDesktop
+                            ? (
 
-                <GridItem rowSpan={1} colSpan={3} >
-                    <Divider />
-                    <Box p="4">
-                        <Text fontWeight="semibold" fontSize="lg">Detalles de la actividad</Text>
-                        {
-                            !state.loading &&
-                            <Fragment>
-                                <LanguagePicker {...{ dispatch, lang: state.worksheet.lang }} />
-                                <PublicSwitch {...{ dispatch, isPublic: state.worksheet.isPublic }} />
+                                <Grid h="100vh" templateColumns="repeat(12, 1fr)" templateRows="auto 1fr">
 
-                            </Fragment>
+                                    <GridItem rowSpan={2} colSpan={1} bg="#05043E" py="10" position="sticky" top="0" zIndex="docked" sx={{
+                                        "@media print": {
+                                            display: "none",
+                                        }
+                                    }}>
+                                        <Navbar {...{ handlePrint, id }} />
+                                    </GridItem>
+
+                                    <GridItem rowSpan={1} colSpan={11} sx={{
+                                        "@media print": {
+                                            display: "none",
+                                        }
+                                    }} >
+                                        <Grid gridTemplateRows="auto auto auto" gridTemplateColumns="50px 1fr auto" h="full" bg="white">
+
+                                            <GridItem rowSpan="1" colSpan="1" display="grid" placeItems="center" >
+                                                <Box as="a" href="/" mx="4">
+                                                    <Icon as={FaArrowLeft} />
+                                                </Box>
+                                            </GridItem>
+
+                                            <GridItem rowSpan="1" display="flex" flexDirection="row" alignItems="center">
+                                                <WorksheetTitle {...{ dispatch, sendToLocalStorage, title: state.worksheet.title }} />
+                                            </GridItem>
+
+                                            <GridItem display="flex" alignItems="center" px="4" colStart={3} rowSpan={2}>
+                                                <ButtonGroup>
+                                                    <Button colorScheme="brand" variant="ghost">
+                                                        Guardar Borrador
+                                        </Button>
+                                                    <Button colorScheme="brand">
+                                                        Publicar
+                                        </Button>
+                                                </ButtonGroup>
+                                            </GridItem>
+
+                                            <GridItem py="2" colStart={2} rowSpan="1" display="inline-flex" alignItems="center">
+                                                <Menu>
+                                                    <MenuButton> Actividad </MenuButton>
+                                                    <MenuList>
+                                                        <MenuItem onClick={sendToLocalStorage}>Guardar Borrador</MenuItem>
+                                                        <MenuItem >Publicar Actividad</MenuItem>
+                                                        <MenuItem onClick={handlePrint}>Imprimir Actividad</MenuItem>
+                                                    </MenuList>
+                                                </Menu>
+                                                <Menu>
+                                                    <MenuButton mx="4">
+                                                        Insertar
+                                        </MenuButton>
+                                                    <MenuList>
+                                                        <MenuGroup title="Ejercicios">
+                                                            <MenuItem onClick={e => createExercise(editor, { type: "missing-word" })}>Palabras Faltantes</MenuItem>
+                                                            <MenuItem onClick={e => createExercise(editor, { type: "word-order" })}>Ordenar Oraciones</MenuItem>
+                                                        </MenuGroup>
+                                                    </MenuList>
+                                                </Menu>
+                                                <Menu>
+                                                    <MenuButton mx="4">
+                                                        Ver
+                                        </MenuButton>
+                                                    <MenuList>
+                                                        <MenuItem onClick={handleOpenFullscreen}>Pantalla completa</MenuItem>
+                                                        <MenuItem onClick={handleCloseFullscreen}>Vista normal</MenuItem>
+                                                    </MenuList>
+                                                </Menu>
+                                            </GridItem>
+                                            <GridItem py="2" px="5" colSpan={3} width="full" borderTop="2px solid var(--chakra-colors-gray-100)">
+
+                                                <ButtonGroup as={Flex} alignItems="center">
+
+                                                    <Menu>
+                                                        <Tooltip hasArrow label="Estilos de tipografía" fontSize="md">
+                                                            <MenuButton
+                                                                as={Button}
+                                                                aria-label="Estilos de tipografía"
+                                                                variant="ghost"
+                                                                color="#616161"
+                                                                size="sm"
+                                                            >
+                                                                <Icon as={FaHeading} />
+
+                                                            </MenuButton>
+                                                        </Tooltip>
+
+                                                        <MenuList>
+                                                            <ToolbarButton variant="menuListItem" type="block" format="heading 4xl" label={<Text fontSize="3xl">Título 1</Text>} />
+                                                            <ToolbarButton variant="menuListItem" type="block" format="heading 3xl" label={<Text fontSize="2xl">Título 2</Text>} />
+                                                            <ToolbarButton variant="menuListItem" type="block" format="heading 2xl" label={<Text fontSize="xl">Subtítulo 1</Text>} />
+                                                            <ToolbarButton variant="menuListItem" type="block" format="heading xl" label={<Text fontSize="lg">Subtítulo 2</Text>} />
+                                                            <ToolbarButton variant="menuListItem" type="block" format="" label={<Text fontSize="md">Texto normal</Text>} />
+                                                        </MenuList>
+                                                    </Menu>
+
+                                                    <ToolbarButton type="mark" format="bold" label="Negrita" icon={<Icon as={FaBold} />} />
+                                                    <ToolbarButton type="mark" format="italic" label="Cursiva" icon={<Icon as={FaItalic} />} />
+                                                    <ToolbarButton type="mark" format="underline" label="Subrayado" icon={<Icon as={FaUnderline} />} />
+                                                    <ToolbarButton type="mark" format="strike" label="Tachado" icon={<Icon as={FaStrikethrough} />} />
+
+                                                    <ToolbarButton type="block" formatKey="textAlign" format="left" label="Alinear a la izquierda" icon={<Icon as={FaAlignLeft} />} />
+                                                    <ToolbarButton type="block" formatKey="textAlign" format="center" label="Alinear al centro" icon={<Icon as={FaAlignCenter} />} />
+                                                    <ToolbarButton type="block" formatKey="textAlign" format="right" label="Alinear a la derecha" icon={<Icon as={FaAlignRight} />} />
+                                                    <ToolbarButton type="block" formatKey="textAlign" format="justify" label="Justificar" icon={<Icon as={FaAlignJustify} />} />
+
+
+
+                                                    <Menu>
+                                                        <MenuButton as={Button} size="sm" colorScheme="brand" variant="solid">
+                                                            <Icon w={5} h={5} mr="2" as={HiViewGridAdd} /> Insertar Ejercicio
+                                                        </MenuButton>
+                                                        <MenuList>
+                                                            <MenuItem icon={<Icon width="2em" as={MissingWordIcon} />}
+                                                                onClick={e => createExercise(editor, { type: "missing-word" })}
+                                                            >
+                                                                Palabras faltantes
+                                                            </MenuItem>
+                                                            <MenuItem icon={<Icon width="2em" as={AiOutlineProfile} />}
+                                                                onClick={e => createExercise(editor, { type: "word-order" })}
+                                                            >
+                                                                Ordernar oraciones
+                                                            </MenuItem>
+                                                        </MenuList>
+                                                    </Menu>
+                                                </ButtonGroup>
+                                            </GridItem>
+                                        </Grid>
+                                    </GridItem>
+
+                                    <GridItem rowSpan={1} colSpan={8} p="12" bg="gray.100" sx={{
+                                        "@media print": {
+                                            gridColumn: "span 12/span 12",
+                                            gridRow: "span 2/span 2"
+                                        }
+                                    }}>
+
+                                        <Box
+                                            background="white"
+                                            p="5"
+                                            as={Editable}
+                                            {...{
+                                                renderElement,
+                                                renderLeaf,
+                                                readOnly: !state.isWritingMode,
+                                                placeholder: "Escribe aquí...",
+                                                required: true,
+                                            }}
+                                        />
+
+                                    </GridItem>
+
+                                    <GridItem rowSpan={1} colSpan={3}
+                                        sx={{
+                                            "@media print": {
+                                                display: "none",
+                                            }
+                                        }}>
+                                        <Divider />
+                                        <Box p="4">
+                                            <Text fontWeight="semibold" fontSize="lg">Detalles de la actividad</Text>
+                                            {
+                                                !state.loading && !state.error &&
+                                                <Fragment>
+                                                    <LanguagePicker {...{ dispatch, lang: state.worksheet.lang }} />
+                                                    <PublicSwitch {...{ dispatch, isPublic: state.worksheet.isPublic }} />
+
+                                                </Fragment>
+                                            }
+                                        </Box>
+
+                                        <Divider />
+                                        <Box p="4">
+                                            <Text fontWeight="semibold" fontSize="lg">Ajustes</Text>
+                                            <Text my="2" >
+                                                Modo de edición: <Switch colorScheme="brand" ml="4" isChecked={state.isWritingMode} onChange={() => dispatch({ type: "toggle-writting-mode" })} />
+                                            </Text>
+                                        </Box>
+
+                                    </GridItem>
+                                </Grid>
+                            )
+                            : (
+                                <Flex flexDir="column" minH="100vh">
+                                    <Flex py="2" px="4" alignItems="center">
+                                        <Box flexGrow="1">
+                                            <WorksheetTitle {...{ dispatch, sendToLocalStorage, title: state.worksheet.title }} />
+                                        </Box>
+
+                                        <Menu>
+                                            <MenuButton variant="ghost" colorScheme="brand" icon={<Icon as={HiDotsVertical} />} as={IconButton} />
+                                            <MenuList>
+                                                <MenuItem onClick={sendToLocalStorage} icon={<Icon color="brand.500" as={RiDraftFill} />} >Guardar Borrador</MenuItem>
+                                                <MenuItem icon={<Icon color="brand.500" as={FaFileUpload} />} >Publicar Actividad</MenuItem>
+                                            </MenuList>
+                                        </Menu>
+
+                                    </Flex>
+                                    <Divider />
+                                    <Box flexGrow="1" bg="gray.100" p="4" boxShadow="base">
+                                        <Box
+                                            background="white"
+                                            p="5"
+                                            as={Editable}
+                                            {...{
+                                                renderElement,
+                                                renderLeaf,
+                                                readOnly: !state.isWritingMode,
+                                                placeholder: "Escribe aquí...",
+                                                required: true,
+                                            }}
+                                        />
+                                    </Box>
+
+                                    {editor.selection && (
+                                        <Slide direction="bottom" in={editor.selection} style={{ zIndex: 100, boxShadow: "var(--chakra-shadows-dark-lg)", }}>
+
+                                            <Flex pr="20vw" w="100vw" color="#616161" bg="white" alignItems="center" height="50px">
+                                                <Flex width="full" height="full" position="relative" overflowX="auto" overflowY="hidden">
+                                                    <Menu>
+                                                        <MenuButton borderRadius="none" height="full" flex="0 0 auto" display="flex" as={Button} variant="solid" colorScheme="brand">
+                                                            <Icon w={5} h={5} mr="2" as={HiViewGridAdd} /> Insertar Ejercicio
+                                                    </MenuButton>
+                                                        <MenuList>
+                                                            <MenuItem icon={<Icon width="2em" as={MissingWordIcon} />}
+                                                                onClick={e => createExercise(editor, { type: "missing-word" })}
+                                                            >
+                                                                Palabras faltantes
+                                                            </MenuItem>
+                                                            <MenuItem icon={<Icon width="2em" as={AiOutlineProfile} />}
+                                                                onClick={e => createExercise(editor, { type: "word-order" })}
+                                                            >
+                                                                Ordernar oraciones
+                                                            </MenuItem>
+                                                        </MenuList>
+                                                    </Menu>
+
+                                                    <Menu>
+                                                        <Tooltip hasArrow label="Estilos de tipografía" fontSize="md">
+                                                            <MenuButton
+                                                                as={IconButton}
+                                                                aria-label="Estilos de tipografía"
+                                                                variant="ghost"
+                                                                color="#616161"
+                                                                size="lg"
+                                                                borderRadius="none"
+                                                                icon={<Icon as={FaHeading} />}
+                                                            />
+                                                        </Tooltip>
+
+                                                        <MenuList>
+                                                            <ToolbarButton borderRadius="none" size="lg" variant="menuListItem" type="block" format="heading 4xl" label={<Text fontSize="3xl">Título 1</Text>} />
+                                                            <ToolbarButton borderRadius="none" size="lg" variant="menuListItem" type="block" format="heading 3xl" label={<Text fontSize="2xl">Título 2</Text>} />
+                                                            <ToolbarButton borderRadius="none" size="lg" variant="menuListItem" type="block" format="heading 2xl" label={<Text fontSize="xl">Subtítulo 1</Text>} />
+                                                            <ToolbarButton borderRadius="none" size="lg" variant="menuListItem" type="block" format="heading xl" label={<Text fontSize="lg">Subtítulo 2</Text>} />
+                                                            <ToolbarButton borderRadius="none" size="lg" variant="menuListItem" type="block" format="" label={<Text fontSize="lg">Texto normal</Text>} />
+                                                        </MenuList>
+                                                    </Menu>
+
+                                                    <ToolbarButton borderRadius="none" size="lg" type="mark" format="bold" label="Negrita" icon={<Icon as={FaBold} />} />
+                                                    <ToolbarButton borderRadius="none" size="lg" type="mark" format="italic" label="Cursiva" icon={<Icon as={FaItalic} />} />
+                                                    <ToolbarButton borderRadius="none" size="lg" type="mark" format="underline" label="Subrayado" icon={<Icon as={FaUnderline} />} />
+                                                    <ToolbarButton borderRadius="none" size="lg" type="mark" format="strike" label="Tachado" icon={<Icon as={FaStrikethrough} />} />
+
+                                                    <ToolbarButton borderRadius="none" size="lg" type="block" formatKey="textAlign" format="left" label="Alinear a la izquierda" icon={<Icon as={FaAlignLeft} />} />
+                                                    <ToolbarButton borderRadius="none" size="lg" type="block" formatKey="textAlign" format="center" label="Alinear al centro" icon={<Icon as={FaAlignCenter} />} />
+                                                    <ToolbarButton borderRadius="none" size="lg" type="block" formatKey="textAlign" format="right" label="Alinear a la derecha" icon={<Icon as={FaAlignRight} />} />
+                                                    <ToolbarButton borderRadius="none" size="lg" type="block" formatKey="textAlign" format="justify" label="Justificar" icon={<Icon as={FaAlignJustify} />} />
+
+
+                                                </Flex>
+
+                                                <Flex height="full" position="fixed" bottom="0" right="0" alignItems="center">
+                                                    <Divider orientation="vertical" />
+                                                    <IconButton onClick={handleHideKeyboard} variant="ghost" colorScheme="brand" icon={<Icon as={MdKeyboardHide} />} />
+                                                    <Divider orientation="vertical" />
+                                                    <IconButton variant="ghost" colorScheme="brand" icon={<Icon as={FaChevronUp} />} />
+                                                </Flex>
+                                            </Flex>
+
+                                        </Slide>
+                                    )}
+
+                                    {!editor.selection && (
+                                        <Slide direction="bottom" in={!editor.selection} style={{ zIndex: 150 }}>
+
+                                            <Box color="white" display="flex" bg="#05043E" alignItems="center" width="100%" justifyContent="space-around">
+                                                <Flex flexDir="column" alignItems="center" justifyContent="center" cursor="pointer" aria-label="button" py="2" _hover={{ color: "var(--chakra-colors-brand-300)" }} >
+                                                    <Icon w={6} h={6} as={FaChalkboardTeacher} />
+                                                    <Text fontSize="x-small">Imprimir</Text>
+                                                </Flex>
+
+                                                <Flex flexDir="column" alignItems="center" justifyContent="center" cursor="pointer" aria-label="button" py="2" _hover={{ color: "var(--chakra-colors-brand-300)" }} >
+                                                    <Icon w={6} h={6} as={FaHome} />
+                                                    <Text fontSize="x-small">Inicio</Text>
+                                                </Flex>
+
+                                                <Flex flexDir="column" alignItems="center" justifyContent="center" cursor="pointer" aria-label="button" py="2" _hover={{ color: "var(--chakra-colors-brand-300)" }}>
+                                                    <Icon w={6} h={6} as={FaPrint} />
+                                                    <Text fontSize="x-small">Previsualizar</Text>
+                                                </Flex>
+                                            </Box>
+                                        </Slide>
+                                    )}
+                                </Flex>
+                            )
                         }
-                    </Box>
-
-                    <Divider />
-                    <Box p="4">
-                        <Text fontWeight="semibold" fontSize="lg">Ajustes</Text>
-                        <Text my="2" >
-                            Modo de edición: <Switch colorScheme="brand" ml="4" isChecked={state.isWritingMode} onChange={() => dispatch({ type: "toggle-writting-mode" })} />
-                        </Text>
-                    </Box>
-
-                </GridItem>
-            </Grid>
 
 
-            {/* <pre>
-                {state.worksheet && JSON.stringify(state.worksheet.content, null, 2)}
-            </pre> */}
-            <Box display="none" flexDirection="column" alignItems="flex-start" position="fixed" zIndex="banner" bottom="0.5" width="full"
-                sx={{
-                    "@media print": {
-                        display: "flex",
-                    }
-                }}
-            >
-                <Logo size="sm" />
-                <Text fontSize="smaller"> {host}/worksheets/{id}/practice </Text>
-            </Box>
-        </Slate>
+                        {/* <pre>
+                        {state.worksheet && JSON.stringify(state.worksheet.content, null, 2)}
+                    </pre> */}
+                        <Box display="none" flexDirection="column" alignItems="flex-start" position="fixed" zIndex="banner" bottom="0.5" width="full"
+                            sx={{
+                                "@media print": {
+                                    display: "flex",
+                                }
+                            }}
+                        >
+                            <Icon as={Logo} />
+                            <Text fontSize="smaller"> {host}/worksheets/{id}/practice </Text>
+                        </Box>
+                    </Slate >
+                )
     )
 }
 
