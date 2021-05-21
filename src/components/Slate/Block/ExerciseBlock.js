@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { useReadOnly, useSelected, useFocused, useSlate } from "slate-react";
-import { Box, Collapse, Divider, Flex, Icon, IconButton, Input, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Text } from "@chakra-ui/react";
+import { Box, Collapse, Flex, Icon, IconButton, Input, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Text } from "@chakra-ui/react";
 import ToolbarButton from "../ToolbarButton";
 import ScoringSection from "../../ScoringSection";
 import { Editor, Range } from "slate";

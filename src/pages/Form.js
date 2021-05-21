@@ -1,25 +1,27 @@
 // @refresh reset
-import React, { useEffect, Fragment, useReducer, forwardRef } from 'react'
+import React, { useEffect, Fragment, useReducer } from 'react'
 import { useParams } from "react-router-dom"
 import { Slate, Editable } from "slate-react"
 
 import Navbar from "../components/Form/Navbar";
 // import Navbar from "../components/Navbar";
-import Sidebar from "../components/Sidebar";
-import Toolbar from "../components/Slate/Toolbar";
+// import Sidebar from "../components/Sidebar";
+// import Toolbar from "../components/Slate/Toolbar";
 import WorksheetTitle from "../components/Form/WorksheetTitle";
 
-import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Alert, AlertIcon, Flex, Menu, MenuButton, Button, MenuList, Divider, Switch, AlertTitle, AlertDescription, Portal, MenuGroup, useMediaQuery, Slide } from "@chakra-ui/react";
+import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Alert, AlertIcon, Flex, Menu, MenuButton, Button, MenuList, Divider, Switch, AlertTitle, AlertDescription, MenuGroup, useMediaQuery, Slide, MenuDivider } from "@chakra-ui/react";
 
 import LanguagePicker from '../components/LanguagePicker';
 import PublicSwitch from '../components/PublicSwitch';
 import Logo from '../components/Logo';
 
-import { FaArrowLeft, FaFileUpload, FaHeading, FaAlignCenter, FaAlignJustify, FaAlignRight, FaAlignLeft, FaBold, FaIceCream, FaItalic, FaUnderline, FaStrikethrough, FaChalkboardTeacher, FaPrint, FaHome, FaChevronUp, FaKeyboard, FaRegKeyboard } from "react-icons/fa";
+import { FaArrowLeft, FaFileUpload, FaHeading, FaAlignCenter, FaAlignJustify, FaAlignRight, FaAlignLeft, FaBold, FaItalic, FaUnderline, FaStrikethrough, FaChalkboardTeacher, FaPrint, FaHome, FaChevronUp } from "react-icons/fa";
 import { HiDotsVertical, HiViewGridAdd } from 'react-icons/hi';
 import { AiOutlineProfile } from 'react-icons/ai';
 import { RiDraftFill } from "react-icons/ri";
-import { MdDrafts, MdKeyboardHide } from "react-icons/md";
+import { BsFullscreenExit, BsFullscreen } from "react-icons/bs";
+import { MdKeyboardHide } from "react-icons/md";
+import { MissingWord as MissingWordIcon } from '../svgs';
 
 import { createExercise } from '../components/Slate/commands';
 import { getWorksheet } from "../utils/localStorage";
@@ -28,10 +30,7 @@ import useSlateRender from '../hooks/useSlateRender';
 
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import ToolbarButton from '../components/Slate/ToolbarButton';
-import { MissingWord as MissingWordIcon } from '../svgs';
-import { Editor, Transforms } from 'slate';
-
-
+import { Transforms } from 'slate';
 
 
 const ACTIONS = {
@@ -169,10 +168,10 @@ const Form = () => {
         }
     }
 
-    function handleSubmit(e) {
-        e.preventDefault();
-        sendToLocalStorage();
-    }
+    // function handleSubmit(e) {
+    //     e.preventDefault();
+    //     sendToLocalStorage();
+    // }
     function handlePrint(e) {
         //set print preview scale to 100%
         document.body.style.zoom = "100%";
@@ -256,11 +255,13 @@ const Form = () => {
                                             <GridItem display="flex" alignItems="center" px="4" colStart={3} rowSpan={2}>
                                                 <ButtonGroup>
                                                     <Button colorScheme="brand" variant="ghost">
+                                                        <Icon as={RiDraftFill} mr="2" />
                                                         Guardar Borrador
-                                        </Button>
+                                                    </Button>
                                                     <Button colorScheme="brand">
+                                                        <Icon as={FaFileUpload} mr="2" />
                                                         Publicar
-                                        </Button>
+                                                    </Button>
                                                 </ButtonGroup>
                                             </GridItem>
 
@@ -268,18 +269,18 @@ const Form = () => {
                                                 <Menu>
                                                     <MenuButton> Actividad </MenuButton>
                                                     <MenuList>
-                                                        <MenuItem onClick={sendToLocalStorage}>Guardar Borrador</MenuItem>
-                                                        <MenuItem >Publicar Actividad</MenuItem>
-                                                        <MenuItem onClick={handlePrint}>Imprimir Actividad</MenuItem>
+                                                        <MenuItem onClick={sendToLocalStorage} icon={<Icon as={RiDraftFill} />} >Guardar Borrador</MenuItem>
+                                                        <MenuItem icon={<Icon as={FaFileUpload} />} >Publicar Actividad</MenuItem>
+                                                        <MenuItem icon={<Icon as={FaPrint} />} onClick={handlePrint}>Imprimir Actividad</MenuItem>
                                                     </MenuList>
                                                 </Menu>
                                                 <Menu>
                                                     <MenuButton mx="4">
                                                         Insertar
-                                        </MenuButton>
+                                                </MenuButton>
                                                     <MenuList>
                                                         <MenuGroup title="Ejercicios">
-                                                            <MenuItem onClick={e => createExercise(editor, { type: "missing-word" })}>Palabras Faltantes</MenuItem>
+                                                            <MenuItem icon={<Icon w={8} h={8} as={MissingWordIcon} />} onClick={e => createExercise(editor, { type: "missing-word" })}>Palabras Faltantes</MenuItem>
                                                             <MenuItem onClick={e => createExercise(editor, { type: "word-order" })}>Ordenar Oraciones</MenuItem>
                                                         </MenuGroup>
                                                     </MenuList>
@@ -287,10 +288,10 @@ const Form = () => {
                                                 <Menu>
                                                     <MenuButton mx="4">
                                                         Ver
-                                        </MenuButton>
+                                                    </MenuButton>
                                                     <MenuList>
-                                                        <MenuItem onClick={handleOpenFullscreen}>Pantalla completa</MenuItem>
-                                                        <MenuItem onClick={handleCloseFullscreen}>Vista normal</MenuItem>
+                                                        <MenuItem icon={<Icon as={BsFullscreen} />} onClick={handleOpenFullscreen}>Pantalla completa</MenuItem>
+                                                        <MenuItem icon={<Icon as={BsFullscreenExit} />} onClick={handleCloseFullscreen}>Vista normal</MenuItem>
                                                     </MenuList>
                                                 </Menu>
                                             </GridItem>
@@ -417,8 +418,15 @@ const Form = () => {
                                         <Menu>
                                             <MenuButton variant="ghost" colorScheme="brand" icon={<Icon as={HiDotsVertical} />} as={IconButton} />
                                             <MenuList>
-                                                <MenuItem onClick={sendToLocalStorage} icon={<Icon color="brand.500" as={RiDraftFill} />} >Guardar Borrador</MenuItem>
-                                                <MenuItem icon={<Icon color="brand.500" as={FaFileUpload} />} >Publicar Actividad</MenuItem>
+                                                <MenuGroup title="Actividad">
+                                                    <MenuItem onClick={sendToLocalStorage} icon={<Icon color="brand.500" as={RiDraftFill} />} >Guardar Borrador</MenuItem>
+                                                    <MenuItem icon={<Icon color="brand.500" as={FaFileUpload} />} >Publicar Actividad</MenuItem>
+                                                </MenuGroup>
+                                                <MenuDivider />
+                                                <MenuGroup title="Ver">
+                                                    <MenuItem icon={<Icon as={BsFullscreen} />} onClick={handleOpenFullscreen}>Pantalla completa</MenuItem>
+                                                    <MenuItem icon={<Icon as={BsFullscreenExit} />} onClick={handleCloseFullscreen}>Vista normal</MenuItem>
+                                                </MenuGroup>
                                             </MenuList>
                                         </Menu>
 

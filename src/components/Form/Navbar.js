@@ -1,6 +1,5 @@
-import { Button, ButtonGroup, IconButton } from '@chakra-ui/button'
 import Icon from '@chakra-ui/icon'
-import { Box, Flex, Spacer } from '@chakra-ui/layout'
+import { Box, Flex } from '@chakra-ui/layout'
 import { useMediaQuery } from '@chakra-ui/media-query'
 import { Tooltip } from '@chakra-ui/tooltip'
 import React, { Fragment } from 'react'
@@ -73,9 +72,5 @@ const Navbar = (props) => {
     )
 }
 
-
-const NavbarMobile = (props) => {
-
-}
 
 export default Navbar
