@@ -21,7 +21,7 @@ import { AiOutlineProfile } from 'react-icons/ai';
 import { RiDraftFill } from "react-icons/ri";
 import { BsFullscreenExit, BsFullscreen } from "react-icons/bs";
 import { MdKeyboardHide } from "react-icons/md";
-import { MissingWord as MissingWordIcon } from '../svgs';
+import { MissingWord as MissingWordIcon, WordOrderIcon } from '../svgs';
 
 import { createExercise } from '../components/Slate/commands';
 import { getWorksheet } from "../utils/localStorage";
@@ -279,11 +279,11 @@ const Form = () => {
                                                 <Menu>
                                                     <MenuButton mx="4">
                                                         Insertar
-                                                </MenuButton>
+                                                    </MenuButton>
                                                     <MenuList>
                                                         <MenuGroup title="Ejercicios">
                                                             <MenuItem icon={<Icon w={8} h={8} as={MissingWordIcon} />} onClick={e => createExercise(editor, { type: "missing-word" })}>Palabras Faltantes</MenuItem>
-                                                            <MenuItem onClick={e => createExercise(editor, { type: "word-order" })}>Ordenar Oraciones</MenuItem>
+                                                            <MenuItem icon={<Icon w={8} h={8} as={WordOrderIcon} />} onClick={e => createExercise(editor, { type: "word-order" })}>Ordenar Oraciones</MenuItem>
                                                         </MenuGroup>
                                                     </MenuList>
                                                 </Menu>
@@ -300,7 +300,7 @@ const Form = () => {
                                                     </MenuList>
                                                 </Menu>
                                             </GridItem>
-                                            <GridItem py="2" px="5" colSpan={3} width="full" borderTop="2px solid var(--chakra-colors-gray-100)">
+                                            <GridItem py="2" px="5" colSpan={3} width="full" borderTop="2px solid var(--chakra-colors-gray-100)" position="sticky" top="0">
 
                                                 <ButtonGroup as={Flex} alignItems="center">
 
@@ -342,12 +342,12 @@ const Form = () => {
                                                             <Icon w={5} h={5} mr="2" as={HiViewGridAdd} /> Insertar Ejercicio
                                                         </MenuButton>
                                                         <MenuList>
-                                                            <MenuItem icon={<Icon width="2em" as={MissingWordIcon} />}
+                                                            <MenuItem icon={<Icon w={5} h={5} as={MissingWordIcon} />}
                                                                 onClick={e => createExercise(editor, { type: "missing-word" })}
                                                             >
                                                                 Palabras faltantes
                                                             </MenuItem>
-                                                            <MenuItem icon={<Icon width="2em" as={AiOutlineProfile} />}
+                                                            <MenuItem icon={<Icon w={5} h={5} as={WordOrderIcon} />}
                                                                 onClick={e => createExercise(editor, { type: "word-order" })}
                                                             >
                                                                 Ordernar oraciones
@@ -456,21 +456,21 @@ const Form = () => {
                                     </Box>
 
                                     {editor.selection && (
-                                        <Slide direction="bottom" in={editor.selection} style={{ zIndex: 100, boxShadow: "var(--chakra-shadows-dark-lg)", }}>
+                                        <Slide direction="bottom" in={editor.selection} style={{ zIndex: 50, boxShadow: "var(--chakra-shadows-dark-lg)", }}>
 
                                             <Flex pr="20vw" w="100vw" color="#616161" bg="white" alignItems="center" height="50px">
-                                                <Flex width="full" height="full" position="relative" overflowX="auto" overflowY="hidden">
+                                                <Flex width="full" height="full" overflowX="auto">
                                                     <Menu>
                                                         <MenuButton borderRadius="none" height="full" flex="0 0 auto" display="flex" as={Button} variant="solid" colorScheme="brand">
                                                             <Icon w={5} h={5} mr="2" as={HiViewGridAdd} /> Insertar Ejercicio
-                                                    </MenuButton>
+                                                        </MenuButton>
                                                         <MenuList>
-                                                            <MenuItem icon={<Icon width="2em" as={MissingWordIcon} />}
+                                                            <MenuItem icon={<Icon w={5} h={5} as={MissingWordIcon} />}
                                                                 onClick={e => createExercise(editor, { type: "missing-word" })}
                                                             >
                                                                 Palabras faltantes
                                                             </MenuItem>
-                                                            <MenuItem icon={<Icon width="2em" as={AiOutlineProfile} />}
+                                                            <MenuItem icon={<Icon w={5} h={5} as={WordOrderIcon} />}
                                                                 onClick={e => createExercise(editor, { type: "word-order" })}
                                                             >
                                                                 Ordernar oraciones
