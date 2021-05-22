@@ -27,10 +27,12 @@ import { createExercise } from '../components/Slate/commands';
 import { getWorksheet } from "../utils/localStorage";
 import useSlateEditor from '../hooks/useSlateEditor';
 import useSlateRender from '../hooks/useSlateRender';
-
 import useDocumentTitle from "../hooks/useDocumentTitle";
+import useIsFullscreen from "../hooks/useIsFullscreen";
+
 import ToolbarButton from '../components/Slate/ToolbarButton';
 import { Transforms } from 'slate';
+import { isFullscreen } from '../utils/browser';
 
 
 const ACTIONS = {
@@ -93,8 +95,8 @@ const initialValue = {
 }
 
 function handleOpenFullscreen() {
-    const isFullscreen = document.fullscreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement;
-    if (isFullscreen) return;
+
+    if (isFullscreen()) return;
 
     let screen = document.documentElement;
 
@@ -109,12 +111,9 @@ function handleOpenFullscreen() {
     }
 }
 
-
-
 function handleCloseFullscreen() {
-    const isFullscreen = document.fullscreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement;
 
-    if (!isFullscreen) return;
+    if (!isFullscreen()) return;
 
     if (document.exitFullscreen) {
         document.exitFullscreen();
@@ -136,6 +135,8 @@ const Form = () => {
     const [renderLeaf, renderElement] = useSlateRender();
 
     const [state, dispatch] = useReducer(reducer, initialValue);
+
+    const isFullscreen = useIsFullscreen();
 
     useEffect(() => {
         const { worksheet, error } = getWorksheet(id);
@@ -198,7 +199,6 @@ const Form = () => {
 
 
     function handleHideKeyboard() {
-        // console.log("Blur editor");
         Transforms.deselect(editor);
     }
     return (
@@ -290,8 +290,11 @@ const Form = () => {
                                                         Ver
                                                     </MenuButton>
                                                     <MenuList>
-                                                        <MenuItem icon={<Icon as={BsFullscreen} />} onClick={handleOpenFullscreen}>Pantalla completa</MenuItem>
-                                                        <MenuItem icon={<Icon as={BsFullscreenExit} />} onClick={handleCloseFullscreen}>Vista normal</MenuItem>
+                                                        {
+                                                            isFullscreen
+                                                                ? <MenuItem icon={<Icon as={BsFullscreenExit} />} onClick={handleCloseFullscreen}>Vista normal</MenuItem>
+                                                                : <MenuItem icon={<Icon as={BsFullscreen} />} onClick={handleOpenFullscreen}>Pantalla completa</MenuItem>
+                                                        }
                                                     </MenuList>
                                                 </Menu>
                                             </GridItem>
@@ -331,8 +334,6 @@ const Form = () => {
                                                     <ToolbarButton type="block" formatKey="textAlign" format="center" label="Alinear al centro" icon={<Icon as={FaAlignCenter} />} />
                                                     <ToolbarButton type="block" formatKey="textAlign" format="right" label="Alinear a la derecha" icon={<Icon as={FaAlignRight} />} />
                                                     <ToolbarButton type="block" formatKey="textAlign" format="justify" label="Justificar" icon={<Icon as={FaAlignJustify} />} />
-
-
 
                                                     <Menu>
                                                         <MenuButton as={Button} size="sm" colorScheme="brand" variant="solid">
@@ -424,8 +425,11 @@ const Form = () => {
                                                 </MenuGroup>
                                                 <MenuDivider />
                                                 <MenuGroup title="Ver">
-                                                    <MenuItem icon={<Icon as={BsFullscreen} />} onClick={handleOpenFullscreen}>Pantalla completa</MenuItem>
-                                                    <MenuItem icon={<Icon as={BsFullscreenExit} />} onClick={handleCloseFullscreen}>Vista normal</MenuItem>
+                                                    {
+                                                        isFullscreen
+                                                            ? <MenuItem icon={<Icon as={BsFullscreenExit} />} onClick={handleCloseFullscreen}>Vista normal</MenuItem>
+                                                            : <MenuItem icon={<Icon as={BsFullscreen} />} onClick={handleOpenFullscreen}>Pantalla completa</MenuItem>
+                                                    }
                                                 </MenuGroup>
                                             </MenuList>
                                         </Menu>
