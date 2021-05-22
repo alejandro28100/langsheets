@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { useReadOnly, useSelected, useFocused, useSlate } from "slate-react";
-import { Box, Collapse, Flex, Icon, IconButton, Input, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Text } from "@chakra-ui/react";
+import { Box, Collapse, Divider, Flex, Icon, IconButton, Input, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Text } from "@chakra-ui/react";
 import ToolbarButton from "../ToolbarButton";
 import ScoringSection from "../../ScoringSection";
 import { Editor, Range } from "slate";
@@ -93,13 +93,13 @@ function handleCreateMissingWord(editor, node) {
 
 const Tools = (props) => {
     const editor = useSlate();
-    // console.log(props);
     switch (props.exerciseType) {
         case 'missing-word':
             return (
-                <Fragment>
-                    <ToolbarButton colorScheme="brand" type="mark" customOnClick={() => handleCreateMissingWord(editor)} format="missingWord" label="Añadir Palabra faltante" icon={<Icon width="2.5em" as={MissingWordIcon} />} />
-                </Fragment>
+                <Box w="full">
+                    <ToolbarButton m="2" colorScheme="brand" type="mark" customOnClick={() => handleCreateMissingWord(editor)} format="missingWord" label="Añadir Palabra faltante" icon={<Icon width="2.5em" as={MissingWordIcon} />} />
+                    <Divider borderBottomWidth="2px" opacity="1" />
+                </Box>
             )
         case 'word-order':
             return null
@@ -129,7 +129,6 @@ export const ExerciseBlock = (props) => {
                     return true;
                 }
             }
-
             return true;
         }
         return false;
@@ -172,9 +171,7 @@ export const ExerciseBlock = (props) => {
 
                     </Box>)
                 }
-                <Box w="full" py="2" px="4" >
-                    <Tools isActive={isActive()} exerciseType={props.element.exerciseType} />
-                </Box>
+                <Tools isActive={isActive()} exerciseType={props.element.exerciseType} />
             </Collapse>
             <Box borderBottomRadius="base" py="4" px={isActive() && "2"}  >
                 {props.children}

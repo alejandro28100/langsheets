@@ -1,3 +1,4 @@
+import { Text } from "@chakra-ui/layout";
 import { useReadOnly } from "slate-react"
 import { MissingWordEditable, MissingWordInput } from "./MissingWord";
 const Leaf = (props) => {
@@ -13,6 +14,9 @@ const Leaf = (props) => {
         return <MissingWordEditable {...props} />
     }
 
+    if (leaf.division) {
+        children = <Text as="span" fontWeight="black" color="brand.500">{children}</Text>
+    }
 
     if (leaf.bold) {
         children = <strong>{children}</strong>

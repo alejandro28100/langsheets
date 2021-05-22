@@ -33,6 +33,7 @@ import useIsFullscreen from "../hooks/useIsFullscreen";
 import ToolbarButton from '../components/Slate/ToolbarButton';
 import { Transforms } from 'slate';
 import { isFullscreen } from '../utils/browser';
+import useSlateDecorate from '../hooks/useSlateDecorate';
 
 
 const ACTIONS = {
@@ -133,6 +134,7 @@ const Form = () => {
     const editor = useSlateEditor();
     //Slate editor render functions
     const [renderLeaf, renderElement] = useSlateRender();
+    const decorate = useSlateDecorate(editor);
 
     const [state, dispatch] = useReducer(reducer, initialValue);
 
@@ -369,6 +371,7 @@ const Form = () => {
                                             p="5"
                                             as={Editable}
                                             {...{
+                                                decorate,
                                                 renderElement,
                                                 renderLeaf,
                                                 readOnly: !state.isWritingMode,
@@ -442,6 +445,7 @@ const Form = () => {
                                             p="5"
                                             as={Editable}
                                             {...{
+                                                decorate,
                                                 renderElement,
                                                 renderLeaf,
                                                 readOnly: !state.isWritingMode,
