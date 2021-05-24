@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useRef } from 'react'
 import PropTypes from "prop-types"
-import { Text, Icon, ButtonGroup, IconButton, Button, Spacer, Flex, Tooltip, AlertDialog, AlertDialogBody, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogFooter } from "@chakra-ui/react"
+import { Text, Icon, ButtonGroup, IconButton, Button, Spacer, Flex, Tooltip, AlertDialog, AlertDialogBody, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, useToast } from "@chakra-ui/react"
 
 import { FaChalkboardTeacher } from "react-icons/fa";
 import { MdDelete, MdPublic } from "react-icons/md";
@@ -19,7 +19,7 @@ const LANGUAGES = {
     zh: "Chino"
 }
 
-function WorksheetCard({ lang, title, id, createdAt, deleteSheet, isPublic }) {
+function WorksheetCard({ lang, title, _id: id, createdAt, deleteSheet, isPublic }) {
     const [isAlertOpen, setIsAlertOpen] = useState(false);
     const onClose = () => setIsAlertOpen(false);
     const cancelRef = useRef();
@@ -45,7 +45,7 @@ function WorksheetCard({ lang, title, id, createdAt, deleteSheet, isPublic }) {
                 </Flex>
                 <Spacer />
                 <Flex pr="5" py="5">
-                    <ButtonGroup as={Flex} flexDirection="column" alignItems="center" justifyContent="space-evenly" spacing="0" size="lg" colorScheme="purple" variant="ghost">
+                    <ButtonGroup as={Flex} flexDirection="column" alignItems="center" justifyContent="space-evenly" spacing="0" size="lg" colorScheme="brand" variant="ghost">
 
                         <Tooltip hasArrow label="Comenzar Actividad" >
                             <IconButton as="a" href={`/worksheets/${id}/practice`} icon={<Icon as={FaChalkboardTeacher} />} />
@@ -100,7 +100,7 @@ WorksheetCard.defaultProps = {
 WorksheetCard.propTypes = {
     lang: PropTypes.oneOf(["en", "fr", "de", "ja", "es", "zh", "ru", ""]).isRequired,
     title: PropTypes.string.isRequired,
-    id: PropTypes.string.isRequired,
+    _id: PropTypes.string.isRequired,
     isPublic: PropTypes.bool.isRequired,
     createdAt: PropTypes.string.isRequired,
     deleteSheet: PropTypes.func.isRequired,
