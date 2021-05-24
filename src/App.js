@@ -12,8 +12,8 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 function App() {
   return (
-    <div className="App">
-      <ChakraProvider theme={theme}>
+    <ChakraProvider theme={theme}>
+      <div className="App">
         <Router>
           <Switch>
             <Route path="/" exact component={Home} />
@@ -22,8 +22,8 @@ function App() {
             <Route path="*" component={NotFounded} />
           </Switch>
         </Router>
-      </ChakraProvider>
-    </div>
+      </div>
+    </ChakraProvider>
   );
 }
 

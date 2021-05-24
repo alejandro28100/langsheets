@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { Editable, EditablePreview, EditableInput, Box } from "@chakra-ui/react"
 
 
-function WorksheetTitle({ title, sendToLocalStorage, dispatch }) {
+function WorksheetTitle({ title, dispatch }) {
     const textRef = useRef();
     return (
         <Box
@@ -20,7 +20,6 @@ function WorksheetTitle({ title, sendToLocalStorage, dispatch }) {
                 required
                 id="title"
                 value={title}
-                onBlur={sendToLocalStorage}
                 onChange={newValue => dispatch({ type: "change-worksheet-prop", payload: { property: "title", value: newValue } })}
                 type="text"
                 placeholder="Escribe un tílulo aquí..."
@@ -34,7 +33,6 @@ function WorksheetTitle({ title, sendToLocalStorage, dispatch }) {
 
 WorksheetTitle.propTypes = {
     title: PropTypes.string.isRequired,
-    sendToLocalStorage: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
 }
 

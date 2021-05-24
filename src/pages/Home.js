@@ -94,7 +94,7 @@ const Home = () => {
                 dispatch({ type: 'update-worksheets', payload: { worksheets: parseWorksheets(json) } });
                 return;
             }
-            dispatch({ type: 'api-error', payload: { error } })
+            dispatch({ type: 'api-error', payload: { error: json } })
 
         }
 
@@ -131,7 +131,7 @@ const Home = () => {
 
         if (response.ok) {
             //Redirect to the form page with the id of the document created
-            history.push(`/api/activities/${json._id}/edit`);
+            history.push(`/worksheets/${json._id}/edit`);
             return;
         }
 

@@ -9,7 +9,7 @@ import Navbar from "../components/Form/Navbar";
 // import Toolbar from "../components/Slate/Toolbar";
 import WorksheetTitle from "../components/Form/WorksheetTitle";
 
-import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Alert, AlertIcon, Flex, Menu, MenuButton, Button, MenuList, Divider, Switch, AlertTitle, AlertDescription, MenuGroup, useMediaQuery, Slide, MenuDivider } from "@chakra-ui/react";
+import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Alert, AlertIcon, Flex, Menu, MenuButton, Button, MenuList, Divider, Switch, AlertTitle, AlertDescription, MenuGroup, useMediaQuery, Slide, MenuDivider, useToast } from "@chakra-ui/react";
 
 import LanguagePicker from '../components/LanguagePicker';
 import PublicSwitch from '../components/PublicSwitch';
@@ -23,7 +23,6 @@ import { MdKeyboardHide } from "react-icons/md";
 import { MissingWord as MissingWordIcon, WordOrderIcon } from '../svgs';
 
 import { createExercise } from '../components/Slate/commands';
-import { getWorksheet } from "../utils/localStorage";
 import useSlateEditor from '../hooks/useSlateEditor';
 import useSlateRender from '../hooks/useSlateRender';
 import useDocumentTitle from "../hooks/useDocumentTitle";
@@ -31,11 +30,12 @@ import useIsFullscreen from "../hooks/useIsFullscreen";
 
 import ToolbarButton from '../components/Slate/ToolbarButton';
 import { Transforms } from 'slate';
-import { isFullscreen } from '../utils';
+import { isFullscreen, parseWorksheet, stringifyWorkshet } from '../utils';
 import useSlateDecorate from '../hooks/useSlateDecorate';
 
 
 const ACTIONS = {
+    SAVING_WORKSHEET: 'saving-worksheet',
     TOGGLE_WRITTING_MODE: "toggle-writting-mode",
     CHANGE_WORKSHEET_PROP: "change-worksheet-prop",
     SET_WORKSHEET: "set-worksheet",
@@ -52,7 +52,7 @@ function reducer(state, action) {
                 isWritingMode: !state.isWritingMode
             }
         case ACTIONS.CHANGE_WORKSHEET_PROP: {
-            if (!action.payload.property) throw new Error("Prop 'property' is required but is not defined");
+            if (!action.payload.property) throw new Error("'property' is required but got undefined");
 
             //prevent user from updating content prop when being in preview mode
             if (action.payload.property === "content" && !state.isWritingMode) {
@@ -62,15 +62,21 @@ function reducer(state, action) {
 
             const updatedWorksheet = { ...state.worksheet };
             updatedWorksheet[action.payload.property] = action.payload.value;
-            // console.log(updatedWorksheet);
+
             return {
                 ...state,
                 worksheet: updatedWorksheet,
             }
         }
+        case ACTIONS.SAVING_WORKSHEET:
+            return {
+                ...state,
+                savingWorksheet: true,
+            }
         case ACTIONS.SET_WORKSHEET:
             return {
                 ...state,
+                savingWorksheet: false,
                 loading: false,
                 worksheet: action.payload.worksheet,
                 error: undefined
@@ -92,6 +98,7 @@ const initialValue = {
     loading: true,
     error: "",
     worksheet: undefined,
+    savingWorksheet: false
 }
 
 function handleOpenFullscreen() {
@@ -127,58 +134,71 @@ function handleCloseFullscreen() {
 }
 
 const Form = () => {
+    const toast = useToast();
     //Get the id of the worksheet from the url 
     const { id } = useParams();
     //Slate editor component
     const editor = useSlateEditor();
+
     //Slate editor render functions
     const [renderLeaf, renderElement] = useSlateRender();
     const decorate = useSlateDecorate(editor);
 
     const [state, dispatch] = useReducer(reducer, initialValue);
+    const { worksheet, loading, error, isWritingMode, savingWorksheet } = state;
 
     const isFullscreen = useIsFullscreen();
 
     useEffect(() => {
-        const { worksheet, error } = getWorksheet(id);
-        if (error) return dispatch({ type: ACTIONS.ERROR, payload: { error } })
-        dispatch({ type: ACTIONS.SET_WORKSHEET, payload: { worksheet } })
+        async function getWorksheet() {
+            const response = await fetch(`/api/activities/${id}`);
+            const json = await response.json();
+
+            if (response.ok) {
+                dispatch({ type: ACTIONS.SET_WORKSHEET, payload: { worksheet: parseWorksheet(json) } })
+                return;
+            }
+            dispatch({ type: ACTIONS.ERROR, payload: { error: json } });
+        }
+
+        getWorksheet();
+
     }, [id])
 
-    function sendToLocalStorage() {
-        try {
-            let updatedWorksheet = state.worksheet;
-            //turn Slate JSON-like-content into a string to save storage
-            updatedWorksheet.content = JSON.stringify(updatedWorksheet.content);
+    async function saveWorksheet() {
+        dispatch({ type: ACTIONS.SAVING_WORKSHEET });
 
-            //Update the worksheet from the worksheets value in localStorage
-            const worksheets = JSON.parse(localStorage.getItem("worksheets"))
-                .map(worksheet => {
-                    if (worksheet.id === id) {
-                        worksheet = updatedWorksheet;
-                    }
-                    return worksheet;
-                });
+        const response = await fetch(`/api/activities/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(stringifyWorkshet(worksheet))
+        })
 
-            //save the worksheets updated in localStorage 
-            localStorage.setItem("worksheets", JSON.stringify(worksheets));
-            //update the state
-            dispatch({ type: "set-worksheet", payload: { worksheet: getWorksheet(id).worksheet } })
-            alert("Actividad Guardada");
-        } catch (error) {
-            alert(error);
+        const json = await response.json();
+        if (response.ok) {
+
+            dispatch({ type: ACTIONS.SET_WORKSHEET, payload: { worksheet: parseWorksheet(json) } });
+            toast({
+                position: isDesktop ? 'top-right' : 'bottom',
+                title: "Actividad Guardada",
+                description: "La actividad fue guardada exitósamente",
+                status: "success",
+                duration: 5000,
+                isClosable: true
+            })
+            return;
         }
+
+        dispatch({ type: ACTIONS.ERROR, payload: { error: json } });
     }
 
-    // function handleSubmit(e) {
-    //     e.preventDefault();
-    //     sendToLocalStorage();
-    // }
     function handlePrint(e) {
         //set print preview scale to 100%
         document.body.style.zoom = "100%";
 
-        //Deselect the button
+        //Deselect the button so the tooltip disappears
         e.target.blur();
 
         //Open the native print browser dialog
@@ -203,23 +223,23 @@ const Form = () => {
         Transforms.deselect(editor);
     }
     return (
-        state.loading
+        loading
             ? 'Cargando'
-            : state.error
+            : error
                 ? (
 
                     <Alert status="error">
                         <AlertIcon />
                         <AlertTitle mr={2}>Algo salió mal!</AlertTitle>
-                        <AlertDescription>{state.error}</AlertDescription>
+                        <AlertDescription>{error.message}</AlertDescription>
                     </Alert>
                 )
                 : (
                     <Slate
                         {...{
                             editor,
-                            value: state.loading ? [{ children: [{ text: 'Cargando...' }] }] : state.error ? state.error : state.worksheet.content,
-                            onChange: newContent => dispatch({ type: "change-worksheet-prop", payload: { property: "content", value: newContent } })
+                            value: loading ? [{ children: [{ text: 'Cargando...' }] }] : error ? error : worksheet.content,
+                            onChange: newContent => dispatch({ type: ACTIONS.CHANGE_WORKSHEET_PROP, payload: { property: "content", value: newContent } })
                         }}
                     >
 
@@ -250,14 +270,14 @@ const Form = () => {
                                             </GridItem>
 
                                             <GridItem rowSpan="1" display="flex" flexDirection="row" alignItems="center">
-                                                <WorksheetTitle {...{ dispatch, sendToLocalStorage, title: state.worksheet.title }} />
+                                                <WorksheetTitle {...{ dispatch, title: worksheet.title }} />
                                             </GridItem>
 
                                             <GridItem display="flex" alignItems="center" px="4" colStart={3} rowSpan={2}>
                                                 <ButtonGroup>
-                                                    <Button colorScheme="brand" variant="ghost">
+                                                    <Button isLoading={savingWorksheet} onClick={saveWorksheet} colorScheme="brand" variant="ghost">
                                                         <Icon as={RiDraftFill} mr="2" />
-                                                        Guardar Borrador
+                                                        Guardar Cambios
                                                     </Button>
                                                     <Button colorScheme="brand">
                                                         <Icon as={FaFileUpload} mr="2" />
@@ -270,7 +290,7 @@ const Form = () => {
                                                 <Menu>
                                                     <MenuButton> Actividad </MenuButton>
                                                     <MenuList>
-                                                        <MenuItem onClick={sendToLocalStorage} icon={<Icon as={RiDraftFill} />} >Guardar Borrador</MenuItem>
+                                                        <MenuItem onClick={saveWorksheet} icon={<Icon as={RiDraftFill} />} >Guardar Cambios</MenuItem>
                                                         <MenuItem icon={<Icon as={FaFileUpload} />} >Publicar Actividad</MenuItem>
                                                         <MenuItem icon={<Icon as={FaPrint} />} onClick={handlePrint}>Imprimir Actividad</MenuItem>
                                                     </MenuList>
@@ -373,7 +393,7 @@ const Form = () => {
                                                 decorate,
                                                 renderElement,
                                                 renderLeaf,
-                                                readOnly: !state.isWritingMode,
+                                                readOnly: !isWritingMode,
                                                 placeholder: "Escribe aquí...",
                                                 required: true,
                                             }}
@@ -391,10 +411,10 @@ const Form = () => {
                                         <Box p="4">
                                             <Text fontWeight="semibold" fontSize="lg">Detalles de la actividad</Text>
                                             {
-                                                !state.loading && !state.error &&
+                                                !loading && !error &&
                                                 <Fragment>
-                                                    <LanguagePicker {...{ dispatch, lang: state.worksheet.lang }} />
-                                                    <PublicSwitch {...{ dispatch, isPublic: state.worksheet.isPublic }} />
+                                                    <LanguagePicker {...{ dispatch, lang: worksheet.lang }} />
+                                                    <PublicSwitch {...{ dispatch, isPublic: worksheet.isPublic }} />
 
                                                 </Fragment>
                                             }
@@ -404,7 +424,7 @@ const Form = () => {
                                         <Box p="4">
                                             <Text fontWeight="semibold" fontSize="lg">Ajustes</Text>
                                             <Text my="2" >
-                                                Modo de edición: <Switch colorScheme="brand" ml="4" isChecked={state.isWritingMode} onChange={() => dispatch({ type: "toggle-writting-mode" })} />
+                                                Modo de edición: <Switch colorScheme="brand" ml="4" isChecked={isWritingMode} onChange={() => dispatch({ type: "toggle-writting-mode" })} />
                                             </Text>
                                         </Box>
 
@@ -415,14 +435,14 @@ const Form = () => {
                                 <Flex flexDir="column" minH="100vh">
                                     <Flex py="2" px="4" alignItems="center">
                                         <Box flexGrow="1">
-                                            <WorksheetTitle {...{ dispatch, sendToLocalStorage, title: state.worksheet.title }} />
+                                            <WorksheetTitle {...{ dispatch, title: worksheet.title }} />
                                         </Box>
 
                                         <Menu>
                                             <MenuButton variant="ghost" colorScheme="brand" icon={<Icon as={HiDotsVertical} />} as={IconButton} />
                                             <MenuList>
                                                 <MenuGroup title="Actividad">
-                                                    <MenuItem onClick={sendToLocalStorage} icon={<Icon color="brand.500" as={RiDraftFill} />} >Guardar Borrador</MenuItem>
+                                                    <MenuItem onClick={saveWorksheet} icon={<Icon color="brand.500" as={RiDraftFill} />} >Guardar Cambios</MenuItem>
                                                     <MenuItem icon={<Icon color="brand.500" as={FaFileUpload} />} >Publicar Actividad</MenuItem>
                                                 </MenuGroup>
                                                 <MenuDivider />
@@ -447,7 +467,7 @@ const Form = () => {
                                                 decorate,
                                                 renderElement,
                                                 renderLeaf,
-                                                readOnly: !state.isWritingMode,
+                                                readOnly: !isWritingMode,
                                                 placeholder: "Escribe aquí...",
                                                 required: true,
                                             }}
@@ -550,7 +570,7 @@ const Form = () => {
 
 
                         {/* <pre>
-                        {state.worksheet && JSON.stringify(state.worksheet.content, null, 2)}
+                        {worksheet && JSON.stringify(worksheet.content, null, 2)}
                     </pre> */}
                         <Box display="none" flexDirection="column" alignItems="flex-start" position="fixed" zIndex="banner" bottom="0.5" width="full"
                             sx={{
