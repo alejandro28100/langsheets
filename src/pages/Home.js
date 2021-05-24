@@ -163,7 +163,7 @@ const Home = () => {
             return;
         }
 
-        dispatch({ type: 'api-error', error: json });
+        dispatch({ type: 'api-error', payload: { error: json } });
     }
 
     const worksheetsHandler = {
