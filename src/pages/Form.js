@@ -17,7 +17,6 @@ import Logo from '../components/Logo';
 
 import { FaArrowLeft, FaFileUpload, FaHeading, FaAlignCenter, FaAlignJustify, FaAlignRight, FaAlignLeft, FaBold, FaItalic, FaUnderline, FaStrikethrough, FaChalkboardTeacher, FaPrint, FaHome, FaChevronUp } from "react-icons/fa";
 import { HiDotsVertical, HiViewGridAdd } from 'react-icons/hi';
-import { AiOutlineProfile } from 'react-icons/ai';
 import { RiDraftFill } from "react-icons/ri";
 import { BsFullscreenExit, BsFullscreen } from "react-icons/bs";
 import { MdKeyboardHide } from "react-icons/md";
@@ -32,7 +31,7 @@ import useIsFullscreen from "../hooks/useIsFullscreen";
 
 import ToolbarButton from '../components/Slate/ToolbarButton';
 import { Transforms } from 'slate';
-import { isFullscreen } from '../utils/browser';
+import { isFullscreen } from '../utils';
 import useSlateDecorate from '../hooks/useSlateDecorate';
 
 

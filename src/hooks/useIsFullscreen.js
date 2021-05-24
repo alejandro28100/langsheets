@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { isFullscreen } from "../utils/browser"
+import { isFullscreen } from "../utils";
 
 export default function useIsFullscreen() {
 

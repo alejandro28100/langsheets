@@ -43,6 +43,16 @@ const Home = () => {
     const [worksheets, setWorksheets] = useState([]);
 
     useEffect(() => {
+
+        async function getData() {
+            const result = await fetch("/api/activities");
+            const json = await result.json();
+            console.log(json);
+
+        }
+
+        getData()
+
         //if user has worksheets record in localStorage 
         //get the worksheets
         if (localStorage.getItem("worksheets")) {

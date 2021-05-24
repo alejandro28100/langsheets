@@ -1,6 +1,5 @@
 import Icon from '@chakra-ui/icon'
 import { Box, Flex } from '@chakra-ui/layout'
-import { useMediaQuery } from '@chakra-ui/media-query'
 import { Tooltip } from '@chakra-ui/tooltip'
 import React, { Fragment } from 'react'
 import { FaChalkboardTeacher, FaPrint } from 'react-icons/fa'
