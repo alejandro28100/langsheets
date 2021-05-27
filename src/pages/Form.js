@@ -1,37 +1,34 @@
 // @refresh reset
 import React, { useEffect, Fragment, useReducer } from 'react'
-import { useParams } from "react-router-dom"
-import { Slate, Editable } from "slate-react"
+import { useHistory, useParams } from "react-router-dom"
+import { Slate } from "slate-react"
 
 import Navbar from "../components/Form/Navbar";
-// import Navbar from "../components/Navbar";
-// import Sidebar from "../components/Sidebar";
-// import Toolbar from "../components/Slate/Toolbar";
 import WorksheetTitle from "../components/Form/WorksheetTitle";
 
-import { Box, Icon, Tooltip, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Alert, AlertIcon, Flex, Menu, MenuButton, Button, MenuList, Divider, Switch, AlertTitle, AlertDescription, MenuGroup, useMediaQuery, Slide, MenuDivider, useToast } from "@chakra-ui/react";
+import { Box, Icon, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Flex, Menu, MenuButton, Button, MenuList, Divider, Switch, MenuGroup, useMediaQuery, Slide, MenuDivider, useToast, Skeleton, Progress } from "@chakra-ui/react";
 
+import Editable from "../components/Slate/Editable";
 import LanguagePicker from '../components/LanguagePicker';
 import PublicSwitch from '../components/PublicSwitch';
 import Logo from '../components/Logo';
 
-import { FaArrowLeft, FaFileUpload, FaHeading, FaAlignCenter, FaAlignJustify, FaAlignRight, FaAlignLeft, FaBold, FaItalic, FaUnderline, FaStrikethrough, FaChalkboardTeacher, FaPrint, FaHome, FaChevronUp } from "react-icons/fa";
-import { HiDotsVertical, HiViewGridAdd } from 'react-icons/hi';
+import { FaArrowLeft, FaFileUpload, FaChalkboardTeacher, FaPrint, FaHome, FaChevronUp } from "react-icons/fa";
+import { HiDotsVertical } from 'react-icons/hi';
 import { RiDraftFill } from "react-icons/ri";
 import { BsFullscreenExit, BsFullscreen } from "react-icons/bs";
 import { MdKeyboardHide } from "react-icons/md";
-import { MissingWord as MissingWordIcon, WordOrderIcon } from '../svgs';
 
-import { createExercise } from '../components/Slate/commands';
 import useSlateEditor from '../hooks/useSlateEditor';
 import useSlateRender from '../hooks/useSlateRender';
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import useIsFullscreen from "../hooks/useIsFullscreen";
 
-import ToolbarButton from '../components/Slate/ToolbarButton';
 import { Transforms } from 'slate';
 import { isFullscreen, parseWorksheet, stringifyWorkshet } from '../utils';
 import useSlateDecorate from '../hooks/useSlateDecorate';
+import ActionsMenu from '../components/Form/ActionsMenu';
+import Toolbar from '../components/Form/Toolbar';
 
 
 const ACTIONS = {
@@ -45,6 +42,7 @@ const ACTIONS = {
 
 
 function reducer(state, action) {
+
     switch (action.type) {
         case ACTIONS.TOGGLE_WRITTING_MODE:
             return {
@@ -134,6 +132,7 @@ function handleCloseFullscreen() {
 }
 
 const Form = () => {
+    const history = useHistory();
     const toast = useToast();
     //Get the id of the worksheet from the url 
     const { id } = useParams();
@@ -154,18 +153,36 @@ const Form = () => {
             const response = await fetch(`/api/activities/${id}`);
             const json = await response.json();
 
+            if (response.status === 404) {
+                history.push(`/worksheets/404`);
+                return;
+            }
+
             if (response.ok) {
                 dispatch({ type: ACTIONS.SET_WORKSHEET, payload: { worksheet: parseWorksheet(json) } })
                 return;
             }
-            dispatch({ type: ACTIONS.ERROR, payload: { error: json } });
+
+            toast({
+                description: json.message,
+                status: 'error',
+                isClosable: true
+            })
+
+            // dispatch({ type: ACTIONS.ERROR, payload: { error: json } });
+
         }
 
         getWorksheet();
 
-    }, [id])
+    }, [id, toast, history]);
 
     async function saveWorksheet() {
+
+        if (state.loading) {
+            return console.log("Cannot save changes when page is loading");
+        }
+
         dispatch({ type: ACTIONS.SAVING_WORKSHEET });
 
         const response = await fetch(`/api/activities/${id}`, {
@@ -206,7 +223,6 @@ const Form = () => {
         setTimeout(() => {
             window.print();
         }, 500)
-
     }
 
     const title = !!state?.worksheet?.title
@@ -223,367 +239,248 @@ const Form = () => {
         Transforms.deselect(editor);
     }
     return (
-        loading
-            ? 'Cargando'
-            : error
+        <Slate
+            {...{
+                editor,
+                value: loading
+                    ? [{ children: [{ text: 'Cargando...' }] }]
+                    : error
+                        ? [{ children: [{ text: '' }] }]
+                        : worksheet.content,
+                onChange: newContent => dispatch({ type: ACTIONS.CHANGE_WORKSHEET_PROP, payload: { property: "content", value: newContent } })
+            }}
+        >
+            { isDesktop
                 ? (
 
-                    <Alert status="error">
-                        <AlertIcon />
-                        <AlertTitle mr={2}>Algo salió mal!</AlertTitle>
-                        <AlertDescription>{error.message}</AlertDescription>
-                    </Alert>
-                )
-                : (
-                    <Slate
-                        {...{
-                            editor,
-                            value: loading ? [{ children: [{ text: 'Cargando...' }] }] : error ? error : worksheet.content,
-                            onChange: newContent => dispatch({ type: ACTIONS.CHANGE_WORKSHEET_PROP, payload: { property: "content", value: newContent } })
-                        }}
-                    >
+                    <Grid h="100vh" templateColumns="repeat(12, 1fr)" templateRows="auto 1fr">
 
-                        { isDesktop
-                            ? (
+                        <GridItem rowSpan={2} colSpan={1} bg="#05043E" py="10" position="sticky" top="0" zIndex="docked" sx={{
+                            "@media print": {
+                                display: "none",
+                            }
+                        }}>
+                            <Navbar {...{ handlePrint, id }} />
+                        </GridItem>
 
-                                <Grid h="100vh" templateColumns="repeat(12, 1fr)" templateRows="auto 1fr">
 
-                                    <GridItem rowSpan={2} colSpan={1} bg="#05043E" py="10" position="sticky" top="0" zIndex="docked" sx={{
-                                        "@media print": {
-                                            display: "none",
+                        <GridItem rowSpan={1} colSpan={11} sx={{
+                            "@media print": {
+                                display: "none",
+                            }
+                        }} >
+                            {loading &&
+                                <Progress size="sm" isIndeterminate
+                                    sx={{
+                                        "& > div": {
+                                            background: "var(--chakra-colors-brand-300)"
                                         }
-                                    }}>
-                                        <Navbar {...{ handlePrint, id }} />
-                                    </GridItem>
+                                    }}
+                                />
+                            }
 
-                                    <GridItem rowSpan={1} colSpan={11} sx={{
-                                        "@media print": {
-                                            display: "none",
-                                        }
-                                    }} >
-                                        <Grid gridTemplateRows="auto auto auto" gridTemplateColumns="50px 1fr auto" h="full" bg="white">
+                            <Grid gridTemplateRows="auto auto auto" gridTemplateColumns="50px 1fr auto" h="full" bg="white">
 
-                                            <GridItem rowSpan="1" colSpan="1" display="grid" placeItems="center" >
-                                                <Box as="a" href="/" mx="4">
-                                                    <Icon as={FaArrowLeft} />
-                                                </Box>
-                                            </GridItem>
-
-                                            <GridItem rowSpan="1" display="flex" flexDirection="row" alignItems="center">
-                                                <WorksheetTitle {...{ dispatch, title: worksheet.title }} />
-                                            </GridItem>
-
-                                            <GridItem display="flex" alignItems="center" px="4" colStart={3} rowSpan={2}>
-                                                <ButtonGroup>
-                                                    <Button isLoading={savingWorksheet} onClick={saveWorksheet} colorScheme="brand" variant="ghost">
-                                                        <Icon as={RiDraftFill} mr="2" />
-                                                        Guardar Cambios
-                                                    </Button>
-                                                    <Button colorScheme="brand">
-                                                        <Icon as={FaFileUpload} mr="2" />
-                                                        Publicar
-                                                    </Button>
-                                                </ButtonGroup>
-                                            </GridItem>
-
-                                            <GridItem py="2" colStart={2} rowSpan="1" display="inline-flex" alignItems="center">
-                                                <Menu>
-                                                    <MenuButton> Actividad </MenuButton>
-                                                    <MenuList>
-                                                        <MenuItem onClick={saveWorksheet} icon={<Icon as={RiDraftFill} />} >Guardar Cambios</MenuItem>
-                                                        <MenuItem icon={<Icon as={FaFileUpload} />} >Publicar Actividad</MenuItem>
-                                                        <MenuItem icon={<Icon as={FaPrint} />} onClick={handlePrint}>Imprimir Actividad</MenuItem>
-                                                    </MenuList>
-                                                </Menu>
-                                                <Menu>
-                                                    <MenuButton mx="4">
-                                                        Insertar
-                                                    </MenuButton>
-                                                    <MenuList>
-                                                        <MenuGroup title="Ejercicios">
-                                                            <MenuItem icon={<Icon w={8} h={8} as={MissingWordIcon} />} onClick={e => createExercise(editor, { type: "missing-word" })}>Palabras Faltantes</MenuItem>
-                                                            <MenuItem icon={<Icon w={8} h={8} as={WordOrderIcon} />} onClick={e => createExercise(editor, { type: "word-order" })}>Ordenar Oraciones</MenuItem>
-                                                        </MenuGroup>
-                                                    </MenuList>
-                                                </Menu>
-                                                <Menu>
-                                                    <MenuButton mx="4">
-                                                        Ver
-                                                    </MenuButton>
-                                                    <MenuList>
-                                                        {
-                                                            isFullscreen
-                                                                ? <MenuItem icon={<Icon as={BsFullscreenExit} />} onClick={handleCloseFullscreen}>Vista normal</MenuItem>
-                                                                : <MenuItem icon={<Icon as={BsFullscreen} />} onClick={handleOpenFullscreen}>Pantalla completa</MenuItem>
-                                                        }
-                                                    </MenuList>
-                                                </Menu>
-                                            </GridItem>
-                                            <GridItem py="2" px="5" colSpan={3} width="full" borderTop="2px solid var(--chakra-colors-gray-100)" position="sticky" top="0">
-
-                                                <ButtonGroup as={Flex} alignItems="center">
-
-                                                    <Menu>
-                                                        <Tooltip hasArrow label="Estilos de tipografía" fontSize="md">
-                                                            <MenuButton
-                                                                as={Button}
-                                                                aria-label="Estilos de tipografía"
-                                                                variant="ghost"
-                                                                color="#616161"
-                                                                size="sm"
-                                                            >
-                                                                <Icon as={FaHeading} />
-
-                                                            </MenuButton>
-                                                        </Tooltip>
-
-                                                        <MenuList>
-                                                            <ToolbarButton variant="menuListItem" type="block" format="heading 4xl" label={<Text fontSize="3xl">Título 1</Text>} />
-                                                            <ToolbarButton variant="menuListItem" type="block" format="heading 3xl" label={<Text fontSize="2xl">Título 2</Text>} />
-                                                            <ToolbarButton variant="menuListItem" type="block" format="heading 2xl" label={<Text fontSize="xl">Subtítulo 1</Text>} />
-                                                            <ToolbarButton variant="menuListItem" type="block" format="heading xl" label={<Text fontSize="lg">Subtítulo 2</Text>} />
-                                                            <ToolbarButton variant="menuListItem" type="block" format="" label={<Text fontSize="md">Texto normal</Text>} />
-                                                        </MenuList>
-                                                    </Menu>
-
-                                                    <ToolbarButton type="mark" format="bold" label="Negrita" icon={<Icon as={FaBold} />} />
-                                                    <ToolbarButton type="mark" format="italic" label="Cursiva" icon={<Icon as={FaItalic} />} />
-                                                    <ToolbarButton type="mark" format="underline" label="Subrayado" icon={<Icon as={FaUnderline} />} />
-                                                    <ToolbarButton type="mark" format="strike" label="Tachado" icon={<Icon as={FaStrikethrough} />} />
-
-                                                    <ToolbarButton type="block" formatKey="textAlign" format="left" label="Alinear a la izquierda" icon={<Icon as={FaAlignLeft} />} />
-                                                    <ToolbarButton type="block" formatKey="textAlign" format="center" label="Alinear al centro" icon={<Icon as={FaAlignCenter} />} />
-                                                    <ToolbarButton type="block" formatKey="textAlign" format="right" label="Alinear a la derecha" icon={<Icon as={FaAlignRight} />} />
-                                                    <ToolbarButton type="block" formatKey="textAlign" format="justify" label="Justificar" icon={<Icon as={FaAlignJustify} />} />
-
-                                                    <Menu>
-                                                        <MenuButton as={Button} size="sm" colorScheme="brand" variant="solid">
-                                                            <Icon w={5} h={5} mr="2" as={HiViewGridAdd} /> Insertar Ejercicio
-                                                        </MenuButton>
-                                                        <MenuList>
-                                                            <MenuItem icon={<Icon w={5} h={5} as={MissingWordIcon} />}
-                                                                onClick={e => createExercise(editor, { type: "missing-word" })}
-                                                            >
-                                                                Palabras faltantes
-                                                            </MenuItem>
-                                                            <MenuItem icon={<Icon w={5} h={5} as={WordOrderIcon} />}
-                                                                onClick={e => createExercise(editor, { type: "word-order" })}
-                                                            >
-                                                                Ordernar oraciones
-                                                            </MenuItem>
-                                                        </MenuList>
-                                                    </Menu>
-                                                </ButtonGroup>
-                                            </GridItem>
-                                        </Grid>
-                                    </GridItem>
-
-                                    <GridItem rowSpan={1} colSpan={8} p="12" bg="gray.100" sx={{
-                                        "@media print": {
-                                            gridColumn: "span 12/span 12",
-                                            gridRow: "span 2/span 2"
-                                        }
-                                    }}>
-
-                                        <Box
-                                            background="white"
-                                            p="5"
-                                            as={Editable}
-                                            {...{
-                                                decorate,
-                                                renderElement,
-                                                renderLeaf,
-                                                readOnly: !isWritingMode,
-                                                placeholder: "Escribe aquí...",
-                                                required: true,
-                                            }}
-                                        />
-
-                                    </GridItem>
-
-                                    <GridItem rowSpan={1} colSpan={3}
-                                        sx={{
-                                            "@media print": {
-                                                display: "none",
-                                            }
-                                        }}>
-                                        <Divider />
-                                        <Box p="4">
-                                            <Text fontWeight="semibold" fontSize="lg">Detalles de la actividad</Text>
-                                            {
-                                                !loading && !error &&
-                                                <Fragment>
-                                                    <LanguagePicker {...{ dispatch, lang: worksheet.lang }} />
-                                                    <PublicSwitch {...{ dispatch, isPublic: worksheet.isPublic }} />
-
-                                                </Fragment>
-                                            }
-                                        </Box>
-
-                                        <Divider />
-                                        <Box p="4">
-                                            <Text fontWeight="semibold" fontSize="lg">Ajustes</Text>
-                                            <Text my="2" >
-                                                Modo de edición: <Switch colorScheme="brand" ml="4" isChecked={isWritingMode} onChange={() => dispatch({ type: "toggle-writting-mode" })} />
-                                            </Text>
-                                        </Box>
-
-                                    </GridItem>
-                                </Grid>
-                            )
-                            : (
-                                <Flex flexDir="column" minH="100vh">
-                                    <Flex py="2" px="4" alignItems="center">
-                                        <Box flexGrow="1">
-                                            <WorksheetTitle {...{ dispatch, title: worksheet.title }} />
-                                        </Box>
-
-                                        <Menu>
-                                            <MenuButton variant="ghost" colorScheme="brand" icon={<Icon as={HiDotsVertical} />} as={IconButton} />
-                                            <MenuList>
-                                                <MenuGroup title="Actividad">
-                                                    <MenuItem onClick={saveWorksheet} icon={<Icon color="brand.500" as={RiDraftFill} />} >Guardar Cambios</MenuItem>
-                                                    <MenuItem icon={<Icon color="brand.500" as={FaFileUpload} />} >Publicar Actividad</MenuItem>
-                                                </MenuGroup>
-                                                <MenuDivider />
-                                                <MenuGroup title="Ver">
-                                                    {
-                                                        isFullscreen
-                                                            ? <MenuItem icon={<Icon as={BsFullscreenExit} />} onClick={handleCloseFullscreen}>Vista normal</MenuItem>
-                                                            : <MenuItem icon={<Icon as={BsFullscreen} />} onClick={handleOpenFullscreen}>Pantalla completa</MenuItem>
-                                                    }
-                                                </MenuGroup>
-                                            </MenuList>
-                                        </Menu>
-
-                                    </Flex>
-                                    <Divider />
-                                    <Box flexGrow="1" bg="gray.100" p="4" boxShadow="base">
-                                        <Box
-                                            background="white"
-                                            p="5"
-                                            as={Editable}
-                                            {...{
-                                                decorate,
-                                                renderElement,
-                                                renderLeaf,
-                                                readOnly: !isWritingMode,
-                                                placeholder: "Escribe aquí...",
-                                                required: true,
-                                            }}
-                                        />
+                                <GridItem rowSpan="1" colSpan="1" display="grid" placeItems="center" >
+                                    <Box as="a" href="/" mx="4">
+                                        <Icon as={FaArrowLeft} />
                                     </Box>
+                                </GridItem>
 
-                                    {editor.selection && (
-                                        <Slide direction="bottom" in={editor.selection} style={{ zIndex: 50, boxShadow: "var(--chakra-shadows-dark-lg)", }}>
+                                <GridItem rowSpan="1" display="flex" flexDirection="row" alignItems="center" pt="2">
+                                    <Skeleton isLoaded={!loading} >
+                                        <WorksheetTitle {...{ dispatch, title: worksheet ? worksheet.title : "" }} />
+                                    </Skeleton>
+                                </GridItem>
 
-                                            <Flex pr="20vw" w="100vw" color="#616161" bg="white" alignItems="center" height="50px">
-                                                <Flex width="full" height="full" overflowX="auto">
-                                                    <Menu>
-                                                        <MenuButton borderRadius="none" height="full" flex="0 0 auto" display="flex" as={Button} variant="solid" colorScheme="brand">
-                                                            <Icon w={5} h={5} mr="2" as={HiViewGridAdd} /> Insertar Ejercicio
-                                                        </MenuButton>
-                                                        <MenuList>
-                                                            <MenuItem icon={<Icon w={5} h={5} as={MissingWordIcon} />}
-                                                                onClick={e => createExercise(editor, { type: "missing-word" })}
-                                                            >
-                                                                Palabras faltantes
-                                                            </MenuItem>
-                                                            <MenuItem icon={<Icon w={5} h={5} as={WordOrderIcon} />}
-                                                                onClick={e => createExercise(editor, { type: "word-order" })}
-                                                            >
-                                                                Ordernar oraciones
-                                                            </MenuItem>
-                                                        </MenuList>
-                                                    </Menu>
+                                <GridItem display="flex" alignItems="center" px="4" colStart={3} rowSpan={2}>
+                                    <ButtonGroup>
+                                        <Button isLoading={savingWorksheet} onClick={saveWorksheet} colorScheme="brand" variant="ghost">
+                                            <Icon as={RiDraftFill} mr="2" />
+                                        Guardar Cambios
+                                    </Button>
+                                        <Button colorScheme="brand">
+                                            <Icon as={FaFileUpload} mr="2" />
+                                        Publicar
+                                    </Button>
+                                    </ButtonGroup>
+                                </GridItem>
 
-                                                    <Menu>
-                                                        <Tooltip hasArrow label="Estilos de tipografía" fontSize="md">
-                                                            <MenuButton
-                                                                as={IconButton}
-                                                                aria-label="Estilos de tipografía"
-                                                                variant="ghost"
-                                                                color="#616161"
-                                                                size="lg"
-                                                                borderRadius="none"
-                                                                icon={<Icon as={FaHeading} />}
-                                                            />
-                                                        </Tooltip>
+                                <GridItem py="2" colStart={2} rowSpan="1" display="inline-flex" alignItems="center">
+                                    <ActionsMenu {...{ saveWorksheet }} />
+                                </GridItem>
+                                <GridItem py="2" px="5" colSpan={3} width="full" borderTop="2px solid var(--chakra-colors-gray-100)">
+                                    <ButtonGroup as={Flex} alignItems="center">
+                                        <Toolbar />
+                                    </ButtonGroup>
+                                </GridItem>
+                            </Grid>
 
-                                                        <MenuList>
-                                                            <ToolbarButton borderRadius="none" size="lg" variant="menuListItem" type="block" format="heading 4xl" label={<Text fontSize="3xl">Título 1</Text>} />
-                                                            <ToolbarButton borderRadius="none" size="lg" variant="menuListItem" type="block" format="heading 3xl" label={<Text fontSize="2xl">Título 2</Text>} />
-                                                            <ToolbarButton borderRadius="none" size="lg" variant="menuListItem" type="block" format="heading 2xl" label={<Text fontSize="xl">Subtítulo 1</Text>} />
-                                                            <ToolbarButton borderRadius="none" size="lg" variant="menuListItem" type="block" format="heading xl" label={<Text fontSize="lg">Subtítulo 2</Text>} />
-                                                            <ToolbarButton borderRadius="none" size="lg" variant="menuListItem" type="block" format="" label={<Text fontSize="lg">Texto normal</Text>} />
-                                                        </MenuList>
-                                                    </Menu>
-
-                                                    <ToolbarButton borderRadius="none" size="lg" type="mark" format="bold" label="Negrita" icon={<Icon as={FaBold} />} />
-                                                    <ToolbarButton borderRadius="none" size="lg" type="mark" format="italic" label="Cursiva" icon={<Icon as={FaItalic} />} />
-                                                    <ToolbarButton borderRadius="none" size="lg" type="mark" format="underline" label="Subrayado" icon={<Icon as={FaUnderline} />} />
-                                                    <ToolbarButton borderRadius="none" size="lg" type="mark" format="strike" label="Tachado" icon={<Icon as={FaStrikethrough} />} />
-
-                                                    <ToolbarButton borderRadius="none" size="lg" type="block" formatKey="textAlign" format="left" label="Alinear a la izquierda" icon={<Icon as={FaAlignLeft} />} />
-                                                    <ToolbarButton borderRadius="none" size="lg" type="block" formatKey="textAlign" format="center" label="Alinear al centro" icon={<Icon as={FaAlignCenter} />} />
-                                                    <ToolbarButton borderRadius="none" size="lg" type="block" formatKey="textAlign" format="right" label="Alinear a la derecha" icon={<Icon as={FaAlignRight} />} />
-                                                    <ToolbarButton borderRadius="none" size="lg" type="block" formatKey="textAlign" format="justify" label="Justificar" icon={<Icon as={FaAlignJustify} />} />
+                        </GridItem>
 
 
-                                                </Flex>
+                        <GridItem rowSpan={1} colSpan={8} p="12" bg="gray.100" sx={{
+                            "@media print": {
+                                gridColumn: "span 12/span 12",
+                                gridRow: "span 2/span 2"
+                            }
+                        }}>
+                            <Skeleton isLoaded={!loading}>
+                                <Editable
+                                    {...{
+                                        decorate,
+                                        renderElement,
+                                        renderLeaf,
+                                        readOnly: !isWritingMode,
+                                        placeholder: "Escribe aquí..."
+                                    }}
+                                />
+                            </Skeleton>
+                        </GridItem>
 
-                                                <Flex height="full" position="fixed" bottom="0" right="0" alignItems="center">
-                                                    <Divider orientation="vertical" />
-                                                    <IconButton onClick={handleHideKeyboard} variant="ghost" colorScheme="brand" icon={<Icon as={MdKeyboardHide} />} />
-                                                    <Divider orientation="vertical" />
-                                                    <IconButton variant="ghost" colorScheme="brand" icon={<Icon as={FaChevronUp} />} />
-                                                </Flex>
-                                            </Flex>
-
-                                        </Slide>
-                                    )}
-
-                                    {!editor.selection && (
-                                        <Slide direction="bottom" in={!editor.selection} style={{ zIndex: 150 }}>
-
-                                            <Box color="white" display="flex" bg="#05043E" alignItems="center" width="100%" justifyContent="space-around">
-                                                <Flex flexDir="column" alignItems="center" justifyContent="center" cursor="pointer" aria-label="button" py="2" _hover={{ color: "var(--chakra-colors-brand-300)" }} >
-                                                    <Icon w={6} h={6} as={FaChalkboardTeacher} />
-                                                    <Text fontSize="x-small">Imprimir</Text>
-                                                </Flex>
-
-                                                <Flex flexDir="column" alignItems="center" justifyContent="center" cursor="pointer" aria-label="button" py="2" _hover={{ color: "var(--chakra-colors-brand-300)" }} >
-                                                    <Icon w={6} h={6} as={FaHome} />
-                                                    <Text fontSize="x-small">Inicio</Text>
-                                                </Flex>
-
-                                                <Flex flexDir="column" alignItems="center" justifyContent="center" cursor="pointer" aria-label="button" py="2" _hover={{ color: "var(--chakra-colors-brand-300)" }}>
-                                                    <Icon w={6} h={6} as={FaPrint} />
-                                                    <Text fontSize="x-small">Previsualizar</Text>
-                                                </Flex>
-                                            </Box>
-                                        </Slide>
-                                    )}
-                                </Flex>
-                            )
-                        }
-
-
-                        {/* <pre>
-                        {worksheet && JSON.stringify(worksheet.content, null, 2)}
-                    </pre> */}
-                        <Box display="none" flexDirection="column" alignItems="flex-start" position="fixed" zIndex="banner" bottom="0.5" width="full"
+                        <GridItem rowSpan={1} colSpan={3}
                             sx={{
                                 "@media print": {
-                                    display: "flex",
+                                    display: "none",
                                 }
-                            }}
-                        >
-                            <Icon as={Logo} />
-                            <Text fontSize="smaller"> {host}/worksheets/{id}/practice </Text>
-                        </Box>
-                    </Slate >
+                            }}>
+                            <Divider />
+                            <Box p="4">
+                                <Text fontWeight="semibold" fontSize="lg">Detalles de la actividad</Text>
+                                {
+                                    !loading && !error &&
+                                    <Fragment>
+                                        <LanguagePicker {...{ dispatch, lang: worksheet.lang }} />
+                                        <PublicSwitch {...{ dispatch, isPublic: worksheet.isPublic }} />
+
+                                    </Fragment>
+                                }
+                            </Box>
+
+                            <Divider />
+                            <Box p="4">
+                                <Text fontWeight="semibold" fontSize="lg">Ajustes</Text>
+                                <Text my="2" >
+                                    Modo de edición: <Switch colorScheme="brand" ml="4" isChecked={isWritingMode} onChange={() => dispatch({ type: "toggle-writting-mode" })} />
+                                </Text>
+                            </Box>
+
+                        </GridItem>
+
+                    </Grid>
                 )
+                : (
+                    <Flex flexDir="column" minH="100vh">
+                        {loading &&
+                            <Progress size="sm" isIndeterminate
+                                sx={{
+                                    "& > div": {
+                                        background: "var(--chakra-colors-brand-300)"
+                                    }
+                                }}
+                            />
+                        }
+                        <Flex py="2" px="4" alignItems="center">
+
+                            <Box flexGrow="1">
+                                <Skeleton isLoaded={!loading} >
+                                    <WorksheetTitle {...{ dispatch, title: worksheet ? worksheet.title : "" }} />
+                                </Skeleton>
+                            </Box>
+
+                            <Menu>
+                                <MenuButton variant="ghost" colorScheme="brand" icon={<Icon as={HiDotsVertical} />} as={IconButton} />
+                                <MenuList>
+                                    <MenuGroup title="Actividad">
+                                        <MenuItem onClick={saveWorksheet} icon={<Icon color="brand.500" as={RiDraftFill} />} >Guardar Cambios</MenuItem>
+                                        <MenuItem icon={<Icon color="brand.500" as={FaFileUpload} />} >Publicar Actividad</MenuItem>
+                                    </MenuGroup>
+                                    <MenuDivider />
+                                    <MenuGroup title="Ver">
+                                        {
+                                            isFullscreen
+                                                ? <MenuItem icon={<Icon as={BsFullscreenExit} />} onClick={handleCloseFullscreen}>Vista normal</MenuItem>
+                                                : <MenuItem icon={<Icon as={BsFullscreen} />} onClick={handleOpenFullscreen}>Pantalla completa</MenuItem>
+                                        }
+                                    </MenuGroup>
+                                </MenuList>
+                            </Menu>
+
+                        </Flex>
+                        <Divider />
+                        <Box flexGrow="1" bg="gray.100" p="4" boxShadow="base">
+                            <Skeleton height="full" isLoaded={!loading}>
+                                <Editable
+                                    {...{
+                                        decorate,
+                                        renderElement,
+                                        renderLeaf,
+                                        readOnly: !isWritingMode,
+                                        placeholder: "Escribe aquí..."
+                                    }}
+                                />
+                            </Skeleton>
+                        </Box>
+
+                        {editor.selection && (
+                            <Slide direction="bottom" in={editor.selection} style={{ zIndex: 50, boxShadow: "var(--chakra-shadows-dark-lg)", }}>
+
+                                <Flex pr="30vw" w="100vw" color="#616161" bg="white" alignItems="center" height="50px">
+                                    <Flex width="full" height="full" overflowX="auto" alignItems="center">
+                                        <Toolbar />
+                                    </Flex>
+
+                                    <Flex height="full" position="fixed" bottom="0" right="0" alignItems="center">
+                                        <Divider orientation="vertical" />
+                                        <IconButton bg="white" borderRadius="none" height="full" onClick={handleHideKeyboard} variant="ghost" colorScheme="brand" icon={<Icon as={MdKeyboardHide} />} />
+                                        <Divider orientation="vertical" />
+                                        <IconButton variant="ghost" borderRadius="none" height="full" colorScheme="brand" icon={<Icon as={FaChevronUp} />} />
+                                    </Flex>
+                                </Flex>
+
+                            </Slide>
+                        )}
+
+                        {!editor.selection && (
+                            <Slide direction="bottom" in={!editor.selection} style={{ zIndex: 150 }}>
+
+                                <Box color="white" display="flex" bg="#05043E" alignItems="center" width="100%" justifyContent="space-around">
+                                    <Flex onClick={handlePrint} flexDir="column" alignItems="center" justifyContent="center" cursor="pointer" aria-label="button" py="2" _hover={{ color: "var(--chakra-colors-brand-300)" }} >
+                                        <Icon w={6} h={6} as={FaPrint} />
+                                        <Text fontSize="x-small">Imprimir</Text>
+                                    </Flex>
+
+                                    <Flex flexDir="column" alignItems="center" justifyContent="center" cursor="pointer" aria-label="button" py="2" _hover={{ color: "var(--chakra-colors-brand-300)" }} >
+                                        <Icon w={6} h={6} as={FaHome} />
+                                        <Text fontSize="x-small">Inicio</Text>
+                                    </Flex>
+
+                                    <Flex flexDir="column" alignItems="center" justifyContent="center" cursor="pointer" aria-label="button" py="2" _hover={{ color: "var(--chakra-colors-brand-300)" }}>
+                                        <Icon w={6} h={6} as={FaChalkboardTeacher} />
+                                        <Text fontSize="x-small">Previsualizar</Text>
+                                    </Flex>
+                                </Box>
+                            </Slide>
+                        )}
+                    </Flex>
+                )
+            }
+
+
+            {/* <pre>
+        {worksheet && JSON.stringify(worksheet.content, null, 2)}
+    </pre> */}
+            <Box display="none" flexDirection="column" alignItems="flex-start" position="fixed" zIndex="banner" bottom="0.5" width="full"
+                sx={{
+                    "@media print": {
+                        display: "flex",
+                    }
+                }}
+            >
+                <Icon as={Logo} />
+                <Text fontSize="smaller"> {host}/worksheets/{id}/practice </Text>
+            </Box>
+        </Slate >
     )
 }
 

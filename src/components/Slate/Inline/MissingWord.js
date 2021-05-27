@@ -6,6 +6,8 @@ import Icon from "@chakra-ui/icon";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import { useMediaQuery } from "@chakra-ui/media-query";
 import { getExerciseBlockProps } from "../../../utils/exerciseBlocks";
+import { SocketContext, useSocket } from "../../../context/socket";
+import { useContext } from "react";
 
 
 const Mark = ({ isCorrect, checkExercise, showAnswers }) => {
@@ -20,6 +22,9 @@ const Mark = ({ isCorrect, checkExercise, showAnswers }) => {
 }
 
 export const MissingWordInput = (props) => {
+
+    const socket = useContext(SocketContext);
+
     const { text: correctAnswer, userAnswer = "", isCorrect = false } = props.leaf;
 
     const editor = useSlate();
@@ -28,6 +33,9 @@ export const MissingWordInput = (props) => {
     const { showAnswers, checkExercise } = getExerciseBlockProps(editor, path)
 
     function setLeafProps(properties) {
+        //send the action to the server so it is broadcasted to every client
+        socket.emit("action", JSON.stringify({ type: "set-leaf-props", props: properties, path }))
+        //Apply the action locally
         Transforms.setNodes(editor, properties, { at: path })
     }
 
@@ -46,8 +54,6 @@ export const MissingWordInput = (props) => {
     }
 
     const inputValue = showAnswers ? correctAnswer : userAnswer;
-
-    // return <Input variant="filled" readOnly={isChecked} value={userAnswer} onChange={handleOnChange} />
 
     return (
         <InputGroup w="32" as="span" display="inline-block" >

@@ -177,12 +177,15 @@ const Home = () => {
         <Fragment>
 
             <Navbar />
-            { loading && <Progress colorScheme="brand" size="xs" isIndeterminate sx={{
-                "& > div": {
-                    background: "var(--chakra-colors-brand-100)"
-                }
-            }}
-            />}
+            { loading &&
+                <Progress size="xs" isIndeterminate
+                    sx={{
+                        "& > div": {
+                            background: "var(--chakra-colors-brand-300)"
+                        }
+                    }}
+                />
+            }
             { error &&
                 <Alert status="error">
                     <AlertIcon />

@@ -2,8 +2,8 @@ import React, { Fragment } from 'react';
 import { Drawer, DrawerContent, DrawerOverlay, DrawerHeader, DrawerBody, Icon, IconButton, Text, Switch } from "@chakra-ui/react";
 import { useDisclosure } from '@chakra-ui/hooks';
 import { useMediaQuery } from '@chakra-ui/media-query';
-import LanguagePicker from './LanguagePicker';
-import PublicSwitch from './PublicSwitch';
+import LanguagePicker from '../LanguagePicker';
+import PublicSwitch from '../PublicSwitch';
 
 import PropTypes from "prop-types"
 
