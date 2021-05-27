@@ -12,10 +12,11 @@ const withExerciseBlock = (editor) => {
                 return Transforms.insertNodes(editor, { type: "paragraph", children: [{ text: "" }] }, { at: Path.next(path) });
             }
 
-            // if (!Node.has(editor, Path.previous(path))) {
-            //     console.log("Paragraph inserted");
-            //     return Transforms.insertNodes(editor, { type: "paragraph", children: [{ text: "" }] }, { at: Path.previous(path) });
-            // }
+            //Add a paragraph before if there's not a block 
+            if (!Node.has(editor, Path.previous(path))) {
+                console.log("Paragraph inserted");
+                return Transforms.insertNodes(editor, { type: "paragraph", children: [{ text: "" }] }, { at: Path.previous(path) });
+            }
 
         }
         normalizeNode(entry);

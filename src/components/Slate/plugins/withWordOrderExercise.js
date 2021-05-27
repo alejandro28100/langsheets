@@ -7,8 +7,16 @@ const withWordOrderExercise = (editor) => {
     editor.normalizeNode = entry => {
         const [node, path] = entry;
 
+        let isIntoAnExerciseBlock = false;
+
+        for (const [ancerstorNode] of Node.ancestors(editor, path)) {
+            if (ancerstorNode.type === "exercise-block") {
+                isIntoAnExerciseBlock = true;
+            }
+        }
+
         //Check whether the block is a paragraph or a word-order-exercise-paragraph
-        if (Editor.isBlock(editor, node) && ["paragraph", "word-order-exercise-paragraph"].includes(node.type)) {
+        if (Editor.isBlock(editor, node) && ["paragraph", "word-order-exercise-paragraph"].includes(node.type) && isIntoAnExerciseBlock) {
 
             let hasDivisions = false;
 

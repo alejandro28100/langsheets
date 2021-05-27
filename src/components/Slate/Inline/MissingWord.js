@@ -6,7 +6,7 @@ import Icon from "@chakra-ui/icon";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import { useMediaQuery } from "@chakra-ui/media-query";
 import { getExerciseBlockProps } from "../../../utils/exerciseBlocks";
-import { SocketContext, useSocket } from "../../../context/socket";
+import { SocketContext } from "../../../context/socket";
 import { useContext } from "react";
 
 

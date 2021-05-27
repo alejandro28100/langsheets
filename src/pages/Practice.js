@@ -1,5 +1,5 @@
 // @refresh reset
-import React, { Fragment, useEffect, useRef, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { useParams } from "react-router-dom"
 
 import { Slate, Editable } from "slate-react"
@@ -7,7 +7,6 @@ import { Slate, Editable } from "slate-react"
 import { Container, Box, Text } from "@chakra-ui/react";
 import Navbar from "../components/Navbar";
 
-// import { getWorksheet } from "../utils/localStorage";
 
 import useBodyBackground from '../hooks/useBodyBackground';
 import useSlateRender from '../hooks/useSlateRender';
@@ -17,12 +16,6 @@ import { parseWorksheet } from '../utils';
 
 import { SocketContext, socket } from "../context/socket";
 import { Transforms } from 'slate';
-
-// import { io } from "socket.io-client";
-
-// const socket = socketIoClient(window.location.origin);
-// import { withYjs, SyncElement } from "slate-yjs";
-// import * as Y from "yjs";
 
 const defaultValue = {
     "title": "",
@@ -37,8 +30,6 @@ const defaultValue = {
         }
     ]
 }
-
-// const socket = io();
 
 const Practice = () => {
     //Get the id of the worksheet from the url 
@@ -83,11 +74,9 @@ const Practice = () => {
                 setWorksheet(
                     parseWorksheet(json)
                 )
-                // dispatch({ type: ACTIONS.SET_WORKSHEET, payload: { worksheet: parseWorksheet(json) } })
+
                 return;
             }
-
-            // dispatch({ type: ACTIONS.ERROR, payload: { error: json } });
 
         }
         getWorksheet();
@@ -123,6 +112,7 @@ const Practice = () => {
         </Fragment>
     )
 }
+
 
 
 export default Practice
