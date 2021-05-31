@@ -1,11 +1,11 @@
 // @refresh reset
-import React, { Fragment, useEffect, useRef, useState, useReducer } from 'react'
+import React, { Fragment, useEffect, useRef, useReducer } from 'react'
 import { useParams } from "react-router-dom"
 
 import { Slate, Editable } from "slate-react"
 
-import { Container, Box, Text, Input, Flex, Button, useToast, toast, Avatar, AvatarGroup, AccordionButton } from "@chakra-ui/react";
-import Navbar from "../components/Navbar";
+import { Container, Box, Text, Input, Flex, Button, useToast, Avatar, AvatarGroup, AccordionButton } from "@chakra-ui/react";
+// import Navbar from "../components/Navbar";
 
 
 import useBodyBackground from '../hooks/useBodyBackground';
@@ -16,11 +16,9 @@ import { parseWorksheet } from '../utils';
 
 import { SocketContext, socket } from "../context/socket";
 import { Transforms } from 'slate';
-import Logo from '../components/Logo';
+// import Logo from '../components/Logo';
 import { FaUserAlt } from 'react-icons/fa';
-import { HiPhoneIncoming } from 'react-icons/hi';
-
-// import { io } from "socket.io-client";
+// import { HiPhoneIncoming } from 'react-icons/hi';
 
 const initialValue = {
     users: [],
@@ -41,7 +39,7 @@ const initialValue = {
 };
 
 function reducer(state, action) {
-
+    console.log(`> Practice reducer: ${action.type}`);
     switch (action.type) {
         case 'set-username':
             return {
@@ -105,13 +103,17 @@ const Practice = () => {
 
     }
 
-    if (username) {
-        socket.auth = { username };
-        socket.connect();
-    }
-
     useEffect(() => {
         getWorksheet();
+    }, [])
+
+    useEffect(() => {
+
+        if (username) {
+            socket.auth = { username };
+            socket.connect();
+            socket.emit('join-room', id);
+        }
 
         socket.onAny((event, ...args) => {
             console.log(event, args);
@@ -169,18 +171,19 @@ const Practice = () => {
             }
         });
 
-        // socket.on('connection_error', (err) => {
-        //     if (err.meesage === "invalid username") {
-        //         toast({
-        //             description: "Debes elegir un nombre válido",
-        //             status: "warning",
-        //             duration: 8000,
-        //             position: "top-right",
-        //             isClosable: true,
-        //         })
-        //         setUsername(undefined);
-        //     }
-        // })
+        socket.on('connection_error', (err) => {
+            console.error(err);
+            //     if (err.meesage === "invalid username") {
+            //         toast({
+            //             description: "Debes elegir un nombre válido",
+            //             status: "warning",
+            //             duration: 8000,
+            //             position: "top-right",
+            //             isClosable: true,
+            //         })
+            //         setUsername(undefined);
+            //     }
+        })
 
         return () => {
             socket.off('users');
@@ -188,9 +191,9 @@ const Practice = () => {
             socket.off('user-disconnected');
             socket.off('action');
             socket.off('connection_error');
-            socket.disconnect();
+            socket.disconnect()
         }
-    }, [])
+    }, [username])
 
     //Set a custom background color
     useBodyBackground("var(--chakra-colors-gray-100)");
@@ -235,12 +238,11 @@ const Practice = () => {
 
 const UsersList = (props) => {
     const { users } = props;
-    // console.log("Rendering users")
     return (
         <AvatarGroup size="sm" max={3}>
             {
-                users.map(user => (
-                    <Avatar bg="brand.500" color="white" key={user.userID} name={user.username} src={<FaUserAlt />} title={user.username} />
+                users.map(({ username, userID }) => (
+                    <Avatar key={userID} bg="brand.500" color="white" key={userID} name={username} src={<FaUserAlt />} title={username} />
                 ))
             }
         </AvatarGroup>
