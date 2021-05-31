@@ -1,6 +1,6 @@
 import { ReactEditor, useSlate } from "slate-react"
 import { Transforms } from "slate"
-import { Box } from "@chakra-ui/layout";
+import { Box, Text } from "@chakra-ui/layout";
 import { Input, InputGroup, InputRightElement } from "@chakra-ui/input";
 import Icon from "@chakra-ui/icon";
 import { FaCheck, FaTimes } from "react-icons/fa";
@@ -8,6 +8,7 @@ import { useMediaQuery } from "@chakra-ui/media-query";
 import { getExerciseBlockProps } from "../../../utils/exerciseBlocks";
 import { SocketContext } from "../../../context/socket";
 import { useContext } from "react";
+import { Tooltip } from "@chakra-ui/tooltip";
 
 
 const Mark = ({ isCorrect, checkExercise, showAnswers }) => {
@@ -25,16 +26,32 @@ export const MissingWordInput = (props) => {
 
     const socket = useContext(SocketContext);
 
-    const { text: correctAnswer, userAnswer = "", isCorrect = false } = props.leaf;
+    const { text: correctAnswer, userAnswer = "", isCorrect = false, focused = false, user } = props.leaf;
 
     const editor = useSlate();
     const path = ReactEditor.findPath(editor, props.text);
 
     const { showAnswers, checkExercise } = getExerciseBlockProps(editor, path)
 
+    function handleOnFocus({ event, focus = true }) {
+
+        if (focus) {
+            socket.emit("action", {
+                type: 'input-focused',
+                user: {
+                    username: socket.auth.username,
+                    userID: socket.id
+                },
+                path
+            });
+            return;
+        }
+        event.target.blur();
+    }
+
     function setLeafProps(properties) {
         //send the action to the server so it is broadcasted to every client
-        socket.emit("action", JSON.stringify({ type: "set-leaf-props", props: properties, path }))
+        socket.emit("action", { type: "set-leaf-props", props: properties, path })
         //Apply the action locally
         Transforms.setNodes(editor, properties, { at: path })
     }
@@ -48,6 +65,13 @@ export const MissingWordInput = (props) => {
         });
     }
 
+    function handleOnBlur() {
+        socket.emit("action", {
+            type: 'input-blured',
+            path
+        });
+    }
+
     function handleIsCorrect(userAnswer) {
         //remove all the spaces around the words and compare them in a non sensitive case
         return userAnswer.toLowerCase().trim() === correctAnswer.toLowerCase().trim();
@@ -56,13 +80,38 @@ export const MissingWordInput = (props) => {
     const inputValue = showAnswers ? correctAnswer : userAnswer;
 
     return (
-        <InputGroup w="32" as="span" display="inline-block" >
-            <Input variant="filled" readOnly={checkExercise} value={inputValue} onChange={handleOnChange} />
+        <InputGroup w="32" as="span" display="inline-block" position="relative">
+            { focused
+                ? (
+                    <Tooltip label={<UserLabel user={user} />}>
+                        <Input cursor="not-allowed" variant="filled" bg="brand.200" transition="all ease 300ms" _hover={{ background: "var(--chakra-colors-brand-200)" }} readOnly={checkExercise} value={inputValue} onFocus={event => handleOnFocus({ event, focus: false })} onChange={handleOnChange} />
+                    </Tooltip>
+                )
+                : (
+                    <Input variant="filled" readOnly={checkExercise} value={inputValue} onFocus={handleOnFocus} onBlur={handleOnBlur} onChange={handleOnChange} />
+                )}
             <Mark {...{ isCorrect, checkExercise, showAnswers }} />
-        </InputGroup>
+        </InputGroup >
     )
 
 }
+
+
+const UserLabel = props => {
+    return (
+        <Text as="span">
+            {props.user.username} esta escribiendo <DotAnimation />
+        </Text>
+    )
+}
+
+const DotAnimation = props => (
+    <Text as="span" id="wave" position="relative">
+        <Text as="span" className="dot"></Text>
+        <Text as="span" className="dot"></Text>
+        <Text as="span" className="dot"></Text>
+    </Text>
+)
 
 export const MissingWordEditable = props => {
 

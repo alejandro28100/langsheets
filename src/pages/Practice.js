@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom"
 
 import { Slate, Editable } from "slate-react"
 
-import { Container, Box, Text, Input, Flex, Button, useToast, toast, Avatar, AvatarGroup } from "@chakra-ui/react";
+import { Container, Box, Text, Input, Flex, Button, useToast, toast, Avatar, AvatarGroup, AccordionButton } from "@chakra-ui/react";
 import Navbar from "../components/Navbar";
 
 
@@ -93,14 +93,6 @@ const Practice = () => {
     const { username, users, worksheet } = state;
 
     const toast = useToast();
-    // console.log("Rendering page");
-
-    // Keep track of state for the value of the editor.
-    // const [worksheet, setWorksheet] = useState(defaultValue)
-
-    // const [username, setUsername] = useState(undefined);
-
-    // const [users, setUsers] = useState([]);
 
     async function getWorksheet() {
         const response = await fetch(`/api/activities/${id}`);
@@ -109,32 +101,27 @@ const Practice = () => {
         if (response.ok) {
             const worksheet = parseWorksheet(json);
             dispatch({ type: 'set-worksheet', payload: { worksheet } });
-            // setWorksheet()
         }
 
     }
 
+    if (username) {
+        socket.auth = { username };
+        socket.connect();
+    }
+
     useEffect(() => {
         getWorksheet();
-    }, [])
 
-    useEffect(() => {
-
-        if (username) {
-            socket.auth = { username };
-            socket.connect();
-        }
-
-        // socket.onAny((event, ...args) => {
-        //     console.log(event, args);
-        // });
+        socket.onAny((event, ...args) => {
+            console.log(event, args);
+        });
 
         socket.on('users', (commingUsers) => {
             dispatch({ type: 'set-users', payload: { users: commingUsers } });
         });
 
         socket.on("user-connected", (newUser) => {
-            dispatch({ type: 'add-user', payload: { user: newUser } });
             toast({
                 description: `${newUser.username} ha ingresado a la actividad.`,
                 status: "info",
@@ -142,18 +129,41 @@ const Practice = () => {
                 position: "top-right",
                 isClosable: true,
             })
+            dispatch({ type: 'add-user', payload: { user: newUser } });
+        });
+
+        socket.on("user-disconnected", ({ username, users }) => {
+            toast({
+                description: `${username} se ha salido de la actividad.`,
+                status: "info",
+                duration: 3000,
+                position: "top-right",
+                isClosable: true,
+            })
+            dispatch({ type: 'set-users', payload: { users } });
+
         });
 
         socket.on('action', (value) => {
-            const action = JSON.parse(value);
-            // console.log("Action received", action);
+            if (editor.children.length === 0) return;
+            const { path, ...action } = value;
+
             switch (action.type) {
                 case 'set-leaf-props':
-                    if (editor.children.length !== 0) {
-                        Transforms.setNodes(editor, { ...action.props }, { at: action.path });
-                    }
+                    Transforms.setNodes(editor, {
+                        ...action.props
+                    }, { at: path });
                     break;
-
+                case 'input-focused':
+                    Transforms.setNodes(editor, {
+                        focused: true,
+                        user: action.user
+                    }, { at: path });
+                    break;
+                case 'input-blured':
+                    Transforms.setNodes(editor, {
+                        focused: false
+                    }, { at: path });
                 default:
                     break;
             }
@@ -175,21 +185,12 @@ const Practice = () => {
         return () => {
             socket.off('users');
             socket.off('user-connected');
+            socket.off('user-disconnected');
             socket.off('action');
             socket.off('connection_error');
+            socket.disconnect();
         }
-    })
-
-
-
-    // console.log(editor);
-    function handleChangeProp({ propery, value }) {
-
-        // setWorksheet(prevValue => {
-        //     return { ...prevValue, [propery]: value }
-        // })
-    }
-
+    }, [])
 
     //Set a custom background color
     useBodyBackground("var(--chakra-colors-gray-100)");
@@ -208,8 +209,6 @@ const Practice = () => {
                 {/* <Navbar /> */}
 
                 <Box >
-
-
                     <Container maxWidth="container.lg" my="4" >
                         <SocketContext.Provider value={socket}>
                             <Slate
@@ -236,7 +235,7 @@ const Practice = () => {
 
 const UsersList = (props) => {
     const { users } = props;
-    console.log("Rendering users")
+    // console.log("Rendering users")
     return (
         <AvatarGroup size="sm" max={3}>
             {
