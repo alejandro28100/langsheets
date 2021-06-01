@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom"
 
 import { Slate, Editable } from "slate-react"
 
-import { Container, Box, Text, Input, Flex, Button, useToast, Avatar, AvatarGroup, AccordionButton } from "@chakra-ui/react";
+import { Container, Box, Text, Input, Flex, Button, useToast, Avatar, AvatarGroup } from "@chakra-ui/react";
 // import Navbar from "../components/Navbar";
 
 
@@ -92,32 +92,35 @@ const Practice = () => {
 
     const toast = useToast();
 
-    async function getWorksheet() {
-        const response = await fetch(`/api/activities/${id}`);
-        const json = await response.json();
 
-        if (response.ok) {
-            const worksheet = parseWorksheet(json);
-            dispatch({ type: 'set-worksheet', payload: { worksheet } });
+
+    useEffect(() => {
+        async function getWorksheet() {
+            const response = await fetch(`/api/activities/${id}`);
+            const json = await response.json();
+
+            if (response.ok) {
+                const worksheet = parseWorksheet(json);
+                dispatch({ type: 'set-worksheet', payload: { worksheet } });
+            }
+
         }
-
-    }
-
-    useEffect(() => {
         getWorksheet();
-    }, [])
+    }, [id])
 
     useEffect(() => {
-
         if (username) {
             socket.auth = { username };
             socket.connect();
             socket.emit('join-room', id);
         }
+    }, [id, username])
 
-        socket.onAny((event, ...args) => {
-            console.log(event, args);
-        });
+    useEffect(() => {
+
+        // socket.onAny((event, ...args) => {
+        //     console.log(event, args);
+        // });
 
         socket.on('users', (commingUsers) => {
             dispatch({ type: 'set-users', payload: { users: commingUsers } });
@@ -134,6 +137,12 @@ const Practice = () => {
             dispatch({ type: 'add-user', payload: { user: newUser } });
         });
 
+        //Send the updated contend to a new user 
+        socket.on("send-updated-content", (userID) => {
+            // console.log(worksheet.content);
+            socket.emit('send-updated-content', userID, worksheet.content);
+        });
+
         socket.on("user-disconnected", ({ username, users }) => {
             toast({
                 description: `${username} se ha salido de la actividad.`,
@@ -143,7 +152,6 @@ const Practice = () => {
                 isClosable: true,
             })
             dispatch({ type: 'set-users', payload: { users } });
-
         });
 
         socket.on('action', (value) => {
@@ -151,6 +159,10 @@ const Practice = () => {
             const { path, ...action } = value;
 
             switch (action.type) {
+                case 'update-content':
+                    console.log(action.content);
+                    dispatch({ type: 'set-worksheet-content', payload: { content: action.content } })
+                    break;
                 case 'set-leaf-props':
                     Transforms.setNodes(editor, {
                         ...action.props
@@ -166,34 +178,42 @@ const Practice = () => {
                     Transforms.setNodes(editor, {
                         focused: false
                     }, { at: path });
+                    break;
                 default:
                     break;
             }
         });
 
         socket.on('connection_error', (err) => {
-            console.error(err);
-            //     if (err.meesage === "invalid username") {
-            //         toast({
-            //             description: "Debes elegir un nombre válido",
-            //             status: "warning",
-            //             duration: 8000,
-            //             position: "top-right",
-            //             isClosable: true,
-            //         })
-            //         setUsername(undefined);
-            //     }
+            // console.error(err);
+            switch (err.message) {
+                case "invalid username":
+                    toast({
+                        description: "Debes elegir un nombre válido",
+                        status: "warning",
+                        duration: 8000,
+                        position: "top-right",
+                        isClosable: true,
+                    })
+                    break;
+                case "invalid room":
+                    socket.emit("join-room", id)
+                    break;
+                default:
+                    break;
+            }
         })
 
         return () => {
+            socket.offAny();
+            socket.off("send-updated-content");
             socket.off('users');
             socket.off('user-connected');
             socket.off('user-disconnected');
             socket.off('action');
             socket.off('connection_error');
-            socket.disconnect()
         }
-    }, [username])
+    }, [id, worksheet, editor, toast])
 
     //Set a custom background color
     useBodyBackground("var(--chakra-colors-gray-100)");
@@ -202,7 +222,7 @@ const Practice = () => {
         username ? (
             <Fragment>
 
-                <Flex py="2">
+                <Flex py="2" >
                     <Text flexGrow="1" color="brand.600" px="4" fontSize="x-large" fontWeight="bold" >{worksheet.title}</Text>
                     <Flex justifyContent="flex-end" alignItems="center" px="4">
                         <UsersList users={users} />
@@ -236,18 +256,13 @@ const Practice = () => {
     )
 }
 
-const UsersList = (props) => {
-    const { users } = props;
-    return (
-        <AvatarGroup size="sm" max={3}>
-            {
-                users.map(({ username, userID }) => (
-                    <Avatar key={userID} bg="brand.500" color="white" key={userID} name={username} src={<FaUserAlt />} title={username} />
-                ))
-            }
-        </AvatarGroup>
-    )
-}
+const UsersList = ({ users }) => (
+    <AvatarGroup size="sm" max={3}>
+        {users.map(({ username, userID }) => (
+            <Avatar key={userID} bg="brand.500" color="white" name={username} src={<FaUserAlt />} title={username} />
+        ))}
+    </AvatarGroup>
+)
 
 
 const UserNameForm = (props) => {
