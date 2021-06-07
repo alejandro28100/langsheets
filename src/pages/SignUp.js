@@ -25,14 +25,14 @@ const SignUp = () => {
 
     async function handleSubmit(e) {
         //Clean screen from previous errors
-        const updatedForm = { ...form };
-        updatedForm.error = undefined;
-        setForm(updatedForm);
+        // const updatedForm = { ...form };
+        // updatedForm.error = undefined;
+        // setForm(updatedForm);
 
         e.preventDefault();
 
         //Prevent user to pass two different passwords
-        if (password !== password2) {
+        if (form.password !== form.password2) {
             const updatedForm = { ...form };
             updatedForm.password2 = "";
             updatedForm.error = "Las contraseñas no coinciden";
@@ -40,19 +40,18 @@ const SignUp = () => {
             return;
         }
 
-        const { email, password } = await createUserRecord(name, lastName, email, password);
+        await createUserRecord(form.name, form.lastName, form.email, form.password);
 
-        const { token } = await loginUser(email, password);
+        const { token } = await loginUser(form.email, form.password);
 
-        localStorage.setItem("ls-token", token);
-
+        document.cookie = `token=${token}`;
 
     }
 
 
     async function createUserRecord(name, lastName, email, password) {
         //Create User Record
-        const response = await fetch("/api/users/", {
+        const response = await fetch("/api/users", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
