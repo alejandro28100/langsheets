@@ -1,6 +1,8 @@
-import React, { useReducer, useState } from 'react'
-import { Box, Flex, FormControl, FormLabel, Grid, Image, Input, Button, Stack, Alert, AlertIcon } from "@chakra-ui/react";
+import React, { useState } from 'react'
+import { Box, FormControl, FormLabel, Grid, Image, Input, Button, Stack, Alert, AlertIcon } from "@chakra-ui/react";
 import Logo from '../components/Logo';
+import { useUser } from '../context/UserContext';
+import { useHistory } from 'react-router';
 
 const initialValue = {
     name: "",
@@ -12,7 +14,8 @@ const initialValue = {
 }
 
 const SignUp = () => {
-
+    const { login, signUp } = useUser();
+    const history = useHistory();
     const [form, setForm] = useState(initialValue);
 
     const { name, lastName, email, password, password2, error } = form;
@@ -24,7 +27,7 @@ const SignUp = () => {
     }
 
     async function handleSubmit(e) {
-        //Clean screen from previous errors
+        // Clean screen from previous errors
         // const updatedForm = { ...form };
         // updatedForm.error = undefined;
         // setForm(updatedForm);
@@ -40,58 +43,13 @@ const SignUp = () => {
             return;
         }
 
-        await createUserRecord(form.name, form.lastName, form.email, form.password);
+        await signUp(form.name, form.lastName, form.email, form.password);
+        await login(form.email, form.password);
 
-        const { token } = await loginUser(form.email, form.password);
-
-        document.cookie = `token=${token}`;
-
+        //redirect to dashboard
+        history.push("/");
     }
 
-
-    async function createUserRecord(name, lastName, email, password) {
-        //Create User Record
-        const response = await fetch("/api/users", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                name,
-                lastName,
-                email,
-                password
-            })
-        })
-
-        const json = await response.json();
-
-        return {
-            email: json.email,
-            password: json.password
-        };
-
-    }
-
-    async function loginUser(email, password) {
-        //Login User 
-        const response = await fetch("/api/users/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                email,
-                password
-            })
-        })
-
-        const json = await response.json();
-
-        return {
-            token: json.token
-        }
-    }
     return (
         <Grid h="100vh" placeItems="center" templateColumns={["1fr", "repeat(2, 1fr)"]} w="100vw">
             <Image src="/Online_collaboration.png" />
