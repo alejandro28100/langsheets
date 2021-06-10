@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box, FormControl, FormLabel, Grid, Image, Input, Button, Stack, Alert, AlertIcon } from "@chakra-ui/react";
+import { Box, FormControl, FormLabel, Grid, Image, Input, Button, Stack, Alert, AlertIcon, Text } from "@chakra-ui/react";
 import Logo from '../components/Logo';
 import { useUser } from '../context/UserContext';
 import { useHistory } from 'react-router';
@@ -14,7 +14,7 @@ const initialValue = {
 }
 
 const SignUp = () => {
-    const { login, signUp } = useUser();
+    const { login, signUp, loading } = useUser();
     const history = useHistory();
     const [form, setForm] = useState(initialValue);
 
@@ -52,17 +52,24 @@ const SignUp = () => {
 
     return (
         <Grid h="100vh" placeItems="center" templateColumns={["1fr", "repeat(2, 1fr)"]} w="100vw">
-            <Image src="/Online_collaboration.png" />
+            <Box>
+                <Image src="/Online_collaboration.png" />
+                <Text px="4" textAlign="center" fontSize="x-large" fontWeight="semibold" color="brand.700">
+                    Lleva la interacción de tus clases al siguiente nivel
+                </Text>
+            </Box>
             <Box w="md" textAlign="center" px="10">
 
-                <Logo />
+
 
                 <form onSubmit={handleSubmit}>
                     <Stack spacing="4">
 
+                        <Logo />
+
                         <FormControl isRequired mr="4">
                             <FormLabel>Nombre (s)</FormLabel>
-                            <Input value={name} onChange={e => changeFormProp("name", e.target.value)} placeholder="Armando" />
+                            <Input autoFocus value={name} onChange={e => changeFormProp("name", e.target.value)} placeholder="Armando" />
                         </FormControl>
 
                         <FormControl isRequired>
@@ -94,9 +101,11 @@ const SignUp = () => {
                             )
                         }
 
-                        <Button type="submit" colorScheme="brand" variant="solid">
+                        <Button isLoading={loading} type="submit" colorScheme="brand" variant="solid">
                             Crear Cuenta
                         </Button>
+
+                        <Text textAlign="center">¿Ya tienes una cuenta? Inicia sesión <Text color="brand" textDecoration="underline" as="a" href="/login"> aquí </Text></Text>
 
                     </Stack>
 

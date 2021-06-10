@@ -10,6 +10,7 @@ import useBodyBackground from '../hooks/useBodyBackground';
 import Navbar from '../components/Navbar';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { parseWorksheets } from '../utils';
+import { useUser } from '../context/UserContext';
 
 // const examples = [
 //     {
@@ -79,6 +80,7 @@ const Home = () => {
     const history = useHistory();
     const toast = useToast();
 
+    const { user } = useUser();
     const [state, dispatch] = useReducer(reducer, initialState)
     const { error, loading, worksheets } = state;
 
@@ -114,7 +116,12 @@ const Home = () => {
                 type: 'paragraph',
                 children: [{ text: '' }]
             }]),
-            createdAt: new Date()
+            createdAt: new Date(),
+            author: {
+                name: user.name,
+                lastName: user.lastName,
+                id: user.id
+            }
         }
 
         const response = await fetch("/api/activities", {
@@ -130,6 +137,7 @@ const Home = () => {
         dispatch({ type: 'api-call-ended' });
 
         if (response.ok) {
+            // console.log(json);
             //Redirect to the form page with the id of the document created
             history.push(`/worksheets/${json._id}/edit`);
             return;

@@ -4,7 +4,7 @@ import { useUser } from '../context/UserContext';
 import { useHistory } from 'react-router';
 
 import Logo from '../components/Logo';
-import { Box, FormControl, FormLabel, Input, Button, Stack, Alert, AlertIcon } from "@chakra-ui/react";
+import { Box, FormControl, FormLabel, Input, Button, Stack, Alert, AlertIcon, Text } from "@chakra-ui/react";
 
 const initialValue = {
     email: "",
@@ -38,12 +38,12 @@ function Login() {
     return (
         <Box as="form" bg="gray.100" onSubmit={handleSubmit} display="flex" alignItems="center" justifyContent="center" h="100vh" flexDirection="column">
 
-            <Stack spacing="8" bg="white" shadow="base" w={["80vw", "50vw", "40vw"]} p="16">
+            <Stack spacing="8" bg="white" shadow="base" w={["80vw", "50vw", "40vw"]} p={["8", "10"]}>
                 <Logo />
 
                 <FormControl isRequired>
                     <FormLabel>Correo</FormLabel>
-                    <Input value={email} onChange={e => changeFormProp("email", e.target.value)} placeholder="email@provider.com" />
+                    <Input autoFocus value={email} onChange={e => changeFormProp("email", e.target.value)} placeholder="email@provider.com" />
                 </FormControl>
 
                 <FormControl isRequired>
@@ -63,6 +63,8 @@ function Login() {
                 <Button isLoading={loading} type="submit" colorScheme="brand" variant="solid">
                     Iniciar Sesión
             </Button>
+
+                <Text textAlign="center">¿Aun no tienes una cuenta? Crea tu cuenta <Text color="brand" textDecoration="underline" as="a" href="/signUp"> aquí </Text></Text>
 
             </Stack>
 
