@@ -6,16 +6,11 @@ const UserContext = createContext();
 const initialValue = {
     user: undefined,
     error: undefined,
-    loading: false
+    loading: true
 }
 
 function reducer(state, action) {
     switch (action.type) {
-        case 'loading':
-            return {
-                ...state,
-                loading: true,
-            }
         case 'success':
             const { user } = action.payload;
             return {
@@ -40,26 +35,29 @@ export const UserProvider = ({ children }) => {
 
     const [state, dispatch] = useReducer(reducer, initialValue);
 
-    // useEffect(() => {
-    //     async function getUserInfo() {
-    //         dispatch({ type: 'loading' });
-    //         try {
-    //             const response = await fetch("/api/users/userInfo");
-    //             const json = await response.json();
-    //             dispatch({ type: 'success', payload: { user: json } });
-    //         } catch (error) {
-    //             dispatch({ type: 'error', payload: { error } });
-    //         }
-    //     }
+    useEffect(() => {
+        async function getUserInfo() {
+            const token = Cookies.get("token");
+            if (!token) {
+                dispatch({ type: "success", payload: { user: undefined } });
+                return
+            }
+            try {
+                const response = await fetch("/api/users/userInfo");
+                const json = await response.json();
+                dispatch({ type: 'success', payload: { user: json } });
+            } catch (error) {
+                dispatch({ type: 'error', payload: { error } });
+            }
+        }
 
-    //     getUserInfo();
+        getUserInfo();
 
 
-    // }, [])
+    }, [])
 
     async function login(email, password) {
         //Login User 
-        dispatch({ type: 'loading' });
         const response = await fetch("/api/users/login", {
             method: "POST",
             headers: {
@@ -87,7 +85,6 @@ export const UserProvider = ({ children }) => {
 
     async function signUp(name, lastName, email, password) {
         //Create User Record
-        dispatch({ type: 'loading' });
         const response = await fetch("/api/users", {
             method: "POST",
             headers: {

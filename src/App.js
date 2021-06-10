@@ -1,6 +1,8 @@
 
 import theme from "./theme";
 import { ChakraProvider } from "@chakra-ui/react";
+import PrivateRoute from "./components/PrivateRoute";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import Home from "./pages/Home";
 import Form from "./pages/Form";
@@ -9,32 +11,28 @@ import NotFounded from "./pages/NotFounded";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 
-import { UserProvider } from "./context/UserContext";
-
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import PrivateRoute from "./components/PrivateRoute";
+import { useUser } from "./context/UserContext";
 
 function App() {
-  // const { user } = useUser();
-  // console.log(user);
+  const { loading } = useUser();
   return (
-    <UserProvider>
+    !loading && (
       <ChakraProvider theme={theme} >
         <div className="App">
           <Router>
             <Switch>
-              <PrivateRoute exact path="/" type="user" redirectTo="/signup" component={Home} />
-              {/* <Route path="/" exact component={Home} /> */}
+              <PrivateRoute exact path="/" type="user" redirectTo="/login" component={Home} />
               <Route path="/login" component={Login} />
               <Route path="/signup" component={SignUp} />
-              <Route path="/worksheets/:id/edit" component={Form} />
+              <PrivateRoute path="/worksheets/:id/edit" type="user" redirectTo="/login" component={Form} />
               <Route path="/worksheets/:id/practice" component={Practice} />
               <Route path="*" component={NotFounded} />
             </Switch>
           </Router>
         </div>
       </ChakraProvider >
-    </UserProvider>
+    )
+
   );
 }
 
