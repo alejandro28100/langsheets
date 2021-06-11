@@ -177,6 +177,35 @@ const Form = () => {
 
     }, [id, toast, history]);
 
+    // async function updateWorksheet({ property, value }) {
+    //     let body = { property, value };
+    //     if (property === "content") {
+    //         body["value"] = JSON.stringify(value);
+    //     }
+
+    //     try {
+    //         const response = await fetch(`/api/activities/${id}`, {
+    //             method: 'PUT',
+    //             headers: {
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify(body)
+    //         })
+    //         const prop = await response.json();
+    //         //Implement logic to update props
+    //     } catch (error) {
+
+    //         toast({
+    //             position: isDesktop ? 'top-right' : 'bottom',
+    //             title: "Error al guardar actividad",
+    //             status: "error",
+    //             duration: 5000,
+    //             isClosable: true
+    //         })
+    //     }
+
+    // }
+
     async function saveWorksheet() {
 
         if (state.loading) {

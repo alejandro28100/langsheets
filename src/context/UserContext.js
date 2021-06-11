@@ -11,6 +11,12 @@ const initialValue = {
 
 function reducer(state, action) {
     switch (action.type) {
+        case 'loading':
+            return {
+                ...state,
+                loading: true,
+                error: undefined,
+            }
         case 'success':
             const { user } = action.payload;
             return {
@@ -37,6 +43,7 @@ export const UserProvider = ({ children }) => {
 
     useEffect(() => {
         async function getUserInfo() {
+            dispatch({ type: "loading" });
             const token = Cookies.get("token");
             if (!token) {
                 dispatch({ type: "success", payload: { user: undefined } });
@@ -57,6 +64,7 @@ export const UserProvider = ({ children }) => {
     }, [])
 
     async function login(email, password) {
+        dispatch({ type: "loading" });
         //Login User 
         const response = await fetch("/api/users/login", {
             method: "POST",
@@ -84,6 +92,7 @@ export const UserProvider = ({ children }) => {
     }
 
     async function signUp(name, lastName, email, password) {
+        dispatch({ type: "loading" });
         //Create User Record
         const response = await fetch("/api/users", {
             method: "POST",

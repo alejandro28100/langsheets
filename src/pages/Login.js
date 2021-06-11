@@ -30,7 +30,7 @@ function Login() {
         const [loggedIn] = await login(form.email, form.password);
 
         if (loggedIn) {
-            history.push("/");
+            history.push("/dashboard");
         }
 
     }

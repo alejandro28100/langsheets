@@ -1,39 +1,15 @@
 import React from 'react'
-import PropTypes from "prop-types";
-import { Button, Text, Icon } from "@chakra-ui/react"
-import { Logo as LogoIcon } from "../svgs"
+import { Text, Icon, Flex } from "@chakra-ui/react"
+import { Logo as BrandLogo } from "../svgs"
 
-const getIconSize = (size) => {
-    switch (size) {
-        case "sm":
-            return { w: "1em,", h: "1em" };
-        case "lg":
-            return { w: "3em", h: "3m" };
-        //Return md values as default
-        default:
-            return { w: "2.5em", h: "2.5em" };
-    }
-}
-
-const Logo = ({ withIcon, size }) => {
-
-    const iconSize = getIconSize(size);
+const Logo = () => {
     return (
-        <Button variant="unstyled" display="flex" as="a" href="/">
-            {withIcon && <Icon mr="2" {...iconSize} as={LogoIcon} title="LangSheets" />}
-            <Text fontFamily="cursive" fontSize="large" fontWeight="semibold" color="brand.500" mr="2">LangSheets</Text>
-        </Button>
+        <Flex as="a" href="/" alignItems="center" >
+            <Icon w={10} h={10} as={BrandLogo} />
+            <Text fontSize="x-large" fontWeight="bold" color="brand.500">Langsheets</Text>
+        </Flex>
     )
 }
 
-Logo.defaultProps = {
-    withIcon: true,
-    size: "md"
-}
-
-Logo.propTypes = {
-    withIcon: PropTypes.bool.isRequired,
-    size: PropTypes.oneOf(["sm", "md", "lg"]),
-}
 
 export default Logo

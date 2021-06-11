@@ -4,8 +4,9 @@ import { ChakraProvider } from "@chakra-ui/react";
 import PrivateRoute from "./components/PrivateRoute";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
-import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
 import Form from "./pages/Form";
+import Home from "./pages/Home";
 import Practice from "./pages/Practice";
 import NotFounded from "./pages/NotFounded";
 import SignUp from "./pages/SignUp";
@@ -21,7 +22,8 @@ function App() {
         <div className="App">
           <Router>
             <Switch>
-              <PrivateRoute exact path="/" type="user" redirectTo="/login" component={Home} />
+              <Route exact path="/" component={Home} />
+              <PrivateRoute path="/dashboard" type="user" redirectTo="/login" component={Dashboard} />
               <Route path="/login" component={Login} />
               <Route path="/signup" component={SignUp} />
               <PrivateRoute path="/worksheets/:id/edit" type="user" redirectTo="/login" component={Form} />

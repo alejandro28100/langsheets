@@ -47,7 +47,7 @@ const SignUp = () => {
         await login(form.email, form.password);
 
         //redirect to dashboard
-        history.push("/");
+        history.push("/dashboard");
     }
 
     return (
