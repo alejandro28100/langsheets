@@ -38,7 +38,6 @@ function reducer(state, action) {
 }
 
 export const UserProvider = ({ children }) => {
-
     const [state, dispatch] = useReducer(reducer, initialValue);
 
     useEffect(() => {
@@ -59,7 +58,6 @@ export const UserProvider = ({ children }) => {
         }
 
         getUserInfo();
-
 
     }, [])
 
@@ -85,10 +83,10 @@ export const UserProvider = ({ children }) => {
 
             delete json.token;
             dispatch({ type: 'success', payload: { user: json } });
-            return [true, json];
+            return json;
         }
         dispatch({ type: 'error', payload: { error: json } });
-        return [false, undefined];
+        return undefined;
     }
 
     async function signUp(name, lastName, email, password) {

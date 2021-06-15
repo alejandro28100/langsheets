@@ -12,28 +12,23 @@ import NotFounded from "./pages/NotFounded";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 
-import { useUser } from "./context/UserContext";
-
 function App() {
-  const { loading } = useUser();
   return (
-    !loading && (
-      <ChakraProvider theme={theme} >
-        <div className="App">
-          <Router>
-            <Switch>
-              <Route exact path="/" component={Home} />
-              <PrivateRoute path="/dashboard" type="user" redirectTo="/login" component={Dashboard} />
-              <Route path="/login" component={Login} />
-              <Route path="/signup" component={SignUp} />
-              <PrivateRoute path="/worksheets/:id/edit" type="user" redirectTo="/login" component={Form} />
-              <Route path="/worksheets/:id/practice" component={Practice} />
-              <Route path="*" component={NotFounded} />
-            </Switch>
-          </Router>
-        </div>
-      </ChakraProvider >
-    )
+    <ChakraProvider theme={theme} >
+      <div className="App">
+        <Router>
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <PrivateRoute path="/dashboard" redirectTo="/login" component={Dashboard} />
+            <Route path="/login" component={Login} />
+            <Route path="/signup" component={SignUp} />
+            <PrivateRoute path="/worksheets/:id/edit" type="user" redirectTo="/login" component={Form} />
+            <Route path="/worksheets/:id/practice" component={Practice} />
+            <Route path="*" component={NotFounded} />
+          </Switch>
+        </Router>
+      </div>
+    </ChakraProvider >
 
   );
 }

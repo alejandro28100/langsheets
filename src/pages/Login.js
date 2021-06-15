@@ -24,15 +24,9 @@ function Login() {
     }
 
     async function handleSubmit(e) {
-
         e.preventDefault();
-
-        const [loggedIn] = await login(form.email, form.password);
-
-        if (loggedIn) {
-            history.push("/dashboard");
-        }
-
+        await login(form.email, form.password);
+        history.push("/dashboard");
     }
 
     return (
@@ -62,7 +56,7 @@ function Login() {
 
                 <Button isLoading={loading} type="submit" colorScheme="brand" variant="solid">
                     Iniciar Sesión
-            </Button>
+                </Button>
 
                 <Text textAlign="center">¿Aun no tienes una cuenta? Crea tu cuenta <Text color="brand" textDecoration="underline" as="a" href="/signUp"> aquí </Text></Text>
 

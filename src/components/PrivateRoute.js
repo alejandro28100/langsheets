@@ -1,30 +1,23 @@
+import Cookies from 'js-cookie';
 import React from 'react';
-import { Route, Redirect } from "react-router-dom";
-import { useUser } from '../context/UserContext';
+import { Route, Redirect, useLocation } from "react-router-dom";
 
-const PrivateRoute = ({ component: Component, redirectTo, type, ...rest }) => {
-    let showComponent;
-    const { user } = useUser();
-
-    switch (type) {
-        case 'user':
-            showComponent = !!user;
-            break;
-
-        default:
-            break;
-    }
-
+const PrivateRoute = ({ component: Component, redirectTo, isLoading, loggedIn, ...rest }) => {
+    const location = useLocation();
+    const token = Cookies.get("token");
     return (
-        <Route {...rest} render={props => {
-            return (
-                showComponent
+        <Route {...rest}
+            render={(props) =>
+                !!token
                     ? <Component {...props} />
-                    : <Redirect to={redirectTo} />
-            )
-        }}
+                    : <Redirect to={redirectTo}
+                        state={
+                            { from: location.pathname }
+                        }
+                    />
+            }
         />
     )
-}
 
+}
 export default PrivateRoute
