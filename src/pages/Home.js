@@ -10,9 +10,9 @@ const Home = () => {
     return (
         <Fragment>
 
-            <Box mx="auto" width="container.xl">
+            <Box px="10">
 
-                <Flex justifyContent="space-between" alignItems="center" py="5">
+                <Flex mx="auto" justifyContent="space-between" alignItems="center" py="5">
                     <Logo />
                     {user
                         ? (
