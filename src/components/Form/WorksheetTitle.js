@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { Editable, EditablePreview, EditableInput, Box } from "@chakra-ui/react"
 
 
-function WorksheetTitle({ title, dispatch }) {
+function WorksheetTitle({ title, updateWorksheetProp, dispatch }) {
     const textRef = useRef();
     return (
         <Box
@@ -20,7 +20,8 @@ function WorksheetTitle({ title, dispatch }) {
                 required
                 id="title"
                 value={title}
-                onChange={newValue => dispatch({ type: "change-worksheet-prop", payload: { property: "title", value: newValue } })}
+                onBlur={() => updateWorksheetProp({ property: 'title' })}
+                onChange={newValue => dispatch({ type: 'change-worksheet-prop', payload: { property: 'title', value: newValue } })}
                 type="text"
                 placeholder="Escribe un tílulo aquí..."
             >
@@ -33,7 +34,7 @@ function WorksheetTitle({ title, dispatch }) {
 
 WorksheetTitle.propTypes = {
     title: PropTypes.string.isRequired,
-    dispatch: PropTypes.func.isRequired,
+    updateWorksheetProp: PropTypes.func.isRequired,
 }
 
 export default WorksheetTitle

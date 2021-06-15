@@ -1,18 +1,20 @@
-import Icon from '@chakra-ui/icon'
-import { Menu, MenuButton, MenuGroup, MenuItem, MenuList } from '@chakra-ui/menu'
 import React, { Fragment } from 'react'
-import { BsFullscreen, BsFullscreenExit } from 'react-icons/bs'
-import { FaFileUpload, FaPrint } from 'react-icons/fa'
-import { RiDraftFill } from 'react-icons/ri'
 import { useSlate } from 'slate-react'
 import useIsFullscreen from '../../hooks/useIsFullscreen'
-import { MissingWord as MissingWordIcon, WordOrderIcon } from '../../svgs'
+
+import Icon from '@chakra-ui/icon'
+import { Menu, MenuButton, MenuGroup, MenuItem, MenuList } from '@chakra-ui/menu'
+
 import { isFullscreen } from '../../utils'
 import { createExercise } from '../Slate/commands'
 
+import { BsFullscreen, BsFullscreenExit } from 'react-icons/bs'
+import { FaFileUpload, FaPrint } from 'react-icons/fa'
+import { MissingWord as MissingWordIcon, WordOrderIcon } from '../../svgs'
 
 
-const ActionsMenu = ({ saveWorksheet }) => {
+
+const ActionsMenu = () => {
     const editor = useSlate();
     const isFullscreen = useIsFullscreen();
 
@@ -21,7 +23,6 @@ const ActionsMenu = ({ saveWorksheet }) => {
             <Menu>
                 <MenuButton>Actividad</MenuButton>
                 <MenuList>
-                    <MenuItem onClick={saveWorksheet} icon={<Icon as={RiDraftFill} />} >Guardar Cambios</MenuItem>
                     <MenuItem icon={<Icon as={FaFileUpload} />} >Publicar Actividad</MenuItem>
                     <MenuItem icon={<Icon as={FaPrint} />} onClick={handlePrint}>Imprimir Actividad</MenuItem>
                 </MenuList>

@@ -177,67 +177,35 @@ const Form = () => {
 
     }, [id, toast, history]);
 
-    // async function updateWorksheet({ property, value }) {
-    //     let body = { property, value };
-    //     if (property === "content") {
-    //         body["value"] = JSON.stringify(value);
-    //     }
+    async function updateWorksheetProp({ property }) {
+        let body = { property, value: state.worksheet[property], author: state.worksheet.author };
 
-    //     try {
-    //         const response = await fetch(`/api/activities/${id}`, {
-    //             method: 'PUT',
-    //             headers: {
-    //                 'Content-Type': 'application/json'
-    //             },
-    //             body: JSON.stringify(body)
-    //         })
-    //         const prop = await response.json();
-    //         //Implement logic to update props
-    //     } catch (error) {
-
-    //         toast({
-    //             position: isDesktop ? 'top-right' : 'bottom',
-    //             title: "Error al guardar actividad",
-    //             status: "error",
-    //             duration: 5000,
-    //             isClosable: true
-    //         })
-    //     }
-
-    // }
-
-    async function saveWorksheet() {
-
-        if (state.loading) {
-            return console.log("Cannot save changes when page is loading");
+        if (property === "content") {
+            body["value"] = JSON.stringify(state.worksheet[property]);
         }
+        console.log(`Updating ${property}: ${body.value}`);
 
-        dispatch({ type: ACTIONS.SAVING_WORKSHEET });
+        try {
+            const response = await fetch(`/api/activities/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            })
+            const json = await response.json();
+            //Implement logic to update props
+            console.log(json);
+        } catch (error) {
 
-        const response = await fetch(`/api/activities/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(stringifyWorkshet(worksheet))
-        })
-
-        const json = await response.json();
-        if (response.ok) {
-
-            dispatch({ type: ACTIONS.SET_WORKSHEET, payload: { worksheet: parseWorksheet(json) } });
             toast({
                 position: isDesktop ? 'top-right' : 'bottom',
-                title: "Actividad Guardada",
-                description: "La actividad fue guardada exitósamente",
-                status: "success",
+                title: "Error al guardar actividad",
+                status: "error",
                 duration: 5000,
                 isClosable: true
             })
-            return;
         }
-
-        dispatch({ type: ACTIONS.ERROR, payload: { error: json } });
     }
 
     function handlePrint(e) {
@@ -276,10 +244,10 @@ const Form = () => {
                     : error
                         ? [{ children: [{ text: '' }] }]
                         : worksheet.content,
-                onChange: newContent => dispatch({ type: ACTIONS.CHANGE_WORKSHEET_PROP, payload: { property: "content", value: newContent } })
+                onChange: newContent => dispatch({ type: ACTIONS.CHANGE_WORKSHEET_PROP, payload: { property: 'content', value: newContent } }),
             }}
         >
-            { isDesktop
+            {isDesktop
                 ? (
 
                     <Grid h="100vh" templateColumns="repeat(12, 1fr)" templateRows="auto 1fr">
@@ -318,25 +286,21 @@ const Form = () => {
 
                                 <GridItem rowSpan="1" display="flex" flexDirection="row" alignItems="center" pt="2">
                                     <Skeleton isLoaded={!loading} >
-                                        <WorksheetTitle {...{ dispatch, title: worksheet ? worksheet.title : "" }} />
+                                        <WorksheetTitle {...{ updateWorksheetProp, dispatch, title: worksheet ? worksheet.title : "" }} />
                                     </Skeleton>
                                 </GridItem>
 
                                 <GridItem display="flex" alignItems="center" px="4" colStart={3} rowSpan={2}>
                                     <ButtonGroup>
-                                        <Button isLoading={savingWorksheet} onClick={saveWorksheet} colorScheme="brand" variant="ghost">
-                                            <Icon as={RiDraftFill} mr="2" />
-                                        Guardar Cambios
-                                    </Button>
                                         <Button colorScheme="brand">
                                             <Icon as={FaFileUpload} mr="2" />
-                                        Publicar
-                                    </Button>
+                                            Publicar
+                                        </Button>
                                     </ButtonGroup>
                                 </GridItem>
 
                                 <GridItem py="2" colStart={2} rowSpan="1" display="inline-flex" alignItems="center">
-                                    <ActionsMenu {...{ saveWorksheet }} />
+                                    <ActionsMenu />
                                 </GridItem>
                                 <GridItem py="2" px="5" colSpan={3} width="full" borderTop="2px solid var(--chakra-colors-gray-100)">
                                     <ButtonGroup as={Flex} alignItems="center">
@@ -348,12 +312,15 @@ const Form = () => {
                         </GridItem>
 
 
-                        <GridItem rowSpan={1} colSpan={8} p="12" bg="gray.100" sx={{
-                            "@media print": {
-                                gridColumn: "span 12/span 12",
-                                gridRow: "span 2/span 2"
-                            }
-                        }}>
+                        <GridItem rowSpan={1} colSpan={8} p="12" bg="gray.100"
+                            sx={{
+                                "@media print": {
+                                    gridColumn: "span 12/span 12",
+                                    gridRow: "span 2/span 2"
+                                }
+                            }}
+                            onBlur={() => updateWorksheetProp({ property: 'content' })}
+                        >
                             <Skeleton isLoaded={!loading}>
                                 <Editable
                                     {...{
@@ -379,9 +346,8 @@ const Form = () => {
                                 {
                                     !loading && !error &&
                                     <Fragment>
-                                        <LanguagePicker {...{ dispatch, lang: worksheet.lang }} />
-                                        <PublicSwitch {...{ dispatch, isPublic: worksheet.isPublic }} />
-
+                                        <LanguagePicker {...{ updateWorksheetProp, dispatch, lang: worksheet.lang }} />
+                                        <PublicSwitch {...{ updateWorksheetProp, dispatch, isPublic: worksheet.published }} />
                                     </Fragment>
                                 }
                             </Box>
@@ -413,7 +379,7 @@ const Form = () => {
 
                             <Box flexGrow="1">
                                 <Skeleton isLoaded={!loading} >
-                                    <WorksheetTitle {...{ dispatch, title: worksheet ? worksheet.title : "" }} />
+                                    <WorksheetTitle {...{ updateWorksheetProp, dispatch, title: worksheet ? worksheet.title : "" }} />
                                 </Skeleton>
                             </Box>
 
@@ -421,7 +387,6 @@ const Form = () => {
                                 <MenuButton variant="ghost" colorScheme="brand" icon={<Icon as={HiDotsVertical} />} as={IconButton} />
                                 <MenuList>
                                     <MenuGroup title="Actividad">
-                                        <MenuItem onClick={saveWorksheet} icon={<Icon color="brand.500" as={RiDraftFill} />} >Guardar Cambios</MenuItem>
                                         <MenuItem icon={<Icon color="brand.500" as={FaFileUpload} />} >Publicar Actividad</MenuItem>
                                     </MenuGroup>
                                     <MenuDivider />

@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from "prop-types";
 import { Select, Box, Text } from '@chakra-ui/react';
 
-const LanguagePicker = ({ dispatch, lang }) => {
+const LanguagePicker = ({ updateWorksheetProp, dispatch, lang }) => {
     return (
         <Box my="4">
             <Text my="2">Idioma</Text>
@@ -10,6 +10,7 @@ const LanguagePicker = ({ dispatch, lang }) => {
                 background="white"
                 required
                 value={lang}
+                onBlur={() => updateWorksheetProp({ property: 'lang' })}
                 onChange={e => dispatch({ type: "change-worksheet-prop", payload: { property: "lang", value: e.target.value } })}
             >
                 <option value=""></option>
@@ -32,6 +33,7 @@ LanguagePicker.defaultProps = {
 LanguagePicker.propTypes = {
     dispatch: PropTypes.func.isRequired,
     lang: PropTypes.string.isRequired,
+    updateWorksheetProp: PropTypes.func.isRequired,
 }
 
 export default LanguagePicker
