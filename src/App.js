@@ -1,4 +1,3 @@
-
 import theme from "./theme";
 import { ChakraProvider } from "@chakra-ui/react";
 import PrivateRoute from "./components/PrivateRoute";

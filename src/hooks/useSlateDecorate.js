@@ -8,7 +8,7 @@ export default function useSlateDecorate(editor) {
 
         if (Text.isText(node)) {
             const parent = Node.parent(editor, path);
-            console.log(parent);
+
             if (parent.type === "word-order-exercise-paragraph") {
                 const { text } = node
                 const parts = text.split("/")
