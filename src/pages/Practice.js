@@ -11,6 +11,7 @@ import { Container, Box, Text, Input, Flex, Button, useToast, Avatar, AvatarGrou
 import useBodyBackground from '../hooks/useBodyBackground';
 import useSlateRender from '../hooks/useSlateRender';
 import useSlateEditor from '../hooks/useSlateEditor';
+import { useUser } from "../context/UserContext";
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { parseWorksheet } from '../utils';
 
@@ -39,7 +40,7 @@ const initialValue = {
 };
 
 function reducer(state, action) {
-    console.log(`> Practice reducer: ${action.type}`);
+    // console.log(`> Practice reducer: ${action.type}`);
     switch (action.type) {
         case 'set-username':
             return {
@@ -82,7 +83,7 @@ function reducer(state, action) {
 const Practice = () => {
     //Get the id of the worksheet from the url 
     const { id } = useParams();
-
+    const { user, loading } = useUser();
     const editor = useSlateEditor();
 
     const [renderLeaf, renderElement] = useSlateRender();
@@ -91,8 +92,6 @@ const Practice = () => {
     const { username, users, worksheet } = state;
 
     const toast = useToast();
-
-
 
     useEffect(() => {
         async function getWorksheet() {
@@ -109,11 +108,24 @@ const Practice = () => {
     }, [id])
 
     useEffect(() => {
+        //Get username from localStorage (Only for students)
+        let username = localStorage.getItem("ls-username");
+
+        //Get username from user hook (Only for Teachers)
+        if (!loading && user) {
+            username = `${user.name} ${user.lastName}`;
+        }
+
+        dispatch({ type: "set-username", payload: { username } })
+    }, [loading])
+
+    useEffect(() => {
         if (username) {
             socket.auth = { username };
             socket.connect();
             socket.emit('join-room', id);
         }
+
     }, [id, username])
 
     useEffect(() => {
@@ -145,7 +157,7 @@ const Practice = () => {
 
         socket.on("user-disconnected", ({ username, users }) => {
             toast({
-                description: `${username} se ha salido de la actividad.`,
+                description: `${username} ha salido de la actividad.`,
                 status: "info",
                 duration: 3000,
                 position: "top-right",
@@ -219,50 +231,37 @@ const Practice = () => {
     useBodyBackground("var(--chakra-colors-gray-100)");
     useDocumentTitle(`LangSheets | ${worksheet.title}`);
     return (
-        username ? (
-            <Fragment>
-
-                <Flex py="2" >
-                    <Text flexGrow="1" color="brand.600" px="4" fontSize="x-large" fontWeight="bold" >{worksheet.title}</Text>
-                    <Flex justifyContent="flex-end" alignItems="center" px="4">
-                        <UsersList users={users} />
-                    </Flex>
-                </Flex>
-
-                {/* <Navbar /> */}
-
-                <Box >
-                    <Container maxWidth="container.lg" my="4" >
-                        <SocketContext.Provider value={socket}>
-                            <Slate
-                                {...{
-                                    editor,
-                                    value: worksheet.content,
-                                    onChange: (newContent) => dispatch({ type: 'set-worksheet-content', payload: { content: newContent } })
-                                }}
-                            >
-                                <Box background="white" px={["8", "16"]} py="16" as={Editable} shadow="sm"
-                                    {...{ renderElement, renderLeaf, readOnly: true }}
-                                />
-                            </Slate>
-                        </SocketContext.Provider>
-                    </Container>
-                </Box >
-            </Fragment>
-        ) : (
-            <UserNameForm {...{ dispatch }} />
-        )
-
+        <SocketContext.Provider value={socket}>
+            {
+                !loading && user
+                    ? <TeacherView
+                        {...{
+                            users,
+                            worksheet,
+                            dispatch,
+                            editor,
+                            renderLeaf,
+                            renderElement,
+                            activityID: id
+                        }}
+                    />
+                    : <StudentView
+                        {...{
+                            username,
+                            users,
+                            worksheet,
+                            dispatch,
+                            editor,
+                            renderLeaf,
+                            renderElement,
+                            activityID: id
+                        }}
+                    />
+            }
+        </SocketContext.Provider>
     )
 }
 
-const UsersList = ({ users }) => (
-    <AvatarGroup size="sm" max={3}>
-        {users.map(({ username, userID }) => (
-            <Avatar key={userID} bg="brand.500" color="white" name={username} src={<FaUserAlt />} title={username} />
-        ))}
-    </AvatarGroup>
-)
 
 
 const UserNameForm = (props) => {
@@ -274,6 +273,7 @@ const UserNameForm = (props) => {
     function handleSetUserName() {
         const username = inputRef.current.value;
         if (username.trim() !== "") {
+            localStorage.setItem("ls-username", username);
             dispatch({ type: 'set-username', payload: { username } })
             return
         }
@@ -299,4 +299,82 @@ const UserNameForm = (props) => {
     )
 };
 
+const TeacherView = (props) => {
+    const { users, worksheet, dispatch, editor, renderLeaf, renderElement } = props;
+    return (
+        <Fragment>
+
+            <Flex py="2" >
+                <Text flexGrow="1" color="brand.600" px="4" fontSize="x-large" fontWeight="bold" >{worksheet.title}</Text>
+                <Flex justifyContent="flex-end" alignItems="center" px="4">
+                    <UsersList users={users} />
+                </Flex>
+            </Flex>
+
+            <Box >
+                <Container maxWidth="container.lg" my="4" >
+                    <SocketContext.Provider value={socket}>
+                        <Slate
+                            {...{
+                                editor,
+                                value: worksheet.content,
+                                onChange: (newContent) => dispatch({ type: 'set-worksheet-content', payload: { content: newContent } })
+                            }}
+                        >
+                            <Box background="white" px={["8", "16"]} py="16" as={Editable} shadow="sm"
+                                {...{ renderElement, renderLeaf, readOnly: true }}
+                            />
+                        </Slate>
+                    </SocketContext.Provider>
+                </Container>
+            </Box >
+        </Fragment>
+    )
+}
+
+const StudentView = (props) => {
+    const { username, users, worksheet, dispatch, editor, renderLeaf, renderElement } = props;
+    return (
+        username ? (
+            <Fragment>
+
+                <Flex py="2" >
+                    <Text flexGrow="1" color="brand.600" px="4" fontSize="x-large" fontWeight="bold" >{worksheet.title}</Text>
+                    <Flex justifyContent="flex-end" alignItems="center" px="4">
+                        <UsersList users={users} />
+                    </Flex>
+                </Flex>
+
+                <Box >
+                    <Container maxWidth="container.lg" my="4" >
+                        <SocketContext.Provider value={socket}>
+                            <Slate
+                                {...{
+                                    editor,
+                                    value: worksheet.content,
+                                    onChange: (newContent) => dispatch({ type: 'set-worksheet-content', payload: { content: newContent } })
+                                }}
+                            >
+                                <Box background="white" px={["8", "16"]} py="16" as={Editable} shadow="sm"
+                                    {...{ renderElement, renderLeaf, readOnly: true }}
+                                />
+                            </Slate>
+                        </SocketContext.Provider>
+                    </Container>
+                </Box >
+            </Fragment>
+        ) : (
+            <UserNameForm {...{ dispatch }} />
+        )
+    )
+}
+
+
+const UsersList = ({ users }) => (
+    <AvatarGroup size="sm" max={3}>
+        {users.map(({ username, userID }) => (
+            <Avatar key={userID} bg="brand.500" color="white" name={username} src={<FaUserAlt />} title={username} />
+        ))}
+    </AvatarGroup>
+)
 export default Practice
