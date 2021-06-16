@@ -288,7 +288,7 @@ const Form = () => {
                             <Grid gridTemplateRows="auto auto auto" gridTemplateColumns="50px 1fr auto" h="full" bg="white">
 
                                 <GridItem rowSpan="1" colSpan="1" display="grid" placeItems="center" >
-                                    <Flex as="a" href="/" mx="4">
+                                    <Flex as="a" href="/dashboard" mx="4">
                                         <Icon as={FaArrowLeft} />
                                     </Flex>
                                 </GridItem>
