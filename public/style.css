@@ -55,3 +55,18 @@
 		transform: translateY(-5px);
 	}
 }
+
+@keyframes pulse {
+	0% {
+		-moz-box-shadow: 0 0 0 0 #3c37cfb7;
+		box-shadow: 0 0 0 0 #3c37cfb7;
+	}
+	70% {
+		-moz-box-shadow: 0 0 0 7px rgba(55, 44, 204, 0);
+		box-shadow: 0 0 0 7px rgba(55, 44, 204, 0);
+	}
+	100% {
+		-moz-box-shadow: 0 0 0 0 rgba(44, 47, 204, 0);
+		box-shadow: 0 0 0 0 rgba(44, 47, 204, 0);
+	}
+}

@@ -7,7 +7,7 @@ import { FaCheck, FaTimes } from "react-icons/fa";
 import { useMediaQuery } from "@chakra-ui/media-query";
 import { getExerciseBlockProps } from "../../../utils/exerciseBlocks";
 import { SocketContext } from "../../../context/socket";
-import { useContext } from "react";
+import { Fragment, useContext } from "react";
 import { Tooltip } from "@chakra-ui/tooltip";
 
 
@@ -81,11 +81,14 @@ export const MissingWordInput = (props) => {
 
     return (
         <InputGroup w="32" as="span" display="inline-block" position="relative">
-            { focused
+            {focused
                 ? (
-                    <Tooltip label={<UserLabel user={user} />}>
-                        <Input cursor="not-allowed" variant="filled" bg="brand.200" transition="all ease 300ms" _hover={{ background: "var(--chakra-colors-brand-200)" }} readOnly={checkExercise} value={inputValue} onFocus={event => handleOnFocus({ event, focus: false })} onChange={handleOnChange} />
-                    </Tooltip>
+                    <Fragment>
+                        <Text as="span" w="3" h="3" bg="brand.500" position="absolute" transform="translateY(-50%) translateX(50%)" animation="pulse 2s infinite" boxShadow="0 0 0 #3c37cfb7" right="0" borderRadius="50%" zIndex="overlay" />
+                        <Tooltip label={<UserLabel user={user} />}>
+                            <Input cursor="not-allowed" variant="filled" transition="all ease 300ms" readOnly={checkExercise} value={inputValue} onFocus={event => handleOnFocus({ event, focus: false })} onChange={handleOnChange} />
+                        </Tooltip>
+                    </Fragment>
                 )
                 : (
                     <Input variant="filled" readOnly={checkExercise} value={inputValue} onFocus={handleOnFocus} onBlur={handleOnBlur} onChange={handleOnChange} />
