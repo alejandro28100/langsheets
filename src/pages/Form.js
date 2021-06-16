@@ -6,16 +6,15 @@ import { Slate } from "slate-react"
 import Navbar from "../components/Form/Navbar";
 import WorksheetTitle from "../components/Form/WorksheetTitle";
 
-import { Box, Icon, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Flex, Menu, MenuButton, Button, MenuList, Divider, Switch, MenuGroup, useMediaQuery, Slide, MenuDivider, useToast, Skeleton, Progress } from "@chakra-ui/react";
+import { Box, Spinner, Icon, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Flex, Menu, MenuButton, Button, MenuList, Divider, Switch, MenuGroup, useMediaQuery, Slide, MenuDivider, useToast, Skeleton, Progress, Popover, PopoverTrigger, PopoverContent } from "@chakra-ui/react";
 
 import Editable from "../components/Slate/Editable";
 import LanguagePicker from '../components/LanguagePicker';
 import PublicSwitch from '../components/PublicSwitch';
 import Logo from '../components/Logo';
 
-import { FaArrowLeft, FaFileUpload, FaChalkboardTeacher, FaPrint, FaHome, FaChevronUp } from "react-icons/fa";
+import { FaArrowLeft, FaFileUpload, FaChalkboardTeacher, FaPrint, FaHome, FaChevronUp, FaCheckCircle } from "react-icons/fa";
 import { HiDotsVertical } from 'react-icons/hi';
-import { RiDraftFill } from "react-icons/ri";
 import { BsFullscreenExit, BsFullscreen } from "react-icons/bs";
 import { MdKeyboardHide } from "react-icons/md";
 
@@ -33,6 +32,7 @@ import Toolbar from '../components/Form/Toolbar';
 
 const ACTIONS = {
     SAVING_WORKSHEET: 'saving-worksheet',
+    SAVING_WORKSHEET_SUCCESS: 'saving-worksheet-success',
     TOGGLE_WRITTING_MODE: "toggle-writting-mode",
     CHANGE_WORKSHEET_PROP: "change-worksheet-prop",
     SET_WORKSHEET: "set-worksheet",
@@ -70,6 +70,11 @@ function reducer(state, action) {
             return {
                 ...state,
                 savingWorksheet: true,
+            }
+        case ACTIONS.SAVING_WORKSHEET_SUCCESS:
+            return {
+                ...state,
+                savingWorksheet: false
             }
         case ACTIONS.SET_WORKSHEET:
             return {
@@ -178,12 +183,14 @@ const Form = () => {
     }, [id, toast, history]);
 
     async function updateWorksheetProp({ property }) {
+        dispatch({ type: ACTIONS.SAVING_WORKSHEET });
         let body = { property, value: state.worksheet[property], author: state.worksheet.author };
 
         if (property === "content") {
             body["value"] = JSON.stringify(state.worksheet[property]);
         }
-        console.log(`Updating ${property}: ${body.value}`);
+
+        // console.log(`Updating ${property}: ${body.value}`);
 
         try {
             const response = await fetch(`/api/activities/${id}`, {
@@ -196,6 +203,8 @@ const Form = () => {
             const json = await response.json();
             //Implement logic to update props
             console.log(json);
+            dispatch({ type: ACTIONS.SAVING_WORKSHEET_SUCCESS });
+
         } catch (error) {
 
             toast({
@@ -279,15 +288,19 @@ const Form = () => {
                             <Grid gridTemplateRows="auto auto auto" gridTemplateColumns="50px 1fr auto" h="full" bg="white">
 
                                 <GridItem rowSpan="1" colSpan="1" display="grid" placeItems="center" >
-                                    <Box as="a" href="/" mx="4">
+                                    <Flex as="a" href="/" mx="4">
                                         <Icon as={FaArrowLeft} />
-                                    </Box>
+                                    </Flex>
                                 </GridItem>
 
                                 <GridItem rowSpan="1" display="flex" flexDirection="row" alignItems="center" pt="2">
                                     <Skeleton isLoaded={!loading} >
                                         <WorksheetTitle {...{ updateWorksheetProp, dispatch, title: worksheet ? worksheet.title : "" }} />
                                     </Skeleton>
+                                    {
+                                        !loading &&
+                                        <Button ml="5" variant="ghost" size="sm" rightIcon={savingWorksheet ? <Spinner /> : <Icon color="green.500" as={FaCheckCircle} />}>{savingWorksheet ? "Guardando Actividad" : "Cambios guardados"}</Button>
+                                    }
                                 </GridItem>
 
                                 <GridItem display="flex" alignItems="center" px="4" colStart={3} rowSpan={2}>
@@ -377,11 +390,32 @@ const Form = () => {
                         }
                         <Flex py="2" px="4" alignItems="center">
 
-                            <Box flexGrow="1">
+                            <Flex flexGrow="1" alignItems="center">
                                 <Skeleton isLoaded={!loading} >
                                     <WorksheetTitle {...{ updateWorksheetProp, dispatch, title: worksheet ? worksheet.title : "" }} />
                                 </Skeleton>
-                            </Box>
+                                {
+                                    !loading &&
+                                    <Popover>
+                                        <PopoverTrigger>
+                                            <Button ml="5" variant="ghost" size="sm">
+                                                {savingWorksheet
+                                                    ? <Spinner />
+                                                    : <Icon color="green.500" as={FaCheckCircle} />
+                                                }
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent p="2" boxShadow="base">
+                                            {
+                                                savingWorksheet
+                                                    ? "Guardando cambios"
+                                                    : "Cambios guardados"
+                                            }
+                                        </PopoverContent>
+                                    </Popover>
+
+                                }
+                            </Flex>
 
                             <Menu>
                                 <MenuButton variant="ghost" colorScheme="brand" icon={<Icon as={HiDotsVertical} />} as={IconButton} />
@@ -444,7 +478,7 @@ const Form = () => {
                                         <Text fontSize="x-small">Imprimir</Text>
                                     </Flex>
 
-                                    <Flex flexDir="column" alignItems="center" justifyContent="center" cursor="pointer" aria-label="button" py="2" _hover={{ color: "var(--chakra-colors-brand-300)" }} >
+                                    <Flex flexDir="column" alignItems="center" as="a" href="/dashboard" justifyContent="center" cursor="pointer" aria-label="button" py="2" _hover={{ color: "var(--chakra-colors-brand-300)" }} >
                                         <Icon w={6} h={6} as={FaHome} />
                                         <Text fontSize="x-small">Inicio</Text>
                                     </Flex>
@@ -464,7 +498,7 @@ const Form = () => {
             {/* <pre>
         {worksheet && JSON.stringify(worksheet.content, null, 2)}
     </pre> */}
-            <Box display="none" flexDirection="column" alignItems="flex-start" position="fixed" zIndex="banner" bottom="0.5" width="full"
+            <Flex display="none" flexDirection="column" alignItems="flex-start" position="fixed" zIndex="banner" bottom="0.5" width="full"
                 sx={{
                     "@media print": {
                         display: "flex",
@@ -473,7 +507,7 @@ const Form = () => {
             >
                 <Icon as={Logo} />
                 <Text fontSize="smaller"> {host}/worksheets/{id}/practice </Text>
-            </Box>
+            </Flex>
         </Slate >
     )
 }
