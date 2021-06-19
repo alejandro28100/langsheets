@@ -10,6 +10,7 @@ import Practice from "./pages/Practice";
 import NotFounded from "./pages/NotFounded";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
+import SyncEditor from "./pages/SyncEditor";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       <div className="App">
         <Router>
           <Switch>
+            <Route path="/test" component={SyncEditor} />
             <Route exact path="/" component={Home} />
             <PrivateRoute path="/dashboard" redirectTo="/login" component={Dashboard} />
             <Route path="/login" component={Login} />
