@@ -16,7 +16,7 @@ import useDocumentTitle from '../hooks/useDocumentTitle';
 import { parseWorksheet } from '../utils';
 
 import { SocketContext, socket } from "../context/socket";
-import { Transforms } from 'slate';
+import { Editor, Transforms } from 'slate';
 // import Logo from '../components/Logo';
 import { FaUserAlt } from 'react-icons/fa';
 // import { HiPhoneIncoming } from 'react-icons/hi';
@@ -84,12 +84,14 @@ const Practice = () => {
     //Get the id of the worksheet from the url 
     const { id } = useParams();
     const { user, loading } = useUser();
-    const editor = useSlateEditor();
 
+    const editor = useSlateEditor();
     const [renderLeaf, renderElement] = useSlateRender();
 
     const [state, dispatch] = useReducer(reducer, initialValue);
     const { username, users, worksheet } = state;
+
+    const remoteChange = useRef(false);
 
     const toast = useToast();
 
@@ -121,6 +123,7 @@ const Practice = () => {
 
     useEffect(() => {
         if (username) {
+            // console.log("User name", username);
             socket.auth = { username };
             socket.connect();
             socket.emit('join-room', id);
@@ -133,6 +136,18 @@ const Practice = () => {
         // socket.onAny((event, ...args) => {
         //     console.log(event, args);
         // });
+
+        socket.on('content-change', (operations) => {
+
+            remoteChange.current = true;
+
+            Editor.withoutNormalizing(editor, () => {
+                operations.forEach(operation => {
+                    editor.apply(operation);
+                })
+            })
+
+        })
 
         socket.on('users', (commingUsers) => {
             dispatch({ type: 'set-users', payload: { users: commingUsers } });
@@ -166,36 +181,6 @@ const Practice = () => {
             dispatch({ type: 'set-users', payload: { users } });
         });
 
-        socket.on('action', (value) => {
-            if (editor.children.length === 0) return;
-            const { path, ...action } = value;
-
-            switch (action.type) {
-                case 'update-content':
-                    console.log(action.content);
-                    dispatch({ type: 'set-worksheet-content', payload: { content: action.content } })
-                    break;
-                case 'set-leaf-props':
-                    Transforms.setNodes(editor, {
-                        ...action.props
-                    }, { at: path });
-                    break;
-                case 'input-focused':
-                    Transforms.setNodes(editor, {
-                        focused: true,
-                        user: action.user
-                    }, { at: path });
-                    break;
-                case 'input-blured':
-                    Transforms.setNodes(editor, {
-                        focused: false
-                    }, { at: path });
-                    break;
-                default:
-                    break;
-            }
-        });
-
         socket.on('connection_error', (err) => {
             // console.error(err);
             switch (err.message) {
@@ -218,11 +203,12 @@ const Practice = () => {
 
         return () => {
             socket.offAny();
+            socket.off("content-change");
             socket.off("send-updated-content");
             socket.off('users');
             socket.off('user-connected');
             socket.off('user-disconnected');
-            socket.off('action');
+            // socket.off('action');
             socket.off('connection_error');
         }
     }, [id, worksheet, editor, toast])
@@ -230,6 +216,25 @@ const Practice = () => {
     //Set a custom background color
     useBodyBackground("var(--chakra-colors-gray-100)");
     useDocumentTitle(`LangSheets | ${worksheet.title}`);
+
+    function onChange(newValue) {
+        //Update the content locally
+        dispatch({ type: 'set-worksheet-content', payload: { content: newValue } })
+
+        //Avoid sending certain operations to the server 
+        const operations = editor.operations
+            .filter(operation => !["set_value", "set_selection"].includes(operation.type))
+
+        //If the update was not triggered locally and it includes valid operations
+        //Send them to the server
+        if (!remoteChange.current && operations.length) {
+            // console.log("Sending changes to the server");
+            socket.emit('content-change', operations);
+        }
+
+        remoteChange.current = false;
+    }
+
     return (
         <SocketContext.Provider value={socket}>
             {
@@ -239,6 +244,7 @@ const Practice = () => {
                             users,
                             worksheet,
                             dispatch,
+                            onChange,
                             editor,
                             renderLeaf,
                             renderElement,
@@ -250,6 +256,7 @@ const Practice = () => {
                             username,
                             users,
                             worksheet,
+                            onChange,
                             dispatch,
                             editor,
                             renderLeaf,
@@ -300,7 +307,7 @@ const UserNameForm = (props) => {
 };
 
 const TeacherView = (props) => {
-    const { users, worksheet, dispatch, editor, renderLeaf, renderElement } = props;
+    const { users, worksheet, dispatch, onChange, editor, renderLeaf, renderElement } = props;
     return (
         <Fragment>
 
@@ -318,7 +325,7 @@ const TeacherView = (props) => {
                             {...{
                                 editor,
                                 value: worksheet.content,
-                                onChange: (newContent) => dispatch({ type: 'set-worksheet-content', payload: { content: newContent } })
+                                onChange
                             }}
                         >
                             <Box background="white" px={["8", "16"]} py="16" as={Editable} shadow="sm"
@@ -333,7 +340,7 @@ const TeacherView = (props) => {
 }
 
 const StudentView = (props) => {
-    const { username, users, worksheet, dispatch, editor, renderLeaf, renderElement } = props;
+    const { username, users, worksheet, dispatch, onChange, editor, renderLeaf, renderElement } = props;
     return (
         username ? (
             <Fragment>
@@ -352,7 +359,7 @@ const StudentView = (props) => {
                                 {...{
                                     editor,
                                     value: worksheet.content,
-                                    onChange: (newContent) => dispatch({ type: 'set-worksheet-content', payload: { content: newContent } })
+                                    onChange
                                 }}
                             >
                                 <Box background="white" px={["8", "16"]} py="16" as={Editable} shadow="sm"
