@@ -26,50 +26,48 @@ export const MissingWordInput = (props) => {
 
     const socket = useContext(SocketContext);
 
-    const { text: correctAnswer, userAnswer = "", isCorrect = false, focused = false, user } = props.leaf;
+    const { text: correctAnswer, userAnswer = "", isCorrect = false, focused = undefined } = props.leaf;
 
     const editor = useSlate();
     const path = ReactEditor.findPath(editor, props.text);
 
     const { showAnswers, checkExercise } = getExerciseBlockProps(editor, path)
 
-    function handleOnFocus({ event, focus = true }) {
-
-        if (focus) {
-            socket.emit("action", {
-                type: 'input-focused',
-                user: {
-                    username: socket.auth.username,
-                    userID: socket.id
-                },
-                path
-            });
+    function handleOnFocus(event) {
+        if (focused) {
+            event.preventDefault();
+            event.target.blur();
             return;
         }
-        event.target.blur();
+        Transforms.setNodes(editor, {
+            focused: {
+                username: socket.auth.username,
+                userID: socket.id
+            }
+        }, {
+            at: path
+        })
     }
-
-    function setLeafProps(properties) {
-        //send the action to the server so it is broadcasted to every client
-        socket.emit("action", { type: "set-leaf-props", props: properties, path })
-        //Apply the action locally
-        Transforms.setNodes(editor, properties, { at: path })
-    }
-
     function handleOnChange(e) {
         const value = e.target.value;
-        setLeafProps({
+        //apply changes in at the leaf
+        Transforms.setNodes(editor, {
             isAnswered: value.trim().length > 0,
             isCorrect: handleIsCorrect(value),
             userAnswer: value
+        }, {
+            at: path
         });
     }
 
     function handleOnBlur() {
-        socket.emit("action", {
-            type: 'input-blured',
-            path
-        });
+        if (focused) {
+            Transforms.setNodes(editor, {
+                focused: undefined
+            }, {
+                at: path
+            })
+        }
     }
 
     function handleIsCorrect(userAnswer) {
@@ -81,12 +79,12 @@ export const MissingWordInput = (props) => {
 
     return (
         <InputGroup w="32" as="span" display="inline-block" position="relative">
-            {focused
+            {focused && socket.id !== focused.userID
                 ? (
                     <Fragment>
                         <Text as="span" w="3" h="3" bg="brand.500" position="absolute" transform="translateY(-50%) translateX(50%)" animation="pulse 2s infinite" boxShadow="0 0 0 #3c37cfb7" right="0" borderRadius="50%" zIndex="overlay" />
-                        <Tooltip label={<UserLabel user={user} />}>
-                            <Input cursor="not-allowed" variant="filled" transition="all ease 300ms" readOnly={checkExercise} value={inputValue} onFocus={event => handleOnFocus({ event, focus: false })} onChange={handleOnChange} />
+                        <Tooltip label={<UserLabel username={focused.username} />}>
+                            <Input cursor="not-allowed" variant="filled" transition="all ease 300ms" readOnly={checkExercise} value={inputValue} onFocus={handleOnFocus} onChange={handleOnChange} />
                         </Tooltip>
                     </Fragment>
                 )
@@ -103,7 +101,7 @@ export const MissingWordInput = (props) => {
 const UserLabel = props => {
     return (
         <Text as="span">
-            {props.user.username} esta escribiendo <DotAnimation />
+            {props.username} esta escribiendo <DotAnimation />
         </Text>
     )
 }
