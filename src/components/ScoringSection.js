@@ -27,7 +27,7 @@ const ButtonsSection = (props) => {
     }
 
     return (
-        <ButtonGroup display="flex" flexWrap="wrap" spacing={["0", "4"]} justifyContent="center" colorScheme="purple" size="sm">
+        <ButtonGroup display="flex" flexWrap="wrap" spacing={["0", "4"]} justifyContent="center" colorScheme="brand" size="sm">
             <Button my="2" variant="solid"
                 onClick={handleCheckAnswers}
             >
