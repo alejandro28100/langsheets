@@ -1,6 +1,9 @@
 import { Text } from "@chakra-ui/layout";
 import { useReadOnly } from "slate-react"
-import { MissingWordEditable, MissingWordInput } from "./MissingWord";
+import MissingWordInput from "./MissingWord/Input";
+import MissingWordEditable from "./MissingWord/Editable";
+
+// import { MissingWordEditable, MissingWordInput } from "./MissingWord";
 const Leaf = (props) => {
     let { leaf, children, attributes } = props
     const isReadOnly = useReadOnly();
