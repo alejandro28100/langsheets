@@ -50,20 +50,20 @@ function SyncEditor() {
 
         socket.on('content change', ({ id: senderID, operations }) => {
 
-            if (id.current !== senderID) {
+            // if (id.current !== senderID) {
 
-                console.log("Operations received", { senderID, operations });
-                console.log("Remote change status in socket", socketChange.current);
+            console.log("Operations received", { senderID, operations });
+            console.log("Remote change status in socket", socketChange.current);
 
-                socketChange.current = true;
+            socketChange.current = true;
 
-                Editor.withoutNormalizing(editor, () => {
-                    operations.forEach(operation => {
-                        editor.apply(operation);
-                    })
+            Editor.withoutNormalizing(editor, () => {
+                operations.forEach(operation => {
+                    editor.apply(operation);
                 })
+            })
 
-            }
+            // }
         })
 
         return () => {
