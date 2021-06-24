@@ -7,14 +7,14 @@ import { Menu, MenuButton, MenuGroup, MenuItem, MenuList } from '@chakra-ui/menu
 
 import { isFullscreen } from '../../utils'
 import { createExercise } from '../Slate/commands'
-
 import { BsFullscreen, BsFullscreenExit } from 'react-icons/bs'
 import { FaFileUpload, FaPrint } from 'react-icons/fa'
 import { MissingWord as MissingWordIcon, WordOrderIcon } from '../../svgs'
 
 
 
-const ActionsMenu = () => {
+const ActionsMenu = (props) => {
+    const { handlePublishActivity, worksheet } = props;
     const editor = useSlate();
     const isFullscreen = useIsFullscreen();
 
@@ -23,7 +23,12 @@ const ActionsMenu = () => {
             <Menu>
                 <MenuButton>Actividad</MenuButton>
                 <MenuList>
-                    <MenuItem icon={<Icon as={FaFileUpload} />} >Publicar Actividad</MenuItem>
+                    <MenuItem onClick={handlePublishActivity} icon={<Icon as={FaFileUpload} />} >
+                        {worksheet?.published
+                            ? "Anular Publicación"
+                            : "Publicar Actividad"
+                        }
+                    </MenuItem>
                     <MenuItem icon={<Icon as={FaPrint} />} onClick={handlePrint}>Imprimir Actividad</MenuItem>
                 </MenuList>
             </Menu>

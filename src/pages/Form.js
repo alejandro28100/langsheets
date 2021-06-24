@@ -6,11 +6,11 @@ import { Slate } from "slate-react"
 import Navbar from "../components/Form/Navbar";
 import WorksheetTitle from "../components/Form/WorksheetTitle";
 
-import { Box, Spinner, Icon, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Flex, Menu, MenuButton, Button, MenuList, Divider, Switch, MenuGroup, useMediaQuery, Slide, MenuDivider, useToast, Skeleton, Progress, Popover, PopoverTrigger, PopoverContent } from "@chakra-ui/react";
+import { Box, Spinner, Tooltip, Icon, IconButton, ButtonGroup, Text, Grid, GridItem, MenuItem, Flex, Menu, MenuButton, Button, MenuList, Divider, Switch, MenuGroup, useMediaQuery, Slide, MenuDivider, useToast, Skeleton, Progress, Popover, PopoverTrigger, PopoverContent } from "@chakra-ui/react";
 
 import Editable from "../components/Slate/Editable";
 import LanguagePicker from '../components/LanguagePicker';
-import PublicSwitch from '../components/PublicSwitch';
+import PrivateSwitch from "../components/PrivateSwitch";
 import Logo from '../components/Logo';
 
 import { FaArrowLeft, FaFileUpload, FaChalkboardTeacher, FaPrint, FaHome, FaChevronUp, FaCheckCircle } from "react-icons/fa";
@@ -182,6 +182,46 @@ const Form = () => {
 
     }, [id, toast, history]);
 
+    async function handlePublishActivity() {
+        dispatch({ type: ACTIONS.SAVING_WORKSHEET });
+
+        try {
+            const response = await fetch(`/api/activities/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    property: "published",
+                    value: !state.worksheet.published,
+                })
+            })
+            const json = await response.json();
+            dispatch({ type: ACTIONS.SAVING_WORKSHEET_SUCCESS });
+
+            dispatch({ type: ACTIONS.CHANGE_WORKSHEET_PROP, payload: { property: "published", value: json.published } })
+
+            toast({
+                position: isDesktop ? 'top-right' : 'bottom',
+                title: json.published
+                    ? "La actividad fue publicada exitósamente"
+                    : "La publicación de la actividad fue anulada exitósamente",
+                status: "success",
+                duration: 5000,
+                isClosable: true
+            })
+        } catch (error) {
+            // console.log(error);
+            toast({
+                position: isDesktop ? 'top-right' : 'bottom',
+                title: "Error al guardar los cambios",
+                status: "error",
+                duration: 5000,
+                isClosable: true
+            })
+        }
+    }
+
     async function updateWorksheetProp({ property }) {
         dispatch({ type: ACTIONS.SAVING_WORKSHEET });
         let body = { property, value: state.worksheet[property], author: state.worksheet.author };
@@ -209,7 +249,7 @@ const Form = () => {
 
             toast({
                 position: isDesktop ? 'top-right' : 'bottom',
-                title: "Error al guardar actividad",
+                title: "Error al guardar los cambios",
                 status: "error",
                 duration: 5000,
                 isClosable: true
@@ -305,15 +345,20 @@ const Form = () => {
 
                                 <GridItem display="flex" alignItems="center" px="4" colStart={3} rowSpan={2}>
                                     <ButtonGroup>
-                                        <Button colorScheme="brand">
-                                            <Icon as={FaFileUpload} mr="2" />
-                                            Publicar
-                                        </Button>
+                                        <Tooltip title="Al hacer una actividad pública tus alumnos podrán acceder a la actividad">
+                                            <Button onClick={handlePublishActivity} colorScheme="brand">
+                                                <Icon as={FaFileUpload} mr="2" />
+                                                {worksheet?.published
+                                                    ? "Anular Publicación"
+                                                    : "Publicar Actividad"
+                                                }
+                                            </Button>
+                                        </Tooltip>
                                     </ButtonGroup>
                                 </GridItem>
 
                                 <GridItem py="2" colStart={2} rowSpan="1" display="inline-flex" alignItems="center">
-                                    <ActionsMenu />
+                                    <ActionsMenu {...{ handlePublishActivity, worksheet }} />
                                 </GridItem>
                                 <GridItem py="2" px="5" colSpan={3} width="full" borderTop="2px solid var(--chakra-colors-gray-100)">
                                     <ButtonGroup as={Flex} alignItems="center">
@@ -360,7 +405,7 @@ const Form = () => {
                                     !loading && !error &&
                                     <Fragment>
                                         <LanguagePicker {...{ updateWorksheetProp, dispatch, lang: worksheet.lang }} />
-                                        <PublicSwitch {...{ updateWorksheetProp, dispatch, isPublic: worksheet.published }} />
+                                        <PrivateSwitch {...{ updateWorksheetProp, dispatch, isPrivate: worksheet.private }} />
                                     </Fragment>
                                 }
                             </Box>
@@ -421,7 +466,12 @@ const Form = () => {
                                 <MenuButton variant="ghost" colorScheme="brand" icon={<Icon as={HiDotsVertical} />} as={IconButton} />
                                 <MenuList>
                                     <MenuGroup title="Actividad">
-                                        <MenuItem icon={<Icon color="brand.500" as={FaFileUpload} />} >Publicar Actividad</MenuItem>
+                                        <MenuItem onClick={handlePublishActivity} icon={<Icon color="brand.500" as={FaFileUpload} />} >
+                                            {worksheet?.published
+                                                ? "Anular Publicación"
+                                                : "Publicar Actividad"
+                                            }
+                                        </MenuItem>
                                     </MenuGroup>
                                     <MenuDivider />
                                     <MenuGroup title="Ver">
