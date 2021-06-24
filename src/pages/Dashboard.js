@@ -111,6 +111,7 @@ const Dashboard = () => {
         const newWorksheet = {
             title: "Actividad sin título",
             lang: "es",
+            private: false,
             published: false,
             content: JSON.stringify([{
                 type: 'paragraph',
@@ -185,7 +186,7 @@ const Dashboard = () => {
         <Fragment>
 
             <Navbar />
-            { loading &&
+            {loading &&
                 <Progress size="xs" isIndeterminate
                     sx={{
                         "& > div": {
@@ -194,7 +195,7 @@ const Dashboard = () => {
                     }}
                 />
             }
-            { error &&
+            {error &&
                 <Alert status="error">
                     <AlertIcon />
                     <AlertDescription>{error.message}</AlertDescription>
@@ -222,7 +223,7 @@ const Dashboard = () => {
                     }
                     <Flex width="full" as={Button} colorScheme="brand" variant="ghost" background="white" onClick={worksheetsHandler.createSheet} leftIcon={<Icon as={HiDocumentAdd} />} size="lg" boxShadow="base" height="40" borderRadius="xl">
                         Crear Nueva actividad
-                        </Flex>
+                    </Flex>
                 </Grid>
 
             </Container>
