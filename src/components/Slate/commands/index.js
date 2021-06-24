@@ -6,21 +6,12 @@ function createExercise(editor, { type }) {
     const newNode = {
         type: 'exercise-block',
         exerciseType: type,
-        children: [
-            {
-                type: 'exercise-list-items',
-                children: [
-                    {
-                        type: 'paragraph',
-                        children: [
-                            {
-                                text: ''
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
+        children: [{
+            type: 'paragraph',
+            children: [{
+                text: ''
+            }]
+        }]
     }
 
     if (editor.selection) {
@@ -38,5 +29,5 @@ function createExercise(editor, { type }) {
 }
 
 export {
-    createExercise
+    createExercise,
 }
