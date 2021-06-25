@@ -11,6 +11,7 @@ import NotFounded from "./pages/NotFounded";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import SyncEditor from "./pages/SyncEditor";
+import Activities from "./pages/Activities";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <div className="App">
         <Router>
           <Switch>
+            <Route path="/activities" component={Activities} />
             <Route path="/test" component={SyncEditor} />
             <Route exact path="/" component={Home} />
             <PrivateRoute path="/dashboard" redirectTo="/login" component={Dashboard} />

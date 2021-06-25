@@ -19,7 +19,7 @@
 		"react-icons": "^4.2.0",
 		"react-router-dom": "^5.2.0",
 		"react-scripts": "4.0.3",
-		"slate": "^0.62.0",
+		"slate": "^0.63.0",
 		"slate-history": "^0.62.0",
 		"slate-react": "^0.62.0",
 		"socket.io-client": "^4.1.2",
@@ -32,11 +32,22 @@
 		"eject": "react-scripts eject"
 	},
 	"eslintConfig": {
-		"extends": [ "react-app", "react-app/jest" ]
+		"extends": [
+			"react-app",
+			"react-app/jest"
+		]
 	},
 	"browserslist": {
-		"production": [ ">0.2%", "not dead", "not op_mini all" ],
-		"development": [ "last 1 chrome version", "last 1 firefox version", "last 1 safari version" ]
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
 	},
 	"devDependencies": {}
 }
