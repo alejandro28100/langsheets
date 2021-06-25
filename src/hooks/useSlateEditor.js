@@ -6,9 +6,9 @@ import { withHistory } from "slate-history";
 //slate Custom plugins
 import { withMissingWordExercise, withTextAlignment, withExerciseBlock, withWordOrderExercise } from "../components/Slate/plugins";
 
-function useSlateEditor() {
-    const editor = useMemo(() =>
-        withTextAlignment(
+function useSlateEditor(config) {
+    const editor = useMemo(() => (!config?.plugins
+        ? withTextAlignment(
             withWordOrderExercise(
                 withExerciseBlock(
                     withMissingWordExercise(
@@ -19,6 +19,7 @@ function useSlateEditor() {
                 )
             )
         )
+        : withReact(createEditor()))
         , [])
     return editor;
 }
