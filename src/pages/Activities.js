@@ -1,16 +1,18 @@
 // @refresh reset
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, Fragment, useState } from 'react'
 
-import { Grid, Input, Box, Flex, Button, ButtonGroup, Tooltip, Modal, ModalHeader, ModalBody, ModalOverlay, ModalContent, ModalFooter, ModalCloseButton, Text, Icon, useDisclosure, Divider } from "@chakra-ui/react"
+import { Grid, Input, IconButton, InputGroup, InputLeftAddon, Box, Flex, Button, ButtonGroup, Tooltip, Modal, ModalHeader, ModalBody, ModalOverlay, ModalContent, ModalFooter, ModalCloseButton, Text, Icon, useDisclosure, Divider, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react"
+
+import { Logo } from '../svgs';
+
+import { FaChevronDown, FaClone, FaLanguage, FaSearch, FaUser, FaUserAlt } from 'react-icons/fa';
 
 import { parseWorksheets } from "../utils/index";
-import { FaClone, FaLanguage, FaUser, FaUserAlt } from 'react-icons/fa';
 import useSlateRender from '../hooks/useSlateRender';
 import useSlateEditor from '../hooks/useSlateEditor';
 import { Slate } from 'slate-react';
 import CustomEditable from '../components/Slate/Editable';
 import useBodyBackground from '../hooks/useBodyBackground';
-import { Fragment } from 'react';
 
 const LANGS = {
     es: "Español",
@@ -28,6 +30,10 @@ const Activities = () => {
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(undefined);
+
+    //filters
+    const [language, setLanguage] = useState(undefined);
+    const [keywords, setKeywords] = useState("");
 
     useEffect(() => {
         async function getActivities() {
@@ -47,18 +53,54 @@ const Activities = () => {
                 setLoading(false);
             }
 
-
         };
 
         getActivities();
 
     }, [])
 
+    function handleSearch(e) {
+        console.log("Searching activities");
+        console.log(`Language: ${LANGS[language]}, Keywords: ${keywords}`);
+    }
+
+
+
     if (error) return <Box>Error</Box>;
 
     return (
 
         <Fragment>
+
+            <Flex bg="white" width="full" p="5">
+                <Icon w={12} h={12} as={Logo} mr="4" />
+
+                <InputGroup width="50%" mr="4">
+                    <InputLeftAddon onClick={handleSearch}>
+                        <Icon as={FaSearch} />
+                    </InputLeftAddon>
+                    <Input onKeyDown={(e) => e.key === "Enter" && handleSearch()} value={keywords} onChange={(event) => setKeywords(event.target.value)} placeholder="Busca actividades de otros profesores" />
+                </InputGroup>
+
+
+                <Menu>
+                    <Tooltip hasArrow label="Filtrar por idioma">
+                        <MenuButton as={Button} leftIcon={<Icon as={FaLanguage} />} rightIcon={<Icon as={FaChevronDown} />} >
+                            {language ? LANGS[language] : "Seleccionar Idioma"}
+                        </MenuButton>
+                    </Tooltip>
+                    <MenuList>
+                        <MenuItem onClick={() => setLanguage("en")}>Inglés</MenuItem>
+                        <MenuItem onClick={() => setLanguage("fr")}>Francés</MenuItem>
+                        <MenuItem onClick={() => setLanguage("es")}>Español</MenuItem>
+                        <MenuItem onClick={() => setLanguage("ru")}>Ruso</MenuItem>
+                        <MenuItem onClick={() => setLanguage("de")}>Aleman</MenuItem>
+                        <MenuItem onClick={() => setLanguage("it")}>Italiano</MenuItem>
+                        <MenuItem onClick={() => setLanguage("jp")}>Japonés</MenuItem>
+                    </MenuList>
+                </Menu>
+
+            </Flex>
 
             <Grid mx="auto" px={["0px"]} width="container.lg" templateColumns={["1fr", "repeat(2, 1fr)", "repeat(3, 1fr)"]} gap={6} p="5">
 
@@ -98,10 +140,7 @@ const AcitivityCard = props => {
 
                 <Box cursor="zoom-in" position="relative" h={["60vh", "50vh"]} overflowY="auto">
                     <Box width="100%" height="100%" position="absolute" top="0" left="0" zIndex="1" onClick={onOpen} />
-                    <Box transform={{
-                        base: "scale(.4) translateX(-70%) translateY(-70%)",
-                        md: "scale(.6) translateY(-30%)"
-                    }} >
+                    <Box>
                         <CustomEditable {...{
                             readOnly: true,
                             renderElement,
