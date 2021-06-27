@@ -7,7 +7,7 @@ import { Logo } from '../svgs';
 
 import { FaChevronDown, FaClone, FaLanguage, FaSearch, FaUser, FaUserAlt } from 'react-icons/fa';
 
-import { parseWorksheets } from "../utils/index";
+import { createQueryString, parseWorksheets } from "../utils/index";
 import useSlateRender from '../hooks/useSlateRender';
 import useSlateEditor from '../hooks/useSlateEditor';
 import { Slate } from 'slate-react';
@@ -35,36 +35,30 @@ const Activities = () => {
     const [language, setLanguage] = useState(undefined);
     const [keywords, setKeywords] = useState("");
 
-    useEffect(() => {
-        async function getActivities() {
-            try {
-                setLoading(true);
 
-                const response = await fetch('/api/activities/public');
-                const json = await response.json();
+    async function getActivities() {
+        try {
+            setLoading(true);
+            const params = {};
 
-                const activities = parseWorksheets(json);
+            if (language) params.language = language;
+            if (!!keywords.trim()) params.keywords = keywords;
 
-                setActivities(activities);
-                console.log(activities);
-            } catch (error) {
-                setError(error);
-            } finally {
-                setLoading(false);
-            }
+            const response = await fetch(`/api/activities/public?${Object.keys(params).length !== 0 && createQueryString(params)}`);
+            const json = await response.json();
 
-        };
-
-        getActivities();
-
-    }, [])
-
-    function handleSearch(e) {
-        console.log("Searching activities");
-        console.log(`Language: ${LANGS[language]}, Keywords: ${keywords}`);
+            const activities = parseWorksheets(json);
+            setActivities(activities);
+        } catch (error) {
+            setError(error);
+        } finally {
+            setLoading(false);
+        }
     }
 
-
+    useEffect(() => {
+        getActivities();
+    }, [language])
 
     if (error) return <Box>Error</Box>;
 
@@ -73,13 +67,21 @@ const Activities = () => {
         <Fragment>
 
             <Flex bg="white" width="full" p="5">
-                <Icon w={12} h={12} as={Logo} mr="4" />
+
+                <Text as="a" href="/">
+                    <Icon w={12} h={12} as={Logo} mr="4" />
+                </Text>
 
                 <InputGroup width="50%" mr="4">
-                    <InputLeftAddon onClick={handleSearch}>
+                    <InputLeftAddon onClick={getActivities}>
                         <Icon as={FaSearch} />
                     </InputLeftAddon>
-                    <Input onKeyDown={(e) => e.key === "Enter" && handleSearch()} value={keywords} onChange={(event) => setKeywords(event.target.value)} placeholder="Busca actividades de otros profesores" />
+                    <Input
+                        value={keywords}
+                        onKeyDown={(e) => e.key === "Enter" && getActivities()}
+                        onChange={(event) => setKeywords(event.target.value)}
+                        placeholder="Busca actividades de otros profesores"
+                    />
                 </InputGroup>
 
 
@@ -89,7 +91,7 @@ const Activities = () => {
                             {language ? LANGS[language] : "Seleccionar Idioma"}
                         </MenuButton>
                     </Tooltip>
-                    <MenuList>
+                    <MenuList zIndex="dropdown">
                         <MenuItem onClick={() => setLanguage("en")}>Inglés</MenuItem>
                         <MenuItem onClick={() => setLanguage("fr")}>Francés</MenuItem>
                         <MenuItem onClick={() => setLanguage("es")}>Español</MenuItem>
@@ -102,12 +104,20 @@ const Activities = () => {
 
             </Flex>
 
-            <Grid mx="auto" px={["0px"]} width="container.lg" templateColumns={["1fr", "repeat(2, 1fr)", "repeat(3, 1fr)"]} gap={6} p="5">
+            <Grid mx="auto" px={["0px"]} width="container.lg" templateColumns={["1fr", "repeat(3, 1fr)"]} gap={6} p="5">
 
                 {
                     !loading && activities.map((activity) => (
                         <AcitivityCard key={activity._id} {...activity} />
                     ))
+                }
+
+                {
+                    !loading && activities.length === 0 && (
+                        <Box>
+                            Ninguna actividad fue encontrada :(
+                        </Box>
+                    )
                 }
 
             </Grid>
@@ -136,7 +146,7 @@ const AcitivityCard = props => {
             editor,
             value: content
         }}>
-            <Box w={["100%", "80"]} bg="white" h={["70vh", "60vh"]} transition="ease 0.5s transform" _hover={{ md: { transform: "scale(1.04)" } }} overflowY="hidden" boxShadow="base"  >
+            <Box w={["100%", "80"]} bg="white" h={["70vh", "60vh"]} transition="ease 0.5s transform" overflowY="hidden" boxShadow="base"  >
 
                 <Box cursor="zoom-in" position="relative" h={["60vh", "50vh"]} overflowY="auto">
                     <Box width="100%" height="100%" position="absolute" top="0" left="0" zIndex="1" onClick={onOpen} />

@@ -21,3 +21,16 @@ export function parseWorksheet(worksheet) {
     updatedWorksheet.content = JSON.parse(worksheet.content);
     return updatedWorksheet;
 }
+
+export function createQueryString(params) {
+    if (Object.keys(params).length === 0) return "";
+    return Object.keys(params)
+        .map(key => {
+            const value = params[key];
+            if (!!value) {
+                return `${key}=${params[key]}`;
+            }
+            return ""
+        })
+        .join("&");
+}
