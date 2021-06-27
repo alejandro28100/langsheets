@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
+import { useHistory } from "react-router-dom";
 import Cookies from "js-cookie"
 
 const UserContext = createContext();
@@ -11,6 +12,11 @@ const initialValue = {
 
 function reducer(state, action) {
     switch (action.type) {
+        case 'logout':
+            return {
+                ...state,
+                user: undefined
+            }
         case 'loading':
             return {
                 ...state,
@@ -39,7 +45,7 @@ function reducer(state, action) {
 
 export const UserProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialValue);
-
+    const history = useHistory();
     useEffect(() => {
         async function getUserInfo() {
             dispatch({ type: "loading" });
@@ -60,6 +66,12 @@ export const UserProvider = ({ children }) => {
         getUserInfo();
 
     }, [])
+
+    function logout() {
+        Cookies.remove("token");
+        dispatch({ type: "logout" });
+        history.push("/")
+    }
 
     async function login(email, password) {
         dispatch({ type: "loading" });
@@ -113,6 +125,7 @@ export const UserProvider = ({ children }) => {
     }
 
     const value = {
+        logout,
         login,
         signUp,
         ...state
