@@ -13,7 +13,7 @@ function Navbar({ leftActions, rightActions, withIcon, sm }) {
     const { logout, user } = useUser();
 
     return (
-        <Flex px="10" background="white" py="4" shadow="sm"
+        <Flex px="10" background="white" py="4" shadow="sm" alignItems="center"
             sx={{
                 "@media print": {
                     display: "none",
