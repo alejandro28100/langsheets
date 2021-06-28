@@ -89,7 +89,7 @@ const WordOrderPractice = props => {
                     return (
                         focused && focused.userID !== socket.id ? (
                             <Tooltip label={<UserLabel message={`${focused.username} esta contestando este ejercicio`} />}>
-                                <Flex position="relative" flexWrap="wrap" alignItems="center" my="4" borderRadius="base" border="2px var(--chakra-colors-brand-600) solid"
+                                <Flex position="relative" flexWrap="wrap" alignItems="center" p="4" my="4" borderRadius="base" border="2px var(--chakra-colors-brand-600) solid"
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
                                     className={`${snapshot.isDraggingOver && 'draggingOver'}`}
