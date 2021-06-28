@@ -1,11 +1,16 @@
 import { Text } from "@chakra-ui/layout";
+import PropTypes from "prop-types";
 
 const UserLabel = props => {
     return (
         <Text as="span">
-            {props.username} esta escribiendo <DotAnimation />
+            {props.message} <DotAnimation />
         </Text>
     )
+}
+
+UserLabel.propTypes = {
+    message: PropTypes.string.isRequired,
 }
 
 const DotAnimation = props => (

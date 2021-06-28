@@ -72,7 +72,7 @@ const MissingWordInput = (props) => {
                 ? (
                     <Fragment>
                         <Text as="span" w="3" h="3" bg="brand.500" position="absolute" transform="translateY(-50%) translateX(50%)" animation="pulse 2s infinite" boxShadow="0 0 0 #3c37cfb7" right="0" borderRadius="50%" zIndex="overlay" />
-                        <Tooltip label={<UserLabel username={focused.username} />}>
+                        <Tooltip label={<UserLabel message={`${focused.username} esta escribiendo`} />}>
                             <Input cursor="not-allowed" variant="filled" transition="all ease 300ms" readOnly={checkExercise} value={inputValue} onFocus={handleOnFocus} onChange={handleOnChange} />
                         </Tooltip>
                     </Fragment>
