@@ -21,7 +21,7 @@ Esta página traduce todo el contenido del [RTE](https://en.wikipedia.org/wiki/O
 
 Se creó una versión prototipo de la aplicación que funciona usando localStorage para asegurar la persistencia de los datos de manera local. El proyecto esta hosteado en la plataforma Netlify
 
-<https://determined-mayer-9f15a9.netlify.app/>
+<https://langsheets.herokuapp.com/>
 
 [rte link]: https://en.wikipedia.org/wiki/Online_rich-text_editor
 
