@@ -1,7 +1,7 @@
 import React, { useEffect, Fragment, useReducer } from 'react'
 import { useHistory } from "react-router-dom"
 
-import { Grid, Container, Text, Flex, Icon, Button, Skeleton, Alert, AlertDescription, AlertIcon, Progress, useToast } from "@chakra-ui/react"
+import { Grid, Container, Text, Flex, Icon, Button, Skeleton, Alert, AlertDescription, AlertIcon, Progress, useToast, MenuItem } from "@chakra-ui/react"
 
 import WorksheetCard from "../components/WorksheetCard";
 
@@ -11,6 +11,7 @@ import Navbar from '../components/Navbar';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { parseWorksheets } from '../utils';
 import { useUser } from '../context/UserContext';
+import { FaSearch } from 'react-icons/fa';
 
 // const examples = [
 //     {
@@ -185,7 +186,14 @@ const Dashboard = () => {
     return (
         <Fragment>
 
-            <Navbar />
+            <Navbar
+                sm={
+                    <MenuItem icon={<Icon as={FaSearch} />} href="/activities" as="a">Búsqueda de Actividades</MenuItem>
+                }
+                rightActions={
+                    <Button leftIcon={<Icon as={FaSearch} />} size="sm" mr="4" as="a" href="/activities" variant="outline" colorScheme="brand">Búsqueda De Actividades</Button>
+                }
+            />
             {loading &&
                 <Progress size="xs" isIndeterminate
                     sx={{
@@ -211,10 +219,14 @@ const Dashboard = () => {
                     gap="5"
                     justifyContent="center"
                     placeItems="center"
-                    templateColumns={{ base: "", md: "repeat(2, var(--chakra-sizes-72))", lg: "repeat(3, minmax(var(--chakra-sizes-72),var(--chakra-sizes-80)))" }}
+                    templateColumns={{
+                        base: "",
+                        md: "repeat(2, var(--chakra-sizes-72))",
+                        lg: "repeat(3, var(--chakra-sizes-80))"
+                    }}
                 >
                     {!!worksheets && worksheets.map(worksheet => (
-                        <Skeleton key={worksheet._id} isLoaded={!loading} >
+                        <Skeleton width="full" key={worksheet._id} isLoaded={!loading} >
                             <WorksheetCard
                                 {...{ ...worksheet, ...worksheetsHandler }}
                             />
