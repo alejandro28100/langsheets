@@ -13,6 +13,8 @@ import useSlateEditor from '../hooks/useSlateEditor';
 import { Slate } from 'slate-react';
 import CustomEditable from '../components/Slate/Editable';
 import useBodyBackground from '../hooks/useBodyBackground';
+import { useUser } from '../context/UserContext';
+import { useHistory } from 'react-router-dom';
 
 const LANGS = {
     es: "Español",
@@ -128,9 +130,14 @@ const Activities = () => {
 
 
 const AcitivityCard = props => {
+    const history = useHistory();
+
+    const { user } = useUser();
+
     const { _id, author, content, createdAt, lang, title } = props;
 
     const username = `${author.name} ${author.lastName}`;
+
     const editor = useSlateEditor({
         plugins: false
     });
@@ -140,6 +147,40 @@ const AcitivityCard = props => {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     useBodyBackground("var(--chakra-colors-gray-100)")
+
+    async function handleCloneActivity() {
+
+        const newWorksheet = {
+            title,
+            lang,
+            private: false,
+            published: false,
+            content: JSON.stringify(content),
+            createdAt: new Date(),
+            author: {
+                name: user.name,
+                lastName: user.lastName,
+                id: user.id
+            }
+        }
+
+        try {
+            const response = await fetch("/api/activities", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newWorksheet)
+            })
+
+            const json = await response.json();
+
+            history.push(`/worksheets/${json._id}/edit`);
+        } catch (error) {
+            alert("Algo salió mal, refresca la página e inténtalo de nuevo :(");
+        }
+
+    };
 
     return (
         <Slate {...{
@@ -166,7 +207,7 @@ const AcitivityCard = props => {
                         <Text isTruncated> <Icon as={FaUserAlt} /> {username}</Text>
                     </Box>
                     <Tooltip hasArrow label="Clonar actividad">
-                        <Button alignSelf="flex-start" variant="outline" colorScheme="white"> <Icon as={FaClone} /> </Button>
+                        <Button onClick={handleCloneActivity} alignSelf="flex-start" variant="outline" colorScheme="white"> <Icon as={FaClone} /> </Button>
                     </Tooltip>
                 </Flex>
 
@@ -195,7 +236,7 @@ const AcitivityCard = props => {
                         <ModalFooter>
                             <ButtonGroup>
                                 <Button variant="ghost" onClick={onClose}>Cerrar</Button>
-                                <Button rightIcon={<Icon as={FaClone} />} colorScheme="brand">Clonar Actividad</Button>
+                                <Button onClick={handleCloneActivity} rightIcon={<Icon as={FaClone} />} colorScheme="brand">Clonar Actividad</Button>
                             </ButtonGroup>
                         </ModalFooter>
                     </ModalContent>
